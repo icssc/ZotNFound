@@ -1,0 +1,24 @@
+{
+  "name": "@zotnfound/functions",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "sst bind vitest",
+    "typecheck": "tsc -noEmit"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.137",
+    "@types/node": "^20.12.7",
+    "sst": "^2.41.5",
+    "vitest": "^1.5.3"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "firebase": "^10.11.1",
+    "firebase-admin": "^12.1.0",
+    "googleapis": "^135.0.0",
+    "nodemailer": "^6.9.13",
+    "pg": "^8.11.5",
+    "serverless-http": "^3.2.0"
+  }
+}
