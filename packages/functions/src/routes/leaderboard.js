@@ -4,6 +4,7 @@ const middleware = require("../middleware/index.js");
 const { leaderboardTable } = require("../config/db-config.js");
 
 const client = require("../server/db");
+
 // add a user to leaderboard
 leaderboardRouter.post("/", middleware.decodeToken, async (req, res) => {
   try {
@@ -12,13 +13,11 @@ leaderboardRouter.post("/", middleware.decodeToken, async (req, res) => {
     if (!email || !points) {
       return res.status(400).send("Email and points are required");
     }
-    await client.connect();
 
     await client.query(
       `INSERT INTO ${leaderboardTable} (email, points) VALUES ($1, $2)`,
       [email, points]
     );
-    await client.end();
 
     res.status(201).send("User added to leaderboard");
   } catch (err) {
@@ -30,12 +29,10 @@ leaderboardRouter.post("/", middleware.decodeToken, async (req, res) => {
 // get all users on leaderboard (descending)
 leaderboardRouter.get("/", async (req, res) => {
   try {
-    await client.connect();
 
     const lbData = await client.query(
       `SELECT * FROM ${leaderboardTable} ORDER BY points DESC LIMIT 3`
     );
-    await client.end();
 
     res.json(lbData.rows);
   } catch (error) {
@@ -46,12 +43,10 @@ leaderboardRouter.get("/", async (req, res) => {
 // get count of users in leaderboard
 leaderboardRouter.get("/count", async (req, res) => {
   try {
-    await client.connect();
 
     const lbCount = await client.query(
       `SELECT COUNT(*) as count FROM ${leaderboardTable}`
     );
-    await client.end();
 
     // Extract the count from the first row of the result set
     const count = lbCount.rows[0].count;
@@ -73,13 +68,11 @@ leaderboardRouter.patch(
       if (subscription === undefined) {
         return res.status(400).send("Unsubscribe action is unknown");
       }
-      await client.connect();
 
       await client.query(
         `UPDATE ${leaderboardTable} SET subscription=$1 WHERE email=$2`,
         [subscription, email]
       );
-      await client.end();
 
       res.send("Subscription updated successfully!");
     } catch (err) {
@@ -98,7 +91,6 @@ leaderboardRouter.put("/", middleware.decodeToken, async (req, res) => {
   }
 
   try {
-    await client.connect();
 
     // First, fetch the current points of the user
     const currentPointsResult = await client.query(
@@ -106,7 +98,6 @@ leaderboardRouter.put("/", middleware.decodeToken, async (req, res) => {
       [email]
     );
 
-    await client.end();
 
     if (currentPointsResult.rows.length === 0) {
       return res.status(404).send("User not found");
@@ -115,14 +106,12 @@ leaderboardRouter.put("/", middleware.decodeToken, async (req, res) => {
     const currentPoints = currentPointsResult.rows[0].points;
     const newPoints = currentPoints + pointsToAdd;
 
-    await client.connect();
 
     // Now, update the user's points in the leaderboard
     await client.query(
       `UPDATE ${leaderboardTable} SET points=$1 WHERE email=$2`,
       [newPoints, email]
     );
-    await client.end();
 
     res.send("Points updated successfully");
   } catch (err) {
@@ -138,10 +127,8 @@ leaderboardRouter.delete("/:id", middleware.decodeToken, async (req, res) => {
     if (!id) {
       return res.status(400).send("id is required");
     }
-    await client.connect();
 
     await client.query(`DELETE FROM ${leaderboardTable} WHERE id=$1`, [id]);
-    await client.end();
 
     res.status(200).send("User deleted from leaderboard");
   } catch (err) {

@@ -1,7 +1,7 @@
 {
   "name": "@zotnfound/functions",
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "test": "sst bind vitest",
     "typecheck": "tsc -noEmit"

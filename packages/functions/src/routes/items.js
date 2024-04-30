@@ -6,8 +6,9 @@ const middleware = require("../middleware/index.js");
 const itemsRouter = express.Router();
 
 const client = require("../server/db");
-const templatePath = path.join(__dirname, "../emailTemplate/index.html");
-const template = fs.readFileSync(templatePath, "utf-8");
+
+// const templatePath = path.resolve(__dirname, "../emailTemplate/index.html");
+// const template = fs.readFileSync(templatePath, "utf-8");
 const isPositionWithinBounds = require("../util/inbound.js");
 const { leaderboardTable, itemsTable } = require("../config/db-config.js");
 
@@ -32,7 +33,6 @@ itemsRouter.post("/", async (req, res) => {
       res.json("ITEM OUT OF BOUNDS (UCI ONLY)");
     }
 
-    await client.connect();
     const item = await client.query(
       `INSERT INTO ${itemsTable} (name, description, type, islost, location, date, itemdate, email, image, isresolved, ishelped) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
       [
@@ -56,7 +56,6 @@ itemsRouter.post("/", async (req, res) => {
       [email]
     );
 
-    await client.end();
 
     res.json(item.rows[0]); // send the response immediately after adding the item
     let contentString = "";
@@ -75,12 +74,12 @@ itemsRouter.post("/", async (req, res) => {
           url: `https://zotnfound.com/${item.rows[0].id}`,
         };
 
-        const customizedTemplate = template
-          .replace("{{content}}", dynamicContent.content)
-          .replace("{{image}}", dynamicContent.image)
-          .replace("{{url}}", dynamicContent.url);
+        // const customizedTemplate = template
+        //   .replace("{{content}}", dynamicContent.content)
+        //   .replace("{{image}}", dynamicContent.image)
+        //   .replace("{{url}}", dynamicContent.url);
 
-        sendEmail(email, "A nearby item was added.", customizedTemplate);
+        // sendEmail(email, "A nearby item was added.", customizedTemplate);
 
         contentString = "";
         console.log("sent " + email);
@@ -98,7 +97,6 @@ itemsRouter.get("/", async (req, res) => {
   try {
     // Retrieve the User-Email header
     const userEmail = req.headers["user-email"];
-    await client.connect();
     // Modify your SQL query to conditionally select the email field
     const allItems = await client.query(
       `SELECT id, name, description, type, location, date, itemDate, image, islost, isResolved, isHelped, 
@@ -106,7 +104,6 @@ itemsRouter.get("/", async (req, res) => {
       FROM ${itemsTable} WHERE is_deleted = false`,
       [userEmail] // Pass the userEmail as a parameter to the SQL query
     );
-    await client.end();
 
     res.json(allItems.rows);
   } catch (error) {
@@ -145,12 +142,10 @@ itemsRouter.get("/", async (req, res) => {
 
 itemsRouter.get("/week", async (req, res) => {
   try {
-    await client.connect();
 
     const items = await client.query(
       `SELECT * FROM ${itemsTable} WHERE TO_TIMESTAMP(date, 'YYYY-MM-DD') > NOW() - interval '7 days' AND is_deleted = false`
     );
-    await client.end();
 
     res.json(items.rows);
   } catch (error) {
@@ -160,13 +155,11 @@ itemsRouter.get("/week", async (req, res) => {
 
 itemsRouter.get("/two_weeks", async (req, res) => {
   try {
-    await client.connect();
 
     const items = await client.query(
       `SELECT * FROM ${itemsTable} WHERE TO_TIMESTAMP(date, 'YYYY-MM-DD') > NOW() - interval '14 days' AND is_deleted = false`
     );
 
-    await client.end();
 
     res.json(items.rows);
   } catch (error) {
@@ -176,12 +169,10 @@ itemsRouter.get("/two_weeks", async (req, res) => {
 
 itemsRouter.get("/month", async (req, res) => {
   try {
-    await client.connect();
 
     const items = await client.query(
       `SELECT * FROM ${itemsTable} WHERE TO_TIMESTAMP(date, 'YYYY-MM-DD') > NOW() - interval '30 days' AND is_deleted = false`
     );
-    await client.end();
 
     res.json(items.rows);
   } catch (error) {
@@ -191,12 +182,10 @@ itemsRouter.get("/month", async (req, res) => {
 
 itemsRouter.get("/year", async (req, res) => {
   try {
-    await client.connect();
 
     const items = await client.query(
       `SELECT * FROM ${itemsTable} WHERE TO_TIMESTAMP(date, 'YYYY-MM-DD') > NOW() - interval '365 days' AND is_deleted = false`
     );
-    await client.end();
 
     res.json(items.rows);
   } catch (error) {
@@ -208,12 +197,10 @@ itemsRouter.get("/year", async (req, res) => {
 itemsRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    await client.connect();
 
     const item = await client.query(`SELECT * FROM ${itemsTable} WHERE id=$1`, [
       id,
     ]);
-    await client.end();
 
     res.json(item.rows[0]);
   } catch (error) {
@@ -225,13 +212,11 @@ itemsRouter.get("/:id", async (req, res) => {
 itemsRouter.get("/:id/email", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
-    await client.connect();
 
     const item = await client.query(
       `SELECT email FROM ${itemsTable} WHERE id=$1`,
       [id]
     );
-    await client.end();
 
     res.json(item.rows[0]);
   } catch (error) {
@@ -243,13 +228,11 @@ itemsRouter.get("/:id/email", middleware.decodeToken, async (req, res) => {
 itemsRouter.get("/category/:category", async (req, res) => {
   try {
     const { category } = req.params;
-    await client.connect();
 
     const items = await client.query(
       `SELECT * FROM ${itemsTable} WHERE type=$1`,
       [category]
     );
-    await client.end();
 
     res.json(items.rows);
   } catch (error) {
@@ -262,13 +245,11 @@ itemsRouter.put("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { ishelped } = req.body;
-    await client.connect();
 
     const item = await client.query(
       `UPDATE ${itemsTable} SET isresolved=$1, ishelped=$2 WHERE id=$3 RETURNING *`,
       [true, ishelped, id]
     );
-    await client.end();
 
     res.json(item.rows[0]);
   } catch (error) {
@@ -280,13 +261,11 @@ itemsRouter.put("/:id", middleware.decodeToken, async (req, res) => {
 itemsRouter.delete("/:id", middleware.decodeToken, async (req, res) => {
   try {
     const { id } = req.params;
-    await client.connect();
 
     const markAsDeleted = await client.query(
       `UPDATE ${itemsTable} SET is_deleted = true WHERE id = $1 RETURNING *`,
       [id]
     );
-    await client.end();
 
     // If no rows are returned, it means that there was no item with the given ID.
     if (markAsDeleted.rowCount === 0) {
