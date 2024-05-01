@@ -195,7 +195,7 @@ export default function Map({
     }
     axios
       .post(
-        `${import.meta.env.VITE_APP_API_URL}/items`,
+        `${process.env.REACT_APP_AWS_BACKEND_URL}/items`,
         {
           image: newAddedItem.image,
           type: newAddedItem.type,
@@ -250,7 +250,7 @@ export default function Map({
         const pointsToAdd = newAddedItem.islost ? 1 : 3;
 
         axios.put(
-          `${import.meta.env.VITE_APP_API_URL}/leaderboard`,
+          `${process.env.REACT_APP_AWS_BACKEND_URL}/leaderboard`,
           {
             email: user.email,
             pointsToAdd: pointsToAdd,

@@ -21,7 +21,7 @@ export function API({ stack }: StackContext) {
     buildOutput: "dist",
     buildCommand: "npm run build",
     environment: {
-      VITE_APP_API_URL: api.url,
+      REACT_APP_AWS_BACKEND_URL: api.url,
     },
   });
 
