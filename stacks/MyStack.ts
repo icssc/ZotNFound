@@ -18,7 +18,7 @@ export function API({ stack }: StackContext) {
 
   const web = new StaticSite(stack, "web", {
     path: "packages/web",
-    buildOutput: "dist",
+    buildOutput: "build",
     buildCommand: "npm run build",
     environment: {
       REACT_APP_AWS_BACKEND_URL: api.url,
