@@ -30,8 +30,14 @@ app.use("/items", items);
 app.use("/leaderboard", leaderboard);
 app.use("/nodemailer", nodemailer);
 
-// app.listen(port, () => {
-//   console.log(`server is running on ${port}`);
-// });
-
+const startServer = async () => {
+  try {
+    app.listen(3001, () => {
+      console.log("Server is running on port 3001");
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+startServer();
 module.exports = serverless(app);
