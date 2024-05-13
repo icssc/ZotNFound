@@ -13,13 +13,13 @@ export function API({ stack }: StackContext) {
         bind: [bus],
       },
     },
-    routes: { $default: "packages/functions/src/server.default" },
+    routes: { $default: "packages/functions/src/server.js" },
   });
 
   const web = new StaticSite(stack, "web", {
     path: "packages/web",
-    buildOutput: "build",
-    buildCommand: "npm run build",
+    buildOutput: "dist",
+    buildCommand: "pnpm run build",
     environment: {
       REACT_APP_AWS_BACKEND_URL: api.url,
     },
