@@ -9,7 +9,7 @@ const retrieveItemsAllTime = async (
   try {
     setLoading(false);
     const response = await axios.get(
-      `${process.env.REACT_APP_AWS_BACKEND_URL}/items/`
+      `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items/`
     );
     setData(response.data.map((item) => ({ ...item, id: item.id })));
     setDateRangeFilter("All");
@@ -29,7 +29,7 @@ const retrieveItemsWithinWeek = async (
   try {
     setLoading(false);
     const response = await axios.get(
-      `${process.env.REACT_APP_AWS_BACKEND_URL}/items/week`
+      `${import.meta.env.VITE_.REACT_APP_AWS_BACKEND_URL}/items/week`
     );
     setData(response.data.map((item) => ({ ...item, id: item.id })));
     setDateRangeFilter("Last 7 Days");
@@ -49,7 +49,7 @@ const retrieveItemsWithinTwoWeeks = async (
   try {
     setLoading(false);
     const response = await axios.get(
-      `${process.env.REACT_APP_AWS_BACKEND_URL}/items/two_weeks`
+      `${import.meta.env.VITE_.REACT_APP_AWS_BACKEND_URL}/items/two_weeks`
     );
     setData(response.data.map((item) => ({ ...item, id: item.id })));
     setDateRangeFilter("Last 14 Days");
@@ -69,7 +69,7 @@ const retrieveItemsWithinMonth = async (
   try {
     setLoading(false);
     const response = await axios.get(
-      `${process.env.REACT_APP_AWS_BACKEND_URL}/items/month`
+      `${import.meta.env.VITE_.REACT_APP_AWS_BACKEND_URL}/items/month`
     );
     setData(response.data.map((item) => ({ ...item, id: item.id })));
     setDateRangeFilter("Last 30 Days");
@@ -89,7 +89,7 @@ const retrieveItemsWithinYear = async (
   try {
     setLoading(false);
     const response = await axios.get(
-      `${process.env.REACT_APP_AWS_BACKEND_URL}/items/year`
+      `${import.meta.env.VITE_.REACT_APP_AWS_BACKEND_URL}/items/year`
     );
     setData(response.data.map((item) => ({ ...item, id: item.id })));
     setDateRangeFilter("This Year");

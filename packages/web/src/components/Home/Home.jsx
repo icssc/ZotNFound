@@ -142,7 +142,9 @@ export default function Home() {
     e.preventDefault();
     try {
       await axios.patch(
-        `${process.env.REACT_APP_AWS_BACKEND_URL}/leaderboard/changeSubscription`,
+        `${
+          import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
+        }/leaderboard/changeSubscription`,
         {
           email: user.email,
           subscription: !subscription,
@@ -235,7 +237,7 @@ export default function Home() {
 
       // Request to get items with additional headers
       axios
-        .get(`${process.env.REACT_APP_AWS_BACKEND_URL}/items/`, config)
+        .get(`${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items/`, config)
         .then((obj) => {
           setData(obj.data.map((item) => ({ ...item, id: item.id })));
         })
@@ -251,7 +253,7 @@ export default function Home() {
     const getLeaderboard = async () => {
       try {
         const { data: leaderboardData } = await axios.get(
-          `${process.env.REACT_APP_AWS_BACKEND_URL}/leaderboard`
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`
         );
         setLeaderboard(
           leaderboardData.map((item) => ({ ...item, id: item.id }))
@@ -264,7 +266,7 @@ export default function Home() {
         if (!userEmailExists && user) {
           // added user to prevent race condition (user is undefined before auth resolves)
           await axios.post(
-            `${process.env.REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
+            `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
             {
               email: user.email,
               points: 5, // You can modify this as per your requirements
@@ -277,7 +279,7 @@ export default function Home() {
           );
           // Fetch the leaderboard again after insertion
           const { data: updatedLeaderboardData } = await axios.get(
-            `${process.env.REACT_APP_AWS_BACKEND_URL}/leaderboard`
+            `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`
           );
           setLeaderboard(
             updatedLeaderboardData.map((item) => ({ ...item, id: item.id }))
