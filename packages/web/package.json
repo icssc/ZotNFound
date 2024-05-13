@@ -35,7 +35,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "vite",
+    "start": "sst bind vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
