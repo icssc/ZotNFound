@@ -1,0 +1,74 @@
+name: Build and deploy
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  build_and_deploy:
+    name: Build and deploy PeterPortal
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Out Repo
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 9
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install Dependencies
+        run: pnpm install
+        env:
+          HUSKY: 0
+
+      - name: Build and deploy
+        run: pnpm sst deploy --stage ${{ (github.event_name == 'pull_request' && format('staging-{0}', github.event.pull_request.number)) || 'prod'  }}
+        env:
+          CI: false
+          VITE_REACT_APP_API_KEY: ${{ secrets.VITE_REACT_APP_API_KEY }}
+          VITE_REACT_APP_AUTH_DOMAIN: ${{  secrets.VITE_REACT_APP_AUTH_DOMAIN }}
+          VITE_REACT_APP_PROJECT_ID: ${{  secrets.VITE_REACT_APP_PROJECT_ID }}
+          VITE_REACT_APP_STORAGE_BUCKET: ${{  secrets.VITE_REACT_APP_STORAGE_BUCKET }}
+          VITE_REACT_APP_MESSAGING_SENDER_ID: ${{  secrets. }}
+          VITE_REACT_APP_APP_ID: ${{  secrets. }}
+          VITE_REACT_APP_MEASUREMENT_ID: ${{  secrets. }}
+          VITE_REACT_APP_AWS_BACKEND_URL: ${{  secrets. }}
+          EMAIL: ${{  secrets.EMAIL }}
+          REFRESH_TOKEN: ${{  secrets.REFRESH_TOKEN }}
+          CLIENT_SECRET: ${{  secrets.CLIENT_SECRET }}
+          CLIENT_ID: ${{  secrets.CLIENT_ID }}
+          REDIRECT_URI: ${{  secrets.REDIRECT_URI }}
+          AWS_USER: ${{  secrets.AWS_USER }}
+          AWS_PASSWORD: ${{  secrets.AWS_PASSWORD }}
+          AWS_HOST: ${{  secrets.AWS_HOST }}
+          AWS_PORT: ${{  secrets.AWS_PORT }}
+          AWS_DB_NAME: ${{  secrets.AWS_DB_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          NODE_ENV: ${{ github.event_name == 'pull_request' && 'staging' || 'production' }}
+      
