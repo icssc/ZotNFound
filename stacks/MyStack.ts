@@ -20,8 +20,9 @@ export function API({ stack }: StackContext) {
     path: "packages/web",
     buildOutput: "dist",
     buildCommand: "pnpm run build",
+    customDomain: "zotnfound.com",
     environment: {
-      REACT_APP_AWS_BACKEND_URL: api.url,
+      VITE_REACT_APP_AWS_BACKEND_URL: api.url,
     },
   });
 
