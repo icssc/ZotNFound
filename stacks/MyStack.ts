@@ -13,7 +13,7 @@ export function API({ stack }: StackContext) {
         bind: [bus],
       },
     },
-    routes: { $default: "packages/functions/src/server.js" },
+    routes: { $default: "packages/functions/src/server.default" },
   });
 
   const web = new StaticSite(stack, "web", {
@@ -32,6 +32,6 @@ export function API({ stack }: StackContext) {
 
   stack.addOutputs({
     ApiEndpoint: api.url,
-    WebEndpoint: web.url,
+    WebEndpoint: web.customDomainUrl,
   });
 }
