@@ -1,7 +1,7 @@
 {
   "name": "@zotnfound/functions",
   "version": "0.0.0",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "dev": "nodemon src/server.js",
     "test": "sst bind vitest",
@@ -14,12 +14,14 @@
     "vitest": "^1.5.3"
   },
   "dependencies": {
+    "@lucia-auth/adapter-postgresql": "^3.1.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "firebase": "^10.11.1",
     "firebase-admin": "^12.1.0",
     "googleapis": "^135.0.0",
+    "lucia": "^3.2.0",
     "nodemailer": "^6.9.13",
     "pg": "^8.11.5",
     "serverless-http": "^3.2.0"

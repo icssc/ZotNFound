@@ -12,8 +12,7 @@
 //   },
 // });
 
-// import pg from 'pg'
-const pg = require("pg");
+import pg from "pg";
 const { Client } = pg;
 
 const client = new Client({
@@ -24,9 +23,8 @@ const client = new Client({
   database: process.env.AWS_DB_NAME,
   ssl: { rejectUnauthorized: false },
 });
-client.connect();
 
-module.exports = client;
+export default client;
 
 // const cn = `postgres://${process.env.AWS_USER}:${encodeURIComponent(
 //   process.env.AWS_PASSWORD
