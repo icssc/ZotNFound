@@ -202,75 +202,75 @@ itemsRouter.get("/:id", async (req, res) => {
   }
 });
 
-// // Get email associated with an item id (only if user is logged in)
-// itemsRouter.get("/:id/email", middleware.decodeToken, async (req, res) => {
-//   try {
-//     const { id } = req.params;
+// Get email associated with an item id (only if user is logged in)
+itemsRouter.get("/:id/email", async (req, res) => {
+  try {
+    const { id } = req.params;
 
-//     const item = await client.query(
-//       `SELECT email FROM ${itemsTable} WHERE id=$1`,
-//       [id]
-//     );
+    const item = await client.query(
+      `SELECT email FROM ${itemsTable} WHERE id=$1`,
+      [id]
+    );
 
-//     res.json(item.rows[0]);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// });
+    res.json(item.rows[0]);
+  } catch (error) {
+    console.error(error);
+  }
+});
 
-// // Retrieve Items by Category
-// itemsRouter.get("/category/:category", async (req, res) => {
-//   try {
-//     const { category } = req.params;
+// Retrieve Items by Category
+itemsRouter.get("/category/:category", async (req, res) => {
+  try {
+    const { category } = req.params;
 
-//     const items = await client.query(
-//       `SELECT * FROM ${itemsTable} WHERE type=$1`,
-//       [category]
-//     );
+    const items = await client.query(
+      `SELECT * FROM ${itemsTable} WHERE type=$1`,
+      [category]
+    );
 
-//     res.json(items.rows);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// });
+    res.json(items.rows);
+  } catch (error) {
+    console.error(error);
+  }
+});
 
-// //Update a item resolve and helpfulness
-// itemsRouter.put("/:id", middleware.decodeToken, async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { ishelped } = req.body;
+//Update a item resolve and helpfulness
+itemsRouter.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { ishelped } = req.body;
 
-//     const item = await client.query(
-//       `UPDATE ${itemsTable} SET isresolved=$1, ishelped=$2 WHERE id=$3 RETURNING *`,
-//       [true, ishelped, id]
-//     );
+    const item = await client.query(
+      `UPDATE ${itemsTable} SET isresolved=$1, ishelped=$2 WHERE id=$3 RETURNING *`,
+      [true, ishelped, id]
+    );
 
-//     res.json(item.rows[0]);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// });
+    res.json(item.rows[0]);
+  } catch (error) {
+    console.error(error);
+  }
+});
 
-// // Mark an item as deleted instead of removing it from the database
-// itemsRouter.delete("/:id", middleware.decodeToken, async (req, res) => {
-//   try {
-//     const { id } = req.params;
+// Mark an item as deleted instead of removing it from the database
+itemsRouter.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
 
-//     const markAsDeleted = await client.query(
-//       `UPDATE ${itemsTable} SET is_deleted = true WHERE id = $1 RETURNING *`,
-//       [id]
-//     );
+    const markAsDeleted = await client.query(
+      `UPDATE ${itemsTable} SET is_deleted = true WHERE id = $1 RETURNING *`,
+      [id]
+    );
 
-//     // If no rows are returned, it means that there was no item with the given ID.
-//     if (markAsDeleted.rowCount === 0) {
-//       return res.status(404).json({ message: "Item not found" });
-//     }
+    // If no rows are returned, it means that there was no item with the given ID.
+    if (markAsDeleted.rowCount === 0) {
+      return res.status(404).json({ message: "Item not found" });
+    }
 
-//     res.json(markAsDeleted.rows[0]);
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(500).send("Server error");
-//   }
-// });
+    res.json(markAsDeleted.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server error");
+  }
+});
 
-// module.exports = itemsRouter;
+module.exports = itemsRouter;
