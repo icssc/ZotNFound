@@ -31,7 +31,7 @@ export default function FeedbackModal({
     setLoading(false);
     axios
       .put(
-        `${process.env.REACT_APP_AWS_BACKEND_URL}/items/${props.id}`,
+        `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items/${props.id}`,
         {
           ...props,
           isresolved: true,
@@ -63,7 +63,7 @@ export default function FeedbackModal({
     const pointsToAdd = props.islost ? 2 : 5;
 
     axios.put(
-      `${process.env.REACT_APP_AWS_BACKEND_URL}/leaderboard`,
+      `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`,
       {
         email: email,
         pointsToAdd: pointsToAdd,

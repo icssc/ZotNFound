@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "type": "commonjs",
   "scripts": {
+    "dev": "nodemon src/server.js",
     "test": "sst bind vitest",
     "typecheck": "tsc -noEmit"
   },

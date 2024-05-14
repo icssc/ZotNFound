@@ -19,9 +19,10 @@ export function API({ stack }: StackContext) {
   const web = new StaticSite(stack, "web", {
     path: "packages/web",
     buildOutput: "dist",
-    buildCommand: "npm run build",
+    buildCommand: "pnpm run build",
+    customDomain: "zotnfound.com",
     environment: {
-      REACT_APP_AWS_BACKEND_URL: api.url,
+      VITE_REACT_APP_AWS_BACKEND_URL: api.url,
     },
   });
 
@@ -31,6 +32,6 @@ export function API({ stack }: StackContext) {
 
   stack.addOutputs({
     ApiEndpoint: api.url,
-    WebEndpoint: web.url,
+    WebEndpoint: web.customDomainUrl,
   });
 }

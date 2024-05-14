@@ -53,12 +53,9 @@
       content="https://zotnfound.com/description.png"
     />
 
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
-    <link
-      rel="stylesheet"
-      href="%PUBLIC_URL%/google_font_roboto_300_400_500_700.css"
-    />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/google_font_roboto_300_400_500_700.css" />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
@@ -112,7 +109,7 @@
       id="root"
       style="height: 100vh; position: fixed; top: 0; width: 100%"
     ></div>
-    <script>
+    <!-- <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
           navigator.serviceWorker.register("/service-worker.js").then(
@@ -128,6 +125,7 @@
           );
         });
       }
-    </script>
+    </script> -->
+    <script type="module" src="/src/index.jsx"></script>
   </body>
 </html>

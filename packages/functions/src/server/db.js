@@ -22,7 +22,7 @@ const client = new Client({
   host: process.env.AWS_HOST,
   port: process.env.AWS_PORT,
   database: process.env.AWS_DB_NAME,
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false },
 });
 client.connect();
 
