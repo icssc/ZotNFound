@@ -1,12 +1,12 @@
 const express = require("express");
 const leaderboardRouter = express.Router();
-const middleware = require("../middleware/index.js");
+// const middleware = require("../middleware/index.js");
 const { leaderboardTable } = require("../config/db-config.js");
 
 const client = require("../server/db");
 
 // add a user to leaderboard
-leaderboardRouter.post("/", middleware.decodeToken, async (req, res) => {
+leaderboardRouter.post("/", async (req, res) => {
   try {
     const { email, points } = req.body; // Get email and points from request body
 
@@ -29,7 +29,6 @@ leaderboardRouter.post("/", middleware.decodeToken, async (req, res) => {
 // get all users on leaderboard (descending)
 leaderboardRouter.get("/", async (req, res) => {
   try {
-
     const lbData = await client.query(
       `SELECT * FROM ${leaderboardTable} ORDER BY points DESC LIMIT 3`
     );
@@ -43,7 +42,6 @@ leaderboardRouter.get("/", async (req, res) => {
 // get count of users in leaderboard
 leaderboardRouter.get("/count", async (req, res) => {
   try {
-
     const lbCount = await client.query(
       `SELECT COUNT(*) as count FROM ${leaderboardTable}`
     );
@@ -59,31 +57,27 @@ leaderboardRouter.get("/count", async (req, res) => {
   }
 });
 
-leaderboardRouter.patch(
-  "/changeSubscription",
-  middleware.decodeToken,
-  async (req, res) => {
-    try {
-      const { subscription, email } = req.body;
-      if (subscription === undefined) {
-        return res.status(400).send("Unsubscribe action is unknown");
-      }
-
-      await client.query(
-        `UPDATE ${leaderboardTable} SET subscription=$1 WHERE email=$2`,
-        [subscription, email]
-      );
-
-      res.send("Subscription updated successfully!");
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Internal server error");
+leaderboardRouter.patch("/changeSubscription", async (req, res) => {
+  try {
+    const { subscription, email } = req.body;
+    if (subscription === undefined) {
+      return res.status(400).send("Unsubscribe action is unknown");
     }
+
+    await client.query(
+      `UPDATE ${leaderboardTable} SET subscription=$1 WHERE email=$2`,
+      [subscription, email]
+    );
+
+    res.send("Subscription updated successfully!");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal server error");
   }
-);
+});
 
 // update user's points
-leaderboardRouter.put("/", middleware.decodeToken, async (req, res) => {
+leaderboardRouter.put("/", async (req, res) => {
   const { email, pointsToAdd } = req.body; // Assume you're sending email and pointsToAdd in the request body
 
   if (!email || typeof pointsToAdd !== "number") {
@@ -91,13 +85,11 @@ leaderboardRouter.put("/", middleware.decodeToken, async (req, res) => {
   }
 
   try {
-
     // First, fetch the current points of the user
     const currentPointsResult = await client.query(
       `SELECT points FROM ${leaderboardTable} WHERE email=$1`,
       [email]
     );
-
 
     if (currentPointsResult.rows.length === 0) {
       return res.status(404).send("User not found");
@@ -105,7 +97,6 @@ leaderboardRouter.put("/", middleware.decodeToken, async (req, res) => {
 
     const currentPoints = currentPointsResult.rows[0].points;
     const newPoints = currentPoints + pointsToAdd;
-
 
     // Now, update the user's points in the leaderboard
     await client.query(
@@ -121,7 +112,7 @@ leaderboardRouter.put("/", middleware.decodeToken, async (req, res) => {
 });
 
 // delete user from leaderboard
-leaderboardRouter.delete("/:id", middleware.decodeToken, async (req, res) => {
+leaderboardRouter.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params; // Extract id from request body
     if (!id) {
