@@ -13,13 +13,16 @@
     "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {
-    "sst": "^2.41.5",
+    "@tsconfig/node18": "^18.2.4",
     "aws-cdk-lib": "2.132.1",
     "constructs": "10.3.0",
-    "typescript": "^5.4.5",
-    "@tsconfig/node18": "^18.2.4"
+    "sst": "^2.41.5",
+    "typescript": "^5.4.5"
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "dotenv-flow": "^4.1.0"
+  }
 }
