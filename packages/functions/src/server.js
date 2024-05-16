@@ -11,9 +11,9 @@ dotenv.config();
 const app = express();
 // const port = 8080;
 // ROUTES
-// const items = require("./routes/items");
-// const nodemailer = require("./routes/nodeMailer");
-// const leaderboard = require("./routes/leaderboard");
+const items = require("./routes/items");
+const nodemailer = require("./routes/nodeMailer");
+const leaderboard = require("./routes/leaderboard");
 
 const adapter = new NodePostgresAdapter(client, {
   user: "tyleryu",
@@ -51,9 +51,9 @@ app.get("/", async (req, res) => {
     console.error(error);
   }
 });
-// app.use("/items", items);
-// app.use("/leaderboard", leaderboard);
-// app.use("/nodemailer", nodemailer);
+app.use("/items", items);
+app.use("/leaderboard", leaderboard);
+app.use("/nodemailer", nodemailer);
 
 if (process.env.NODE_ENV === "development") {
   app.listen(3001, () => {
