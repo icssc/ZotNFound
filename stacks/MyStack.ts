@@ -1,4 +1,4 @@
-import { StackContext, Api, EventBus, StaticSite } from "sst/constructs";
+import { StackContext, Api, EventBus, StaticSite, Bucket } from "sst/constructs";
 
 export function API({ stack }: StackContext) {
   const bus = new EventBus(stack, "bus", {
@@ -13,8 +13,11 @@ export function API({ stack }: StackContext) {
         bind: [bus],
       },
     },
-    routes: { $default: "packages/functions/src/server.default" },
+    routes: {
+      $default: "packages/functions/src/server.default",
+    },
   });
+
 
   const web = new StaticSite(stack, "web", {
     path: "packages/web",

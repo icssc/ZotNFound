@@ -28,7 +28,6 @@ import {
 } from "@chakra-ui/react";
 // import logo from "../../assets/images/small_logo.png";
 import { storage } from "../../firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { MdDriveFileRenameOutline, MdOutlineDescription } from "react-icons/md";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";
@@ -57,30 +56,21 @@ export default function CreateModal({
 }) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const uploadFile = useCallback(() => {
+  const uploadFile = useCallback(async () => {
     if (!newAddedItem.image) return;
 
-    const time = new Date().getTime();
-    const imageRef = ref(
-      storage,
-      `zotnfound2/images/${time + newAddedItem.image.name}`
-    );
-
-    uploadBytes(imageRef, newAddedItem.image).then((snapshot) => {
-      getDownloadURL(snapshot.ref).then((url) => {
-        if (
-          url.includes(
-            "https://firebasestorage.googleapis.com/v0/b/zotnfound2.appspot.com/o/zotnfound2%2Fimages%2FNaN"
-          )
-        ) {
-          setUploadImg("");
-        } else {
-          setUploadImg(url);
-          setNewAddedItem((prev) => ({ ...prev, image: url }));
-          setIsLoading(false);
-        }
-      });
+    const response = await fetch('https://quywdntac0.execute-api.us-east-1.amazonaws.com/image-url', {
+      body: JSON.stringify({ "name": newAddedItem.image.name, "contentType": newAddedItem.image.type }),
+      method: "POST",
     });
+    const data = await response.json()
+    console.log(data)
+    const url = data.url
+    const key = data.key
+
+    setUploadImg(url);
+    setNewAddedItem((prev) => ({ ...prev, image: url }));
+    setIsLoading(false);
   }, [newAddedItem.image, setUploadImg, setNewAddedItem, setIsLoading]);
 
   const [date, setDate] = useState(new Date());

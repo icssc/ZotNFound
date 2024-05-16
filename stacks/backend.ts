@@ -1,4 +1,4 @@
-import { StackContext, Api, EventBus } from "sst/constructs";
+import { StackContext, Api, EventBus, Bucket, StaticSite } from "sst/constructs";
 
 export function BackendStack({ stack }: StackContext) {
   const bus = new EventBus(stack, "bus", {
@@ -28,8 +28,14 @@ export function BackendStack({ stack }: StackContext) {
         },
       },
     },
-    routes: { $default: "packages/functions/src/server.default" },
+    routes: {
+      $default: "packages/functions/src/server.default",
+      "POST /image-url": "packages/functions/src/generate-image-url.handler"
+    },
   });
+
+  const bucket = new Bucket(stack, process.env.AWS_BUCKET_NAME);
+  api.bind([bucket])
 
   stack.addOutputs({
     ApiEndpoint: api.url,
