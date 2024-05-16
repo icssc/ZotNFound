@@ -9,7 +9,7 @@ export function FrontendStack({ stack }: StackContext) {
     buildCommand: "pnpm run build",
     customDomain: "zotnfound.com",
     environment: {
-      VITE_REACT_APP_AWS_BACKEND_URL: apiUrl,
+      VITE_REACT_APP_AWS_BACKEND_URL: apiUrl, //https://805cgohzr0.execute-api.us-east-1.amazonaws.com/
       VITE_REACT_APP_API_KEY: process.env.VITE_REACT_APP_API_KEY!,
       VITE_REACT_APP_AUTH_DOMAIN: process.env.VITE_REACT_APP_AUTH_DOMAIN!,
       VITE_REACT_APP_PROJECT_ID: process.env.VITE_REACT_APP_PROJECT_ID!,
