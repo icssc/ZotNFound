@@ -1,4 +1,4 @@
-import { StackContext, Api, EventBus } from "sst/constructs";
+import { StackContext, Api, EventBus, Bucket, StaticSite } from "sst/constructs";
 
 export function BackendStack({ stack }: StackContext) {
   const bus = new EventBus(stack, "bus", {
@@ -37,4 +37,8 @@ export function BackendStack({ stack }: StackContext) {
 
   process.env.API_URL = api.url; // Set the API URL to be used by the frontend stack
   // localhost:3001
+
+  const bucket = new Bucket(stack, "public"); // create bucket to store files
+  
+  process.env.BUCKET = bucket;
 }

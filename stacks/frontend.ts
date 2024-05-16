@@ -2,9 +2,11 @@ import { StackContext, StaticSite } from "sst/constructs";
 
 export function FrontendStack({ stack }: StackContext) {
   const apiUrl = process.env.API_URL as string; // Ensure API_URL is treated as a string
+  const bucket = process.env.BUCKET;
 
   const web = new StaticSite(stack, "web", {
     path: "packages/web",
+    bind: [bucket],
     buildOutput: "dist",
     buildCommand: "pnpm run build",
     customDomain: "zotnfound.com",
