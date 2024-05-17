@@ -7,10 +7,11 @@ export function BackendStack({ stack }: StackContext) {
     },
   });
 
+  const bucket = new Bucket(stack, process.env.AWS_BUCKET_NAME);
   const api = new Api(stack, "api", {
     defaults: {
       function: {
-        bind: [bus],
+        bind: [bus, bucket],
         environment: {
           EMAIL: process.env.EMAIL,
           REFRESH_TOKEN: process.env.REFRESH_TOKEN,
@@ -34,8 +35,6 @@ export function BackendStack({ stack }: StackContext) {
     },
   });
 
-  const bucket = new Bucket(stack, process.env.AWS_BUCKET_NAME);
-  api.bind([bucket])
 
   stack.addOutputs({
     ApiEndpoint: api.url,

@@ -58,7 +58,7 @@ export default function CreateModal({
 
   const uploadFile = useCallback(async () => {
     if (!newAddedItem.image) return;
-
+    console.log(newAddedItem)
     const response = await fetch('https://quywdntac0.execute-api.us-east-1.amazonaws.com/image-url', {
       body: JSON.stringify({ "name": newAddedItem.image.name, "contentType": newAddedItem.image.type }),
       method: "POST",
