@@ -1,4 +1,4 @@
-import { StackContext, Api, EventBus, Bucket } from "sst/constructs";
+import { StackContext, Api, EventBus, Bucket, StaticSite } from "sst/constructs";
 
 
 export function BackendStack({ stack }: StackContext) {
@@ -9,12 +9,13 @@ export function BackendStack({ stack }: StackContext) {
   });
 
 
-  const bucket = new Bucket(stack, "bucket");
- 
+  const bucket = new Bucket(stack, "Uploads");
+
+
   const api = new Api(stack, "api", {
     defaults: {
       function: {
-        bind: [bus, bucket], // ensures that all API functions have access to the bus and bucket upon initialization
+        bind: [bus, bucket],
         environment: {
           EMAIL: process.env.EMAIL,
           REFRESH_TOKEN: process.env.REFRESH_TOKEN,
@@ -31,12 +32,13 @@ export function BackendStack({ stack }: StackContext) {
           AWS_HOST: process.env.AWS_HOST,
           AWS_PORT: process.env.AWS_PORT,
           AWS_DB_NAME: process.env.AWS_DB_NAME,
+          AWS_S3_BUCKET: bucket.bucketName,
         },
       },
     },
     routes: {
       $default: "packages/functions/src/server.default",
-      "POST /image-url": "packages/functions/src/generate-image-url.handler"
+      "POST /image-url": "packages/functions/src/generate-image-url.handler",  
     },
   });
 
@@ -45,13 +47,13 @@ export function BackendStack({ stack }: StackContext) {
 
   stack.addOutputs({
     ApiEndpoint: api.url,
-    BucketName: bucket.bucketName, // declared as an output to be used by the frontend stack, not too sure if we need it since we are setting the BUCKET env variable in the frontend stack but I added it just in case
+    BucketName: bucket.bucketName,
   });
 
 
   process.env.API_URL = api.url; // Set the API URL to be used by the frontend stack
   // localhost:3001
-  process.env.BUCKET = bucket.bucketName; // Set the bucket name to be used by the frontend stack, Don't need to directly create a BUCKET env variable,
 }
+
 
 

@@ -28,7 +28,6 @@ import {
 } from "@chakra-ui/react";
 // import logo from "../../assets/images/small_logo.png";
 import { storage } from "../../firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { MdDriveFileRenameOutline, MdOutlineDescription } from "react-icons/md";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";
@@ -38,6 +37,8 @@ import "./Calendar.css";
 import img_placeholder from "../../assets/images/img_placeholder.jpeg";
 import TypeSelector from "../TypeSelector/TypeSelector";
 import LostFoundSwitch from "./LostFoundSwitch";
+import axios from "axios";
+
 
 export default function CreateModal({
   isOpen,
@@ -57,33 +58,59 @@ export default function CreateModal({
 }) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const uploadFile = useCallback(() => {
-    if (!newAddedItem.image) return;
 
-    const time = new Date().getTime();
-    const imageRef = ref(
-      storage,
-      `zotnfound2/images/${time + newAddedItem.image.name}`
-    );
-
-    uploadBytes(imageRef, newAddedItem.image).then((snapshot) => {
-      getDownloadURL(snapshot.ref).then((url) => {
-        if (
-          url.includes(
-            "https://firebasestorage.googleapis.com/v0/b/zotnfound2.appspot.com/o/zotnfound2%2Fimages%2FNaN"
-          )
-        ) {
-          setUploadImg("");
-        } else {
-          setUploadImg(url);
-          setNewAddedItem((prev) => ({ ...prev, image: url }));
-          setIsLoading(false);
-        }
+  const generatepresignedUrl = async () => {
+    return axios
+      .post(`${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/image-url`, {
+        name: newAddedItem.image.name,
+        contentType: newAddedItem.image.type,
+      })
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        console.error("Could not retrieve presigned url: ", error);
       });
-    });
+  }
+
+
+
+
+  const uploadFile = useCallback(async () => {
+    if (!newAddedItem.image) return;
+    console.log(newAddedItem)
+    const { url, key } = await generatepresignedUrl();
+    console.log(url);
+    // try {
+    //   const response = await fetch(`${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/image-url`, {
+    //     body: JSON.stringify({ "name": newAddedItem.image.name, "contentType": newAddedItem.image.type }),
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json"
+    //     }
+    //   });
+
+
+    //   const data = await response.json()
+    //   console.log(data)
+    //   const url = data.url
+    //   const key = data.key
+
+
+    // } catch (error) {
+    //   console.error("Cannot retrieve url: ", error);
+    // }
+    console.log("here asdfafdas")
+
+
+    setUploadImg(url);
+    setNewAddedItem((prev) => ({ ...prev, image: url }));
+    setIsLoading(false);
   }, [newAddedItem.image, setUploadImg, setNewAddedItem, setIsLoading]);
 
+
   const [date, setDate] = useState(new Date());
+
 
   const steps = [
     { title: "First", description: "Enter Info" },
@@ -93,10 +120,12 @@ export default function CreateModal({
     { title: "Fifth", description: "Check Info" },
   ];
 
+
   const { activeStep, setActiveStep } = useSteps({
     index: 0,
     count: steps.length,
   });
+
 
   // Define the JSX for the loading animation while an image is uploading
   const loadingAnimation = (
@@ -119,6 +148,7 @@ export default function CreateModal({
     </Flex>
   );
 
+
   // Define the JSX for the uploaded image
   const uploadedImage = (
     <Image
@@ -127,15 +157,18 @@ export default function CreateModal({
     />
   );
 
+
   // Define the callback function to increment the active step count
   const handleStepIncrement = useCallback(() => {
     setActiveStep((prevStep) => prevStep + 1);
   }, [setActiveStep]);
 
+
   // Define the callback function to decrement the active step count
   const handleStepDecrement = useCallback(() => {
     setActiveStep((prevStep) => prevStep - 1);
   }, [setActiveStep]);
+
 
   // Define the JSX for the 'Back' button in the modal
   const backModalButton = (
@@ -148,6 +181,7 @@ export default function CreateModal({
       Back
     </Button>
   );
+
 
   // Define the JSX for the 'Cancel' button in the modal
   const cancelModalButton = (
@@ -174,6 +208,7 @@ export default function CreateModal({
     </Button>
   );
 
+
   // Define the JSX for the 'Continue (without submitting)' button in the modal
   const continueModalButton = (
     <Button
@@ -192,6 +227,7 @@ export default function CreateModal({
       Continue
     </Button>
   );
+
 
   // Define the JSX for the 'Continue (and submit)' button in the modal
   const submitModalButton = (
@@ -217,6 +253,7 @@ export default function CreateModal({
     </Button>
   );
 
+
   // Define the callback function to change the item date
   const handleItemDateChange = useCallback(
     (e) => {
@@ -229,6 +266,7 @@ export default function CreateModal({
     [setNewAddedItem]
   );
 
+
   // Define the callback function to change the item name
   const handleItemNameChange = useCallback(
     (e) =>
@@ -239,6 +277,7 @@ export default function CreateModal({
     [setNewAddedItem]
   );
 
+
   // Define the callback function to change the item description
   const handleItemDescriptionChange = useCallback(
     (e) =>
@@ -248,6 +287,7 @@ export default function CreateModal({
       })),
     [setNewAddedItem]
   );
+
 
   // Define the callback function to change the item image
   const handleItemImageChange = useCallback(
@@ -265,12 +305,14 @@ export default function CreateModal({
     [setNewAddedItem]
   );
 
+
   useEffect(() => {
     if (newAddedItem.image && typeof newAddedItem.image !== "string") {
       setIsLoading(true);
       uploadFile();
     }
   }, [newAddedItem.image, uploadFile]);
+
 
   return (
     <>
@@ -317,10 +359,12 @@ export default function CreateModal({
                       />
                     </StepIndicator>
 
+
                     <Box flexShrink="0">
                       <StepTitle>{step.title}</StepTitle>
                       <StepDescription>{step.description}</StepDescription>
                     </Box>
+
 
                     <StepSeparator />
                   </Step>
@@ -340,6 +384,7 @@ export default function CreateModal({
                     <FormControl>
                       <FormLabel fontSize="2xl">🔑 Item Name:</FormLabel>
 
+
                       <Input
                         variant="outline"
                         placeholder="Ex: Airpods Pro, ..."
@@ -352,6 +397,7 @@ export default function CreateModal({
                       <FormLabel fontSize="2xl">
                         📝Description of Item:
                       </FormLabel>
+
 
                       <Textarea
                         variant="outline"
@@ -366,6 +412,7 @@ export default function CreateModal({
                   </Flex>
                 )}
                 {/* first step */}
+
 
                 {/* second step */}
                 {activeStep === 1 && (
@@ -386,6 +433,7 @@ export default function CreateModal({
                       </FormLabel>
                     </FormControl>
 
+
                     <TypeSelector
                       setNewAddedItem={setNewAddedItem}
                       newAddedItem={newAddedItem}
@@ -401,6 +449,7 @@ export default function CreateModal({
                         >
                           🤔 Lost or Found Item?
                         </FormLabel>
+
 
                         <Flex
                           alignItems={"center"}
@@ -418,7 +467,9 @@ export default function CreateModal({
                   </Flex>
                 )}
 
+
                 {/* second step */}
+
 
                 {/* third step */}
                 {activeStep === 2 && (
@@ -431,6 +482,7 @@ export default function CreateModal({
                     >
                       {newAddedItem.islost ? "📅 Lost Date:" : "📅 Found Date:"}
                     </FormLabel>
+
 
                     <Flex
                       w="100%"
@@ -448,6 +500,7 @@ export default function CreateModal({
                   </FormControl>
                 )}
                 {/* third step */}
+
 
                 {/* fourth step */}
                 {activeStep === 3 && (
@@ -477,14 +530,17 @@ export default function CreateModal({
                           onChange={handleItemImageChange}
                         />
 
+
                         {/* <Button onClick={uploadFile}>Confirm</Button> */}
                       </Flex>
+
 
                       {isLoading ? loadingAnimation : uploadedImage}
                     </Flex>
                   </FormControl>
                 )}
                 {/* fourth step */}
+
 
                 {/* fifth step */}
                 {activeStep === 4 && (
@@ -508,6 +564,7 @@ export default function CreateModal({
                       />
                     </Flex>
 
+
                     <Flex
                       flex={1}
                       backgroundColor={"#f9f9f9"}
@@ -528,6 +585,7 @@ export default function CreateModal({
                         Item Information:
                       </Text>
 
+
                       <Flex
                         mb="5%"
                         ml="1%"
@@ -543,6 +601,7 @@ export default function CreateModal({
                         </Text>
                       </Flex>
 
+
                       <Flex
                         mb="5%"
                         padding={2}
@@ -556,6 +615,7 @@ export default function CreateModal({
                           {newAddedItem.description}
                         </Text>
                       </Flex>
+
 
                       <Flex
                         mb="5%"
@@ -572,6 +632,7 @@ export default function CreateModal({
                           {newAddedItem.type.toUpperCase()}
                         </Text>
                       </Flex>
+
 
                       <Flex
                         mb="5%"
@@ -592,6 +653,7 @@ export default function CreateModal({
                 {/* fifth step */}
               </Flex>
 
+
               <Flex justifyContent={"center"} gap="3%">
                 {activeStep > 0 ? backModalButton : cancelModalButton}
                 {activeStep < 4 ? continueModalButton : submitModalButton}
@@ -603,3 +665,6 @@ export default function CreateModal({
     </>
   );
 }
+
+
+
