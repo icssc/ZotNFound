@@ -31,7 +31,7 @@ export function BackendStack({ stack }: StackContext) {
     },
     routes: {
       $default: "packages/functions/src/server.default",
-      "POST /image-url": "packages/functions/src/generate-image-url.handler"
+      "PUT /image-url": "packages/functions/src/generate-image-url.handler"
     },
   });
 

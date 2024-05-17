@@ -58,15 +58,24 @@ export default function CreateModal({
 
   const uploadFile = useCallback(async () => {
     if (!newAddedItem.image) return;
-    console.log(newAddedItem)
+
     const response = await fetch('https://quywdntac0.execute-api.us-east-1.amazonaws.com/image-url', {
-      body: JSON.stringify({ "name": newAddedItem.image.name, "contentType": newAddedItem.image.type }),
-      method: "POST",
+      body: newAddedItem.image,
+      method: "PUT",
+      headers: {
+        "Content-Type": newAddedItem.image.type,
+        "Content-Disposition": `attachment; filename="${newAddedItem.image.name}"`,
+      },
     });
+    if (!response.ok) {
+      throw new Error("Failed to upload file");
+    }
+
     const data = await response.json()
-    console.log(data)
+    // console.log(data)
     const url = data.url
     const key = data.key
+    // save key into database associated with use 
 
     setUploadImg(url);
     setNewAddedItem((prev) => ({ ...prev, image: url }));
