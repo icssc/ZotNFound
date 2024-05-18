@@ -39,7 +39,7 @@ export function FrontendStack({ app, stack }: StackContext) {
     },
   });
 
-  stack.addOutputs({
-    WebEndpoint: web.customDomainUrl,
-  });
+  // stack.addOutputs({
+  //   WebEndpoint: web.customDomainUrl,
+  // });
 }
