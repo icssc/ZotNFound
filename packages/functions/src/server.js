@@ -1,10 +1,9 @@
 // import serverless from "serverless-http";
 
-import dotenv from "dotenv";
+import "dotenv/config.js";
 import express from "express";
 import cors from "cors";
 
-dotenv.config();
 const app = express();
 // const port = 8080;
 import serverless from "serverless-http";
