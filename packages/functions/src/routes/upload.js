@@ -34,7 +34,7 @@ uploadRouter.post("/image", async (req, res) => {
 
   const uploadCommand = new PutObjectCommand(uploadParams);
 
-  s3Client.send(uploadCommand);
+  await s3Client.send(uploadCommand);
 
   // const url = await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 });
   const url = `https://${Bucket.bucket.bucketName}.s3.amazonaws.com/${key}`;
