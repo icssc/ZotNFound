@@ -39,6 +39,8 @@ export function FrontendStack({ app, stack }: StackContext) {
     },
   });
   console.log("weburl", web.customDomainUrl)
+  console.log("domainName", domainName)
+  console.log("domainAlias", domainAlias)
   stack.addOutputs({
     WebEndpoint: web.customDomainUrl,
   });
