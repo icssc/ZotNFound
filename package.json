@@ -23,6 +23,8 @@
     "packages/*"
   ],
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.577.0",
+    "@aws-sdk/s3-request-presigner": "^3.577.0",
     "dotenv-flow": "^4.1.0"
   }
 }

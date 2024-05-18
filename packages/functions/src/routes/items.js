@@ -1,16 +1,13 @@
-const express = require("express");
-const sendEmail = require("../utils.js");
-const fs = require("fs");
-const path = require("path");
+import express from "express";
+
+import client from "../server/db.js";
 // const middleware = require("../middleware/index.js");
 const itemsRouter = express.Router();
 
-const client = require("../server/db");
-
 // const templatePath = path.resolve(__dirname, "../emailTemplate/index.html");
 // const template = fs.readFileSync(templatePath, "utf-8");
-const isPositionWithinBounds = require("../util/inbound.js");
-const { leaderboardTable, itemsTable } = require("../config/db-config.js");
+import isPositionWithinBounds from "../util/inbound.js";
+import { leaderboardTable, itemsTable } from "../config/db-config.js";
 
 //Add a item
 itemsRouter.post("/", async (req, res) => {
@@ -273,4 +270,4 @@ itemsRouter.delete("/:id", async (req, res) => {
   }
 });
 
-module.exports = itemsRouter;
+export default itemsRouter;

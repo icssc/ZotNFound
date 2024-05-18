@@ -1,4 +1,10 @@
-import { StackContext, Api, EventBus } from "sst/constructs";
+import {
+  StackContext,
+  Api,
+  EventBus,
+  Bucket,
+  StaticSite,
+} from "sst/constructs";
 
 export function BackendStack({ stack }: StackContext) {
   const bus = new EventBus(stack, "bus", {
@@ -7,10 +13,21 @@ export function BackendStack({ stack }: StackContext) {
     },
   });
 
+  const bucket = new Bucket(stack, "bucket", {
+    cors: [
+      {
+        maxAge: "1 day",
+        allowedOrigins: ["*"],
+        allowedHeaders: ["*"],
+        allowedMethods: ["GET", "PUT", "POST", "DELETE", "HEAD"],
+      },
+    ],
+  });
+
   const api = new Api(stack, "api", {
     defaults: {
       function: {
-        bind: [bus],
+        bind: [bus, bucket],
         environment: {
           EMAIL: process.env.EMAIL,
           REFRESH_TOKEN: process.env.REFRESH_TOKEN,
@@ -28,7 +45,9 @@ export function BackendStack({ stack }: StackContext) {
         },
       },
     },
-    routes: { $default: "packages/functions/src/server.default" },
+    routes: {
+      $default: "packages/functions/src/server.handler",
+    },
   });
 
   stack.addOutputs({

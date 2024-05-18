@@ -1,15 +1,21 @@
 // import serverless from "serverless-http";
 
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
+import dotenv from "dotenv";
+dotenv.config({
+  silent:
+    process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging",
+});
+import express from "express";
+import cors from "cors";
+
 const app = express();
 // const port = 8080;
-const serverless = require("serverless-http");
+import serverless from "serverless-http";
 // ROUTES
-const items = require("./routes/items");
-const nodemailer = require("./routes/nodeMailer");
-const leaderboard = require("./routes/leaderboard");
+import items from "./routes/items.js";
+import nodemailer from "./routes/nodeMailer.js";
+import leaderboard from "./routes/leaderboard.js";
+import upload from "./routes/upload.js";
 
 app.use(cors());
 app.use(express.json({ limit: "25mb" }));
@@ -29,5 +35,6 @@ app.get("/", async (req, res) => {
 app.use("/items", items);
 app.use("/leaderboard", leaderboard);
 app.use("/nodemailer", nodemailer);
+app.use("/upload", upload);
 
-module.exports = serverless(app);
+export const handler = serverless(app);
