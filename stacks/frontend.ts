@@ -9,9 +9,11 @@ export function FrontendStack({ app, stack }: StackContext) {
     domainName = "zotnfound.com";
     domainAlias = "www.zotnfound.com";
   } else if (app.stage === "dev") {
+    console.log("dev stage")
     domainName = "dev.zotnfound.com";
   } else if (app.stage.match(/^staging-(\d+)$/)) {
     // check if stage is like staging-###
+    console.log("staging stage")
     domainName = `${app.stage}.zotnfound.com`;
   } else {
     throw new Error("Invalid stage");
