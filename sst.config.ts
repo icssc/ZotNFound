@@ -5,7 +5,7 @@ import dotenv from "dotenv-flow";
 
 import { App } from "sst/constructs";
 
-dotenv.config();
+dotenv.config({ silent: process.env.NODE_ENV === "production" });
 
 export default {
   config(_input) {
@@ -16,6 +16,7 @@ export default {
   },
   stacks(app) {
     app
-    .stack(BackendStack, { stackName: `${app.name}-${app.stage}-backend` })
-    .stack(FrontendStack, { stackName: `${app.name}-${app.stage}-frontend` });  },
+      .stack(BackendStack, { stackName: `${app.name}-${app.stage}-backend` })
+      .stack(FrontendStack, { stackName: `${app.name}-${app.stage}-frontend` });
+  },
 } satisfies SSTConfig;

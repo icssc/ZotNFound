@@ -1,6 +1,7 @@
 // import serverless from "serverless-http";
 
-import "dotenv/config.js";
+import dotenv from "dotenv";
+dotenv.config({ silent: process.env.NODE_ENV === "production" });
 import express from "express";
 import cors from "cors";
 
