@@ -1,13 +1,31 @@
 import { StackContext, StaticSite } from "sst/constructs";
 
-export function FrontendStack({ stack }: StackContext) {
+export function FrontendStack({ app, stack }: StackContext) {
   const apiUrl = process.env.API_URL as string; // Ensure API_URL is treated as a string
+
+  let domainName: string;
+  let domainAlias: string | undefined;
+  if (app.stage === "prod") {
+    domainName = "zotnfound.com";
+    domainAlias = "www.zotnfound.com";
+  } else if (app.stage === "dev") {
+    domainName = "dev.zotnfound.com";
+  } else if (app.stage.match(/^staging-(\d+)$/)) {
+    // check if stage is like staging-###
+    domainName = `${app.stage}.zotnfound.com`;
+  } else {
+    throw new Error("Invalid stage");
+  }
 
   const web = new StaticSite(stack, "web", {
     path: "packages/web",
     buildOutput: "dist",
     buildCommand: "pnpm run build",
-    customDomain: "zotnfound.com",
+    customDomain: {
+      domainName: domainName,
+      domainAlias: domainAlias,
+      hostedZone: "zotnfound.com",
+    },
     environment: {
       VITE_REACT_APP_AWS_BACKEND_URL: apiUrl, //https://805cgohzr0.execute-api.us-east-1.amazonaws.com/
       VITE_REACT_APP_API_KEY: process.env.VITE_REACT_APP_API_KEY!,
@@ -20,7 +38,7 @@ export function FrontendStack({ stack }: StackContext) {
       VITE_REACT_APP_MEASUREMENT_ID: process.env.VITE_REACT_APP_MEASUREMENT_ID!,
     },
   });
-
+  
   stack.addOutputs({
     WebEndpoint: web.customDomainUrl,
   });
