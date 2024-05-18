@@ -24,15 +24,17 @@ uploadRouter.post("/image", async (req, res) => {
   const key = `uploads/${Date.now()}-${randomUUID()}.${type.split("/")[1]}`;
   const base64Data = new Buffer.from(image, "base64");
 
-  const uploadCommand = new PutObjectCommand({
-    ACL: "public-read",
+  const uploadParams = {
+    ACL: "public-read", // This will make the file public "public-read
     Bucket: Bucket.bucket.bucketName,
     Key: key,
     Body: base64Data,
-    ContentEncoding: "base64",
     ContentType: type,
-  });
-  s3Client.upload(uploadCommand);
+  };
+
+  const uploadCommand = new PutObjectCommand(uploadParams);
+
+  s3Client.send(uploadCommand);
 
   const getCommand = new GetObjectCommand({
     Bucket: Bucket.bucket.bucketName,
