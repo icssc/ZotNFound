@@ -1,5 +1,5 @@
-const express = require("express");
-const sendEmail = require("../utils");
+import express from "express";
+import sendEmail from "../utils.js";
 
 const emailRouter = express();
 emailRouter.use(express.json());
@@ -10,4 +10,4 @@ emailRouter.post("/", (req, res) => {
     .catch((error) => res.status(500).send(error.message));
 });
 
-module.exports = emailRouter;
+export default emailRouter;

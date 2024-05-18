@@ -12,4 +12,7 @@ const config = {
   // Add more environments if needed
 };
 
-module.exports = config[process.env.NODE_ENV] || config.development;
+const table = config[process.env.NODE_ENV] || config.development;
+
+export const leaderboardTable = table.leaderboardTable;
+export const itemsTable = table.itemsTable;

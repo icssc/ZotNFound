@@ -1,7 +1,7 @@
 {
   "name": "@zotnfound/functions",
   "version": "0.0.0",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "dev": "nodemon src/server.js",
     "test": "sst bind vitest",

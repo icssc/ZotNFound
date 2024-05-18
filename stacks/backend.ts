@@ -1,4 +1,10 @@
-import { StackContext, Api, EventBus, Bucket, StaticSite } from "sst/constructs";
+import {
+  StackContext,
+  Api,
+  EventBus,
+  Bucket,
+  StaticSite,
+} from "sst/constructs";
 
 export function BackendStack({ stack }: StackContext) {
   const bus = new EventBus(stack, "bus", {
@@ -31,10 +37,9 @@ export function BackendStack({ stack }: StackContext) {
       },
     },
     routes: {
-      $default: "packages/functions/src/server.default",
+      $default: "packages/functions/src/server.handler",
     },
   });
-
 
   stack.addOutputs({
     ApiEndpoint: api.url,
