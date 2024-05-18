@@ -1,5 +1,8 @@
 import dotenv from "dotenv";
-dotenv.config({ silent: process.env.NODE_ENV === "production" });
+dotenv.config({
+  silent:
+    process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging",
+});
 
 // Import necessary modules
 import nodemailer from "nodemailer";

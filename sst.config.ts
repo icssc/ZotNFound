@@ -5,7 +5,10 @@ import dotenv from "dotenv-flow";
 
 import { App } from "sst/constructs";
 
-dotenv.config({ silent: process.env.NODE_ENV === "production" });
+dotenv.config({
+  silent:
+    process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging",
+});
 
 export default {
   config(_input) {

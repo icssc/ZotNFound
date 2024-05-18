@@ -1,7 +1,10 @@
 // import serverless from "serverless-http";
 
 import dotenv from "dotenv";
-dotenv.config({ silent: process.env.NODE_ENV === "production" });
+dotenv.config({
+  silent:
+    process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging",
+});
 import express from "express";
 import cors from "cors";
 
