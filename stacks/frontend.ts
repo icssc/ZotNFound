@@ -38,8 +38,8 @@ export function FrontendStack({ app, stack }: StackContext) {
       VITE_REACT_APP_MEASUREMENT_ID: process.env.VITE_REACT_APP_MEASUREMENT_ID!,
     },
   });
-
-  // stack.addOutputs({
-  //   WebEndpoint: web.customDomainUrl,
-  // });
+  console.log("weburl", web.customDomainUrl)
+  stack.addOutputs({
+    WebEndpoint: web.customDomainUrl,
+  });
 }
