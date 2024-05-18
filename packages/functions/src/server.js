@@ -13,7 +13,7 @@ const app = express();
 import serverless from "serverless-http";
 // ROUTES
 import items from "./routes/items.js";
-import nodemailer from "./routes/nodemailer.js";
+import nodemailer from "./routes/nodeMailer.js";
 import leaderboard from "./routes/leaderboard.js";
 import upload from "./routes/upload.js";
 
