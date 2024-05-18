@@ -59,12 +59,13 @@ export default function CreateModal({
   const uploadFile = useCallback(async () => {
     if (!newAddedItem.image) return;
 
-    const response = await fetch('https://quywdntac0.execute-api.us-east-1.amazonaws.com/image-url', {
+    // const apiUrl = process.env.API_URL;
+    const response = await fetch(`${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
+      }/upload/image`, {
       body: newAddedItem.image,
-      method: "PUT",
+      method: "POST",
       headers: {
         "Content-Type": newAddedItem.image.type,
-        "Content-Disposition": `attachment; filename="${newAddedItem.image.name}"`,
       },
     });
     if (!response.ok) {
@@ -72,9 +73,13 @@ export default function CreateModal({
     }
 
     const data = await response.json()
-    // console.log(data)
+    console.log(data)
     const url = data.url
-    const key = data.key
+    for (const [key, value] of response.headers.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+    // const key = response.headers.get('Content-Disposition').split('=')[1].slice(1, -1);
+    // console.log(key)
     // save key into database associated with use 
 
     setUploadImg(url);
@@ -499,7 +504,7 @@ export default function CreateModal({
                       </Text>
                       <Image
                         sizeBox="100%"
-                        src={newAddedItem.image === "" ? upload : uploadImg}
+                        src={uploadImg === "" ? upload : uploadImg}
                         width={{ md: "25vw", base: "20vh" }}
                         maxHeight={{ md: "25vw", base: "20vh" }}
                         borderRadius="15%"

@@ -8,6 +8,7 @@ export function BackendStack({ stack }: StackContext) {
   });
 
   const bucket = new Bucket(stack, process.env.AWS_BUCKET_NAME);
+
   const api = new Api(stack, "api", {
     defaults: {
       function: {
@@ -31,7 +32,6 @@ export function BackendStack({ stack }: StackContext) {
     },
     routes: {
       $default: "packages/functions/src/server.default",
-      "PUT /image-url": "packages/functions/src/generate-image-url.handler"
     },
   });
 
