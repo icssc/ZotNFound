@@ -13,7 +13,16 @@ export function BackendStack({ stack }: StackContext) {
     },
   });
 
-  const bucket = new Bucket(stack, process.env.AWS_BUCKET_NAME);
+  const bucket = new Bucket(stack, process.env.AWS_BUCKET_NAME, {
+    cors: [
+      {
+        maxAge: "1 day",
+        allowedOrigins: ["*"],
+        allowedHeaders: ["*"],
+        allowedMethods: ["GET", "PUT", "POST", "DELETE", "HEAD"],
+      },
+    ],
+  });
 
   const api = new Api(stack, "api", {
     defaults: {

@@ -42,9 +42,17 @@ uploadRouter.post("/image", async (req, res) => {
     ContentType: type,
   });
 
-  const url = await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 });
+  // const url = await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 });
+  const url = `https://${Bucket.bucket.bucketName}.s3.amazonaws.com/${key}`;
 
-  res.status(200).send({ url, key });
+  res.setHeader("Content-Type", type);
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  // 'headers': {
+  //             'access-control-allow-headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+  //             'access-control-allow-methods': 'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT',
+  //             'access-control-allow-origin': '*'
+  //           }
+  res.status(200).send({ url });
 });
 
 export default uploadRouter;
