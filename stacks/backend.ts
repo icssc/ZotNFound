@@ -13,7 +13,7 @@ export function BackendStack({ stack }: StackContext) {
     },
   });
 
-  const bucket = new Bucket(stack, process.env.AWS_BUCKET_NAME, {
+  const bucket = new Bucket(stack, "bucket", {
     cors: [
       {
         maxAge: "1 day",
