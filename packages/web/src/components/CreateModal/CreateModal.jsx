@@ -60,27 +60,29 @@ export default function CreateModal({
     if (!newAddedItem.image) return;
 
     // const apiUrl = process.env.API_URL;
-    const response = await fetch(`${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
-      }/upload/image`, {
-      body: newAddedItem.image,
-      method: "POST",
-      headers: {
-        "Content-Type": newAddedItem.image.type,
-      },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/upload/image`,
+      {
+        body: newAddedItem.image,
+        method: "POST",
+        headers: {
+          "Content-Type": newAddedItem.image.type,
+        },
+      }
+    );
     if (!response.ok) {
       throw new Error("Failed to upload file");
     }
 
-    const data = await response.json()
-    console.log(data)
-    const url = data.url
+    const data = await response.json();
+    console.log(data);
+    const url = data.url;
     for (const [key, value] of response.headers.entries()) {
       console.log(`${key}: ${value}`);
     }
     // const key = response.headers.get('Content-Disposition').split('=')[1].slice(1, -1);
     // console.log(key)
-    // save key into database associated with use 
+    // save key into database associated with use
 
     setUploadImg(url);
     setNewAddedItem((prev) => ({ ...prev, image: url }));
@@ -127,7 +129,7 @@ export default function CreateModal({
   const uploadedImage = (
     <Image
       width={{ md: "40%", base: "80%" }}
-      src={uploadImg === "" ? img_placeholder : uploadImg}
+      src={uploadImg ? uploadImg : img_placeholder}
     />
   );
 
