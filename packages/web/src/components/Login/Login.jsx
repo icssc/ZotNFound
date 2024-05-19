@@ -6,13 +6,14 @@ import { UserAuth } from "../../context/AuthContext";
 
 export default function Login() {
   // const [isSignUp, setIsSignUp] = React.useState(false);
-  const { googleSignIn } = UserAuth();
+  // const { googleSignIn } = UserAuth();
 
   async function signInGoogle() {
-    try {
-      await googleSignIn();
-    } catch (error) {
-      console.log(error);
+    const res = await createGoogleAuthorizationURL();
+    if (res.error) {
+      console.log(res.error);
+    } else if (res.success) {
+      window.location.href = res.data.toString();
     }
   }
 
