@@ -126,25 +126,24 @@ export default function Map({
 
   const filterItem = useCallback(
     (item) => {
-      return (
-        search.toLowerCase() === "" ||
-        (((findFilter.isLost && item.isLost) ||
-          (findFilter.isFound && !item.isLost)) &&
+    return (((findFilter.islost && item.islost) ||
+          (findFilter.isFound && !item.islost)) &&
           (findFilter.type === "everything" || findFilter.type === item.type) &&
           (findFilter.uploadDate === "" ||
             (item.itemDate && item.itemDate.includes(findFilter.uploadDate))) &&
           (!findFilter.isYourPosts || item.email === user.email) &&
-          (findFilter.isShowReturned || !item.isResolved))
+          (findFilter.isShowReturned || !item.isResolved)
       );
     },
-    [search, findFilter, user]
+    [findFilter, user]
   );
+  
 
   const markersData = results.length > 0 ? results : data;
   const allMarkers = markersData.filter(filterItem).map((item) => {
     return (
       <Marker
-        key={item.location}
+        key={item.key}
         position={item.location}
         eventHandlers={{
           click: () => {
@@ -161,7 +160,7 @@ export default function Map({
       ></Marker>
     );
   });
-
+  
   // moves map when focusLocation state changes
   function MapFocusLocation({ location }) {
     const map = useMap();
