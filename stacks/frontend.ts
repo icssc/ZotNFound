@@ -13,9 +13,10 @@ export function FrontendStack({ app, stack }: StackContext) {
   } else if (app.stage.match(/^staging-(\d+)$/)) {
     // check if stage is like staging-###
     domainName = `${app.stage}.zotnfound.com`;
-  } else {
-    throw new Error("Invalid stage");
   }
+  // } else {
+  //   throw new Error("Invalid stage");
+  // }
 
   const web = new StaticSite(stack, "web", {
     path: "packages/web",
