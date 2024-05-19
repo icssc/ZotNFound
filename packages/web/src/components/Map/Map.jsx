@@ -33,6 +33,8 @@ import { UserAuth } from "../../context/AuthContext";
 
 import axios from "axios";
 
+import { filterItem } from '../../utils/Utils.js';
+
 /**
  * Map is uses react-leaflet's API to communicate user actions to map entities and information
  *
@@ -124,23 +126,13 @@ export default function Map({
   const fuse = new Fuse(data, fuseOptions);
   const results = fuse.search(search).map((result) => result.item);
 
-  const filterItem = useCallback(
-    (item) => {
-    return (((findFilter.islost && item.islost) ||
-          (findFilter.isFound && !item.islost)) &&
-          (findFilter.type === "everything" || findFilter.type === item.type) &&
-          (findFilter.uploadDate === "" ||
-            (item.itemDate && item.itemDate.includes(findFilter.uploadDate))) &&
-          (!findFilter.isYourPosts || item.email === user.email) &&
-          (findFilter.isShowReturned || !item.isResolved)
-      );
-    },
+  const filterItemCallback = useCallback(
+    (item) => filterItem(item, findFilter, user),
     [findFilter, user]
   );
-  
 
   const markersData = results.length > 0 ? results : data;
-  const allMarkers = markersData.filter(filterItem).map((item) => {
+  const allMarkers = markersData.filter(filterItemCallback).map((item) => {
     return (
       <Marker
         key={item.key}
@@ -160,7 +152,7 @@ export default function Map({
       ></Marker>
     );
   });
-  
+
   // moves map when focusLocation state changes
   function MapFocusLocation({ location }) {
     const map = useMap();

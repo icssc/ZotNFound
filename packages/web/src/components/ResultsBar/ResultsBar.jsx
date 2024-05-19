@@ -6,6 +6,8 @@ import DataContext from "../../context/DataContext";
 import { UserAuth } from "../../context/AuthContext";
 import Fuse from "fuse.js";
 
+import { filterItem } from '../../utils/Utils.js';
+
 export default function ResultsBar({
   search,
   findFilter,
@@ -18,19 +20,9 @@ export default function ResultsBar({
 
   const [itemsonScreenLimit, setItemsOnScreenLimit] = useState(10);
 
-  // Define callback function to return filtered items (filtered according to search bar and filter markers)
-  const filterItem = useCallback(
-    (item) => {
-      return (((findFilter.isLost && item.isLost) ||
-          (findFilter.isFound && !item.isLost)) &&
-          (findFilter.type === "everything" || findFilter.type === item.type) &&
-          (findFilter.uploadDate === "" ||
-            (item.itemDate && item.itemDate.includes(findFilter.uploadDate))) &&
-          (!findFilter.isYourPosts || item.email === user.email) &&
-          (findFilter.isShowReturned || !item.isResolved)
-      );
-    },
-    [search, findFilter, user]
+  const filterItemCallback = useCallback(
+    (item) => filterItem(item, findFilter, user),
+    [findFilter, user]
   );
 
   const mapItem = useCallback(
@@ -65,8 +57,8 @@ export default function ResultsBar({
 
   let allResults =
     search === ""
-      ? data.filter(filterItem).map(mapItem)
-      : results.filter(filterItem).map(mapItem);
+      ? data.filter(filterItemCallback).map(mapItem)
+      : results.filter(filterItemCallback).map(mapItem);
 
   // Callback function that increases the number of items displayed on the screen by 10
   const handleLoadMore = useCallback(() => {
