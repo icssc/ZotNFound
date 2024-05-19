@@ -21,15 +21,13 @@ export default function ResultsBar({
   // Define callback function to return filtered items (filtered according to search bar and filter markers)
   const filterItem = useCallback(
     (item) => {
-      return (
-        search.toLowerCase() === "" ||
-        (((findFilter.isLost && item.isLost) ||
+      return (((findFilter.isLost && item.isLost) ||
           (findFilter.isFound && !item.isLost)) &&
           (findFilter.type === "everything" || findFilter.type === item.type) &&
           (findFilter.uploadDate === "" ||
             (item.itemDate && item.itemDate.includes(findFilter.uploadDate))) &&
           (!findFilter.isYourPosts || item.email === user.email) &&
-          (findFilter.isShowReturned || !item.isResolved))
+          (findFilter.isShowReturned || !item.isResolved)
       );
     },
     [search, findFilter, user]
