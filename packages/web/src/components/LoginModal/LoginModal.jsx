@@ -1,4 +1,3 @@
-import { useContext, useState, useCallback } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -16,6 +15,8 @@ import {
   AlertTitle,
   AlertDescription,
 } from "@chakra-ui/react";
+import axios from "axios";
+import { useContext, useState, useCallback } from "react";
 
 import small_logo from "../../assets/images/small_logo.png";
 
@@ -24,7 +25,8 @@ import google_logo from "../../assets/logos/google_logo.png";
 import { UserAuth } from "../../context/AuthContext";
 
 export default function LoginModal() {
-  const { isLoginModalOpen, onLoginModalClose } = useContext(DataContext);
+  const { isLoginModalOpen, onLoginModalClose, token } =
+    useContext(DataContext);
   const [isAttempt, setIsAttempt] = useState(false);
   const { googleSignIn, user } = UserAuth();
 
@@ -36,13 +38,35 @@ export default function LoginModal() {
   //   }
   // }
 
+  // const signInGoogle = useCallback(async () => {
+  //   try {
+  //     await googleSignIn();
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // }, [googleSignIn]);
+
   const signInGoogle = useCallback(async () => {
-    try {
-      await googleSignIn();
-    } catch (error) {
-      console.log(error.message);
+    console.log("Sign in with Google");
+    const res = axios
+      .get(
+        `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/googleOAuth`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // verify auth
+          },
+        }
+      )
+      .then(() => console.log("Success"))
+      .catch((err) => console.log(err));
+
+    if (res.error) {
+      console.log(res.error);
+    } else if (res.success) {
+      window.location.href = res.data.toString();
     }
-  }, [googleSignIn]);
+  }, []);
 
   // Google sign-in functionality - redirects to Google sign-in page
   const handleSignInGoogle = useCallback(() => {
@@ -54,28 +78,21 @@ export default function LoginModal() {
 
   // The sign-in error alert - appears when user tries to sign in with non-UCI email
   const signInErrorAlert = (
-    <Alert
-    status="error"
-    justifyContent={"center"}
-    flexDir={"column"}
-    gap={2}
-    >
+    <Alert status="error" justifyContent={"center"} flexDir={"column"} gap={2}>
       <Flex>
         <AlertIcon />
         <AlertTitle>Can't sign in?</AlertTitle>
       </Flex>
-      <AlertDescription>
-        Please sign in with @uci.edu
-      </AlertDescription>
+      <AlertDescription>Please sign in with @uci.edu</AlertDescription>
     </Alert>
-  )
-  
+  );
+
   // The welcome message text - appears when user successfully signs in (AKA user has an @uci.edu email)
   const welcomeMessage = (
     <Text fontSize="2xl" as="b">
       Welcome back Anteater!
     </Text>
-  )
+  );
   return (
     <>
       <Modal
@@ -99,7 +116,7 @@ export default function LoginModal() {
               gap={8}
             >
               <Image src={small_logo} width="15vh" />
-              {isAttempt ? (signInErrorAlert) : (welcomeMessage)}
+              {isAttempt ? signInErrorAlert : welcomeMessage}
               <Button
                 onClick={handleSignInGoogle}
                 variant={"outline"}
@@ -108,7 +125,7 @@ export default function LoginModal() {
               >
                 <Flex gap={2} alignItems="center">
                   <Image width="20px" height="20px" src={google_logo} />
-                  Sign in with UCI
+                  Sign in with Google
                 </Flex>
               </Button>
             </Flex>

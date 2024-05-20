@@ -1,6 +1,6 @@
 import { Lucia } from "lucia";
-import adapter from "./adapter";
-import { cookies } from "next/headers";
+import { adapter } from "./adapter";
+// import { cookies } from "cookie-parser";
 import { cache } from "react";
 
 export const lucia = new Lucia(adapter, {
@@ -13,7 +13,9 @@ export const lucia = new Lucia(adapter, {
 });
 
 export const validateRequest = cache(async () => {
-  const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
+  //   const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
+  console.log("req cookies: ", req.cookies);
+  const sessionId = req.cookies[lucia.sessionCookieName] ?? null;
 
   if (!sessionId)
     return {
@@ -25,7 +27,7 @@ export const validateRequest = cache(async () => {
   try {
     if (session && session.fresh) {
       const sessionCookie = lucia.createSessionCookie(session.id);
-      cookies().set(
+      setCookie(
         sessionCookie.name,
         sessionCookie.value,
         sessionCookie.attributes
@@ -33,7 +35,7 @@ export const validateRequest = cache(async () => {
     }
     if (!session) {
       const sessionCookie = lucia.createBlankSessionCookie();
-      cookies().set(
+      setCookie(
         sessionCookie.name,
         sessionCookie.value,
         sessionCookie.attributes

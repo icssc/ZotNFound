@@ -1,14 +1,15 @@
-import db from "@/lib/database";
-import { oauthAccountTable, userTable } from "@/lib/database/schema";
-import { lucia } from "@/lib/lucia";
-import { google } from "@/lib/lucia/oauth";
-import { eq } from "drizzle-orm";
-import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import db from "../server/db";
+// import { oauthAccountTable, userTable } from "@/lib/database/schema";
+import { lucia } from "../lucia/index";
+import { google } from "../lucia/oauth";
+// import { eq } from "drizzle-orm";
+// import { cookies } from "next/headers";
+// import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req) => {
   try {
-    const url = new URL(req.url);
+    const url = new URL(createGoogleAuthorizationURL());
+    console.log("Google Authorization URL: ", url);
     const searchParams = url.searchParams;
 
     const code = searchParams.get("code");
@@ -139,8 +140,8 @@ export const GET = async (req) => {
     //     }
     //   }
 
-    //   return NextResponse.redirect(
-    //     new URL("/dashboard", process.env.NEXT_PUBLIC_BASE_URL),
+    //   return res.redirect(
+    //     new URL("/dashboard", process.env.PUBLIC_BASE_URL),
     //     {
     //       status: 302,
     //     }
@@ -165,12 +166,9 @@ export const GET = async (req) => {
       expires: new Date(0),
     });
 
-    return NextResponse.redirect(
-      new URL("/", process.env.NEXT_PUBLIC_BASE_URL),
-      {
-        status: 302,
-      }
-    );
+    return res.redirect(new URL("/", process.env.PUBLIC_BASE_URL), {
+      status: 302,
+    });
   } catch (error) {
     return Response.json(
       { error: error.message },
