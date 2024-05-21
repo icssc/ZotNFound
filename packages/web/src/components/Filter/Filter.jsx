@@ -40,30 +40,31 @@ export default function Filter({ findFilter, setFindFilter, onClose, isOpen }) {
     setFindFilter((prev) => ({
       ...prev,
       isFound: !prev.isFound,
-    }))
-  }, [])
+    }));
+  }, []);
 
   const handleIsShowReturned = useCallback(() => {
+    console.log("isShowReturned");
     setFindFilter((prev) => ({
       ...prev,
       isShowReturned: !prev.isShowReturned,
     }));
-  }, [])
+  }, []);
 
   const handleIsYourPosts = useCallback(() => {
     setFindFilter((prev) => ({
       ...prev,
       isYourPosts: !prev.isYourPosts,
     }));
-  }, [])
+  }, []);
 
   const handleUploadDate = useCallback((e) => {
     setFindFilter((prev) => ({
       ...prev,
       uploadDate: e.target.value,
     }));
-  })
-  
+  });
+
   const handleCancel = useCallback(() => {
     setFindFilter({
       type: "everything",
@@ -74,8 +75,8 @@ export default function Filter({ findFilter, setFindFilter, onClose, isOpen }) {
       isShowReturned: true,
     });
     onClose();
-  }, [])
-  
+  }, []);
+
   return (
     <>
       <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
@@ -189,11 +190,7 @@ export default function Filter({ findFilter, setFindFilter, onClose, isOpen }) {
           </DrawerBody>
 
           <DrawerFooter>
-            <Button
-              variant="outline"
-              mr={3}
-              onClick={handleCancel}
-            >
+            <Button variant="outline" mr={3} onClick={handleCancel}>
               Cancel
             </Button>
             <Button colorScheme="blue" onClick={onClose}>
