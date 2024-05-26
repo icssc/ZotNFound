@@ -502,6 +502,7 @@ export default function Home() {
               setUploadImg={setUploadImg}
               uploadImg={uploadImg}
               upload={upload}
+              user={user}
             />
           </Flex>
         </Flex>

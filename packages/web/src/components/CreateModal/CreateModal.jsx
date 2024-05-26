@@ -1,10 +1,12 @@
 import * as React from "react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import {
   Image,
   Button,
   Flex,
   FormLabel,
+  InputGroup,
+  InputLeftElement,
   Input,
   Modal,
   ModalOverlay,
@@ -20,15 +22,24 @@ import {
   StepStatus,
   StepTitle,
   Stepper,
+  Stack,
+  VStack,
   useSteps,
   Box,
   ModalCloseButton,
   Textarea,
   Spinner,
+  Radio,
+  RadioGroup,
 } from "@chakra-ui/react";
+import { PhoneIcon, EmailIcon } from "@chakra-ui/icons";
 // import logo from "../../assets/images/small_logo.png";
 import { storage } from "../../firebase";
-import { MdDriveFileRenameOutline, MdOutlineDescription } from "react-icons/md";
+import {
+  MdDriveFileRenameOutline,
+  MdOutlineDescription,
+  MdEmail,
+} from "react-icons/md";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";
 import Calendar from "react-calendar";
@@ -37,6 +48,7 @@ import "./Calendar.css";
 import img_placeholder from "../../assets/images/img_placeholder.jpeg";
 import TypeSelector from "../TypeSelector/TypeSelector";
 import LostFoundSwitch from "./LostFoundSwitch";
+// import { Stack } from "react-bootstrap";
 
 export default function CreateModal({
   isOpen,
@@ -53,8 +65,11 @@ export default function CreateModal({
   setUploadImg,
   uploadImg,
   upload,
+  user,
 }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [preferredContact, setPreferredContact] = useState("email");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const uploadFile = useCallback(async () => {
     if (!newAddedItem.image) return;
@@ -96,7 +111,8 @@ export default function CreateModal({
     { title: "Second", description: "Select Type" },
     { title: "Third", description: "Choose Date" },
     { title: "Fourth", description: "File Upload" },
-    { title: "Fifth", description: "Check Info" },
+    { title: "Fifth", description: "Contact Info" },
+    { title: "Sixth", description: "Check Info" },
   ];
 
   const { activeStep, setActiveStep } = useSteps({
@@ -113,8 +129,7 @@ export default function CreateModal({
       opacity="0.8"
       justifyContent="center"
       alignItems="center"
-      zIndex={1000000000}
-    >
+      zIndex={1000000000}>
       <Spinner
         thickness="4px"
         speed="0.65s"
@@ -149,8 +164,7 @@ export default function CreateModal({
       variant={"solid"}
       colorScheme="red"
       size="lg"
-      onClick={handleStepDecrement}
-    >
+      onClick={handleStepDecrement}>
       Back
     </Button>
   );
@@ -174,8 +188,7 @@ export default function CreateModal({
         });
         setUploadImg("");
         onClose();
-      }}
-    >
+      }}>
       Cancel
     </Button>
   );
@@ -188,13 +201,15 @@ export default function CreateModal({
         newAddedItem.description === "" ||
         (activeStep === 1 && newAddedItem.type === "") ||
         (activeStep === 2 && newAddedItem.itemdate === "") ||
-        (activeStep === 3 && uploadImg === "")
+        (activeStep === 3 && uploadImg === "") ||
+        (activeStep === 4 &&
+          preferredContact === "phone" &&
+          phoneNumber.length < 10)
       }
       variant={"solid"}
       colorScheme="blue"
       size="lg"
-      onClick={handleStepIncrement}
-    >
+      onClick={handleStepIncrement}>
       Continue
     </Button>
   );
@@ -207,7 +222,8 @@ export default function CreateModal({
         newAddedItem.image === "" ||
         newAddedItem.type === "" ||
         newAddedItem.name === "" ||
-        newAddedItem.description === ""
+        newAddedItem.description === "" ||
+        phoneNumber === ""
       }
       variant={"solid"}
       type="submit"
@@ -217,9 +233,8 @@ export default function CreateModal({
         onClose();
         setActiveStep(0);
         setIsCreate(false);
-      }}
-    >
-      Continue
+      }}>
+      Submit
     </Button>
   );
 
@@ -271,6 +286,43 @@ export default function CreateModal({
     [setNewAddedItem]
   );
 
+  const phoneNumberBox = (
+    // get this to accept numbers only
+    <InputGroup>
+      <InputLeftElement pointerEvents="none">
+        <PhoneIcon color="gray.300" />
+      </InputLeftElement>
+      <Input
+        type="tel"
+        placeholder="Phone number"
+        value={phoneNumber}
+        onChange={(e) => setPhoneNumber(e.target.value)}
+        maxLength={10} // US phone numbers are 10 digits
+      />
+    </InputGroup>
+  );
+
+  const displayEmail = (
+    // get this to display the email in a bordered box
+    <>
+      <MdEmail color="gray.300" />
+      {/* {console.log(user)} */}
+      <Text ml="2%" fontSize={15} w={"100%"}>
+        {user?.email}
+      </Text>
+    </>
+  );
+
+  const displayPhoneNumber = (
+    <>
+      <PhoneIcon color="gray.300" />
+      <Text ml="2%" fontSize={15} w={"100%"}>
+        {phoneNumber}
+      </Text>
+    </>
+  );
+
+  const emailIcon = <MdEmail size={"1.3em"} />;
   useEffect(() => {
     if (newAddedItem.image && typeof newAddedItem.image !== "string") {
       setIsLoading(true);
@@ -297,12 +349,13 @@ export default function CreateModal({
           setActiveStep(0);
           setIsCreate(true);
           setIsEdit(false);
+          setPhoneNumber("");
+          setPreferredContact("email");
           onClose();
         }}
         size={"4xl"}
         closeOnOverlayClick={false}
-        finalFocusRef={{}}
-      >
+        finalFocusRef={{}}>
         <ModalOverlay>
           <ModalContent minHeight="50vh">
             <Flex padding={"2%"} flexDir={"column"}>
@@ -311,8 +364,7 @@ export default function CreateModal({
                 size="lg"
                 index={activeStep}
                 flex={1}
-                display={{ md: "flex", base: "none" }}
-              >
+                display={{ md: "flex", base: "none" }}>
                 {steps.map((step, index) => (
                   <Step key={index}>
                     <StepIndicator>
@@ -338,8 +390,7 @@ export default function CreateModal({
                 width="100%"
                 justifyContent={"center"}
                 mt="5%"
-                mb={{ md: "3%", base: "10%" }}
-              >
+                mb={{ md: "3%", base: "10%" }}>
                 {/* first step */}
                 {activeStep === 0 && (
                   <Flex width={{ md: "50%", base: "90%" }}>
@@ -379,15 +430,13 @@ export default function CreateModal({
                     flexDir={"column"}
                     w="100%"
                     justifyContent={"center"}
-                    alignItems={"center"}
-                  >
+                    alignItems={"center"}>
                     <FormControl>
                       <FormLabel
                         ml={5}
                         fontSize="2xl"
                         mb={8}
-                        textAlign={"center"}
-                      >
+                        textAlign={"center"}>
                         ❓ Select Item Type:
                       </FormLabel>
                     </FormControl>
@@ -403,8 +452,7 @@ export default function CreateModal({
                           ml={5}
                           fontSize="2xl"
                           my={8}
-                          textAlign={"center"}
-                        >
+                          textAlign={"center"}>
                           🤔 Lost or Found Item?
                         </FormLabel>
 
@@ -412,8 +460,7 @@ export default function CreateModal({
                           alignItems={"center"}
                           textAlign={"center"}
                           justify={"center"}
-                          mb={"5%"}
-                        >
+                          mb={"5%"}>
                           <LostFoundSwitch
                             setNewAddedItem={setNewAddedItem}
                             newAddedItem={newAddedItem}
@@ -433,8 +480,7 @@ export default function CreateModal({
                       px="10%"
                       fontSize="xl"
                       textAlign={"center"}
-                      mb={"5%"}
-                    >
+                      mb={"5%"}>
                       {newAddedItem.islost ? "📅 Lost Date:" : "📅 Found Date:"}
                     </FormLabel>
 
@@ -442,8 +488,7 @@ export default function CreateModal({
                       w="100%"
                       alignItems={"center"}
                       justifyContent={"center"}
-                      px={{ md: "10%", base: "3%" }}
-                    >
+                      px={{ md: "10%", base: "3%" }}>
                       <Calendar
                         className={"react-calendar"}
                         calendarType="US"
@@ -462,8 +507,7 @@ export default function CreateModal({
                       gap={5}
                       alignItems="center"
                       flexDirection="column"
-                      justifyContent="center"
-                    >
+                      justifyContent="center">
                       <Flex justifyContent="center" alignItems="center" gap={3}>
                         <Input
                           type="file"
@@ -492,15 +536,46 @@ export default function CreateModal({
                 )}
                 {/* fourth step */}
 
-                {/* fifth step */}
+                {/* NEW fifth step */}
                 {activeStep === 4 && (
+                  <Flex>
+                    <FormControl>
+                      <FormLabel
+                        ml={5}
+                        fontSize="2xl"
+                        mb={8}
+                        textAlign={"center"}>
+                        📞 Preferred Contact ✉
+                      </FormLabel>
+                      <Flex
+                        justifyContent={"center"}
+                        alignItems={"center"}
+                        mb={5}
+                        gap={3}>
+                        <RadioGroup
+                          onChange={setPreferredContact} // make a function to set the value -- if email, then display email | if phone, then ask for phone number and set it
+                          value={preferredContact}>
+                          <VStack direction="row" spacing={5}>
+                            <Radio value="email">Email</Radio>
+                            <Radio value="phone">Phone</Radio>
+                            {preferredContact === "phone"
+                              ? phoneNumberBox
+                              : displayEmail}
+                          </VStack>
+                        </RadioGroup>
+                      </Flex>
+                    </FormControl>
+                    {console.log(preferredContact)}
+                  </Flex>
+                )}
+                {/* sixth step */}
+                {activeStep === 5 && (
                   <Flex gap={"5%"} flexDir={{ md: "row", base: "column" }}>
                     <Flex
                       flexDir={"column"}
                       flex={1}
                       justifyContent={"center"}
-                      alignItems={"center"}
-                    >
+                      alignItems={"center"}>
                       <Text as="b" fontSize={25}>
                         Confirm & Submit
                       </Text>
@@ -522,15 +597,13 @@ export default function CreateModal({
                       padding={"1vw"}
                       maxW={{ md: "70%", base: "80vw" }}
                       mb={3}
-                      alignItems={{ base: "center", md: "start" }}
-                    >
+                      alignItems={{ base: "center", md: "start" }}>
                       <Text
                         ml="1%"
                         textAlign={"center"}
                         as="b"
                         fontSize={"2xl"}
-                        mb={5}
-                      >
+                        mb={5}>
                         Item Information:
                       </Text>
 
@@ -541,8 +614,7 @@ export default function CreateModal({
                         gap={3}
                         flexDir={{ base: "column", md: "row" }}
                         justifyContent={"center"}
-                        alignItems={"center"}
-                      >
+                        alignItems={"center"}>
                         <MdDriveFileRenameOutline size={"1.3em"} />
                         <Text w={"100%"} ml="2%" fontSize={15}>
                           {newAddedItem.name}
@@ -555,8 +627,7 @@ export default function CreateModal({
                         gap={3}
                         flexDir={{ base: "column", md: "row" }}
                         justifyContent={"center"}
-                        alignItems={"center"}
-                      >
+                        alignItems={"center"}>
                         <MdOutlineDescription size={"1.3em"} />
                         <Text ml="2%" fontSize={15} w={"100%"}>
                           {newAddedItem.description}
@@ -569,8 +640,7 @@ export default function CreateModal({
                         gap={3}
                         flexDir={{ base: "column", md: "row" }}
                         justifyContent={"center"}
-                        alignItems={"center"}
-                      >
+                        alignItems={"center"}>
                         <FaMagnifyingGlass size={"1.3em"} />
                         <Text ml="2%" fontSize={15} w={"100%"}>
                           {newAddedItem.islost ? "LOST" : "FOUND"}
@@ -585,22 +655,33 @@ export default function CreateModal({
                         gap={3}
                         flexDir={{ base: "column", md: "row" }}
                         justifyContent={"center"}
-                        alignItems={"center"}
-                      >
+                        alignItems={"center"}>
                         <SlCalender size={"1.3em"} />
                         <Text ml="2%" fontSize={15} w={"100%"}>
                           {newAddedItem.itemdate}
                         </Text>
                       </Flex>
+
+                      <Flex
+                        mb="5%"
+                        padding={2}
+                        gap={3}
+                        flexDir={{ base: "column", md: "row" }}
+                        justifyContent={"center"}
+                        alignItems={"center"}>
+                        {preferredContact === "phone"
+                          ? displayPhoneNumber
+                          : displayEmail}
+                      </Flex>
                     </Flex>
                   </Flex>
                 )}
-                {/* fifth step */}
+                {/* sixth step */}
               </Flex>
 
               <Flex justifyContent={"center"} gap="3%">
                 {activeStep > 0 ? backModalButton : cancelModalButton}
-                {activeStep < 4 ? continueModalButton : submitModalButton}
+                {activeStep < 5 ? continueModalButton : submitModalButton}
               </Flex>
             </Flex>
           </ModalContent>
