@@ -1,7 +1,8 @@
-import { useContext, useCallback, useState } from "react";
+import { useContext, useCallback, useRef, useState } from "react";
 import "./ResultsBar.css";
 import ResultCard from "../ResultCard/ResultCard";
-import { Box, Flex, Text, Button } from "@chakra-ui/react";
+import { Box, Button, Flex, Text, IconButton } from "@chakra-ui/react";
+import { ArrowUpIcon } from "@chakra-ui/icons"
 import DataContext from "../../context/DataContext";
 import { UserAuth } from "../../context/AuthContext";
 import Fuse from "fuse.js";
@@ -65,6 +66,14 @@ export default function ResultsBar({
     setItemsOnScreenLimit(itemsonScreenLimit + 10);
   }, [itemsonScreenLimit]);
 
+  // scroll to the top of results bar
+  const handleScrollToTop = useCallback(() => {
+    boxRef.current.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  });
+
   const loadMoreButton = (
     <Button
       onClick={handleLoadMore}
@@ -78,6 +87,27 @@ export default function ResultsBar({
     >
       Load More
     </Button>
+  );
+
+  const boxRef = useRef(null);
+  const scrollToTopButton = (
+    <IconButton
+      isRound={true}
+      size="lg"
+      position="absolute"
+      top="10%"
+      right="20%"
+      onClick={handleScrollToTop}
+      variant={"solid"}
+      colorScheme="blue"
+      // marginTop="10px"
+      // marginBottom="10px"
+      opacity={0.5}
+      _hover={{
+        opacity: "1"
+      }}
+      icon={<ArrowUpIcon boxSize={50} />}
+    />
   );
 
   // Retrieve all items that meet the filter criteria
@@ -99,6 +129,7 @@ export default function ResultsBar({
 
   return (
     <Box
+      ref={boxRef}
       paddingX="5px"
       width={{ base: "90vw", md: "21vw" }}
       height="80vh"
@@ -107,6 +138,7 @@ export default function ResultsBar({
     >
       {allResults.length > 0 ? viewableResults : noResults}
       {viewableResults.length < allResults.length && loadMoreButton}
+      {viewableResults.length > 10 && scrollToTopButton}
     </Box>
   );
 }

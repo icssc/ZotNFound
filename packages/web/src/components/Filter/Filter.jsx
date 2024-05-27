@@ -44,7 +44,6 @@ export default function Filter({ findFilter, setFindFilter, onClose, isOpen }) {
   }, []);
 
   const handleIsShowReturned = useCallback(() => {
-    console.log("isShowReturned");
     setFindFilter((prev) => ({
       ...prev,
       isShowReturned: !prev.isShowReturned,
