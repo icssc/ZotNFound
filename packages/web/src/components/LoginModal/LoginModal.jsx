@@ -25,9 +25,9 @@ import google_logo from "../../assets/logos/google_logo.png";
 import { UserAuth } from "../../context/AuthContext";
 
 export default function LoginModal() {
-  const { isLoginModalOpen, onLoginModalClose, token } =
-    useContext(DataContext);
+  const { isLoginModalOpen, onLoginModalClose } = useContext(DataContext);
   const [isAttempt, setIsAttempt] = useState(false);
+  const [googleUrl, setGoogleUrl] = useState("");
   const { googleSignIn, user } = UserAuth();
 
   // async function signInGoogle() {
@@ -48,23 +48,20 @@ export default function LoginModal() {
 
   const signInGoogle = useCallback(async () => {
     console.log("Sign in with Google");
-    const res = axios
-      .get(
-        `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/googleOAuth`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // verify auth
-          },
-        }
-      )
-      .then(() => console.log("Success"))
-      .catch((err) => console.log(err));
-
-    if (res.error) {
-      console.log(res.error);
-    } else if (res.success) {
-      window.location.href = res.data.toString();
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_AWS_API_ENDPOINT}/googleOAuth`
+      );
+      if (res.error) {
+        console.log(res.error);
+      } else if (res.success) {
+        console.log("res", res);
+        window.location.href = res;
+      }
+      // setGoogleUrl(res);
+      // console.log("googleUrl", googleUrl);
+    } catch (error) {
+      console.log(error.message);
     }
   }, []);
 

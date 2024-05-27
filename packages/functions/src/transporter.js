@@ -1,8 +1,10 @@
-const nodemailer = require("nodemailer");
-const { google } = require("googleapis");
+import nodemailer from "nodemailer";
+import { google } from "googleapis";
+
 const OAuth2 = google.auth.OAuth2;
 
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
 const createTransporter = async () => {
   const oauth2Client = new OAuth2(
@@ -35,10 +37,10 @@ const createTransporter = async () => {
       refreshToken: process.env.REFRESH_TOKEN,
     },
     from: process.env.EMAIL,
-  }
-  );
+  });
 
   return transporter;
 };
 
-module.exports = createTransporter;
+// module.exports = createTransporter;
+export default createTransporter;

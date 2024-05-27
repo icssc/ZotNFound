@@ -1,9 +1,9 @@
-const express = require("express");
+import express from "express";
 const leaderboardRouter = express.Router();
 // const middleware = require("../middleware/index.js");
-const { leaderboardTable } = require("../config/db-config.js");
+import leaderboardTable from "../config/db-config.js";
 
-const client = require("../server/db");
+import client from "../server/db.js";
 
 // add a user to leaderboard
 leaderboardRouter.post("/", async (req, res) => {
@@ -128,4 +128,4 @@ leaderboardRouter.delete("/:id", async (req, res) => {
   }
 });
 
-module.exports = leaderboardRouter;
+export default leaderboardRouter;

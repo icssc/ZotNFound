@@ -1,7 +1,7 @@
 import { Lucia } from "lucia";
-import { adapter } from "./adapter";
+import { adapter } from "./adapter.js";
 // import { cookies } from "cookie-parser";
-import { cache } from "react";
+import cache from "react";
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {

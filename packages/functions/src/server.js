@@ -1,24 +1,31 @@
-// import serverless from "serverless-http";
-
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import serverless from "serverless-http";
+import { generateCodeVerifier, generateState } from "arctic";
 dotenv.config();
 const app = express();
 // const port = 8080;
 // ROUTES
-const cookieParser = require("cookie-parser");
-const items = require("./routes/items");
-const nodemailer = require("./routes/nodeMailer");
-const leaderboard = require("./routes/leaderboard");
-const googleOAuth = require("./routes/googleOAuth");
+import cookieParser from "cookie-parser";
+import items from "./routes/items.js";
+import nodemailer from "./routes/nodeMailer.js";
+import leaderboard from "./routes/leaderboard.js";
+import googleOAuth from "./routes/googleOAuth.js";
+import google from "./lucia/oauth.js";
 
 app.use(cors());
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ limit: "25mb", extended: true }));
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "1800");
+  res.setHeader("Access-Control-Allow-Headers", "content-type");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "PUT, POST, GET, DELETE, PATCH, OPTIONS"
+  );
   next();
 });
 app.use(cookieParser());
@@ -41,20 +48,12 @@ if (process.env.NODE_ENV === "development") {
   });
 }
 
-export const createGoogleAuthorizationURL = async () => {
+export const createGoogleAuthorizationUrl = async () => {
   try {
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
 
-    cookies().set("codeVerifier", codeVerifier, {
-      httpOnly: true,
-    });
-
-    cookies().set("state", state, {
-      httpOnly: true,
-    });
-
-    const authorizationURL = await google.createAuthorizationURL(
+    const googleAuthorizationUrl = await google.createAuthorizationURL(
       state,
       codeVerifier,
       {
@@ -64,7 +63,7 @@ export const createGoogleAuthorizationURL = async () => {
 
     return {
       success: true,
-      data: authorizationURL,
+      data: googleAuthorizationUrl,
     };
   } catch (error) {
     return {

@@ -224,29 +224,31 @@ export default function Home() {
   // Sort the array by date
   data.sort(compareDates);
 
-  //get data
-  useEffect(() => {
-    const getData = async () => {
-      // Define the headers object
-      const config = {
-        headers: {
-          // Include any other headers you need
-          "User-Email": user?.email, // Custom header with the user's email
-        },
-      };
+  // //get data
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     // Define the headers object
+  //     const config = {
+  //       headers: {
+  //         // Include any other headers you need
+  //         "User-Email": user?.email, // Custom header with the user's email
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     };
 
-      // Request to get items with additional headers
-      axios
-        .get(`${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items/`, config)
-        .then((obj) => {
-          setData(obj.data.map((item) => ({ ...item, id: item.id })));
-        })
-        .catch((err) => console.log(err));
+  //     // Request to get items with additional headers
+  //     axios
+  //       .get(`${import.meta.env.VITE_AWS_API_ENDPOINT}/items/`, config)
+  //       .then((obj) => {
+  //         console.log("OBJ = ", obj);
+  //         setData(obj.data.map((item) => ({ ...item, id: item.id })));
+  //       })
+  //       .catch((err) => console.log(err));
 
-      setLoading(true);
-    };
-    getData();
-  }, [user]);
+  //     setLoading(true);
+  //   };
+  //   getData();
+  // }, [user]);
 
   //LEADERBOARD GET INFO
   useEffect(() => {

@@ -12,4 +12,4 @@ const config = {
   // Add more environments if needed
 };
 
-module.exports = config[process.env.NODE_ENV] || config.development;
+export default config[process.env.NODE_ENV] || config.development;

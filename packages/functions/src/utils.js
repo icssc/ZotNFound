@@ -1,4 +1,4 @@
-const createTransporter = require("./transporter");
+import createTransporter from "./transporter.js";
 
 const sendEmail = async (recipientEmail, subject, content) => {
   let emailTransporter = await createTransporter();
@@ -11,4 +11,4 @@ const sendEmail = async (recipientEmail, subject, content) => {
   });
 };
 
-module.exports = sendEmail;
+export default sendEmail;

@@ -13,4 +13,4 @@ function isPositionWithinBounds(lat, lng) {
   // if lng is within bounds
   return lng >= allowedBounds[0][1] && lng <= allowedBounds[1][1];
 }
-module.exports = isPositionWithinBounds;
+export default isPositionWithinBounds;
