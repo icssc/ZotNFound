@@ -11,6 +11,7 @@ import { leaderboardTable, itemsTable } from "../config/db-config.js";
 
 //Add a item
 itemsRouter.post("/", async (req, res) => {
+  console.log("Item posted:", req.body);
   try {
     const {
       name,
@@ -20,7 +21,9 @@ itemsRouter.post("/", async (req, res) => {
       location,
       date,
       itemdate,
+      preferredContact,
       email,
+      phoneNumber,
       image,
       isresolved,
       ishelped,
@@ -31,7 +34,7 @@ itemsRouter.post("/", async (req, res) => {
     }
 
     const item = await client.query(
-      `INSERT INTO ${itemsTable} (name, description, type, islost, location, date, itemdate, email, image, isresolved, ishelped) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+      `INSERT INTO ${itemsTable} (name, description, type, islost, location, date, itemdate, preferredContact, email, phoneNumber, image, isresolved, ishelped) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
       [
         name,
         description,
@@ -40,7 +43,9 @@ itemsRouter.post("/", async (req, res) => {
         location,
         date,
         itemdate,
+        preferredContact,
         email,
+        phoneNumber,
         image,
         isresolved,
         ishelped,
