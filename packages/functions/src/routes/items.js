@@ -220,6 +220,38 @@ itemsRouter.get("/:id/email", async (req, res) => {
   }
 });
 
+// Get preferred contact method associated with an item id
+itemsRouter.get(":id/contactMethod", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const item = await client.query(
+      `SELECT preferredContact FROM ${itemsTable} WHERE id=$1`,
+      [id]
+    );
+
+    res.json(item.rows[0]);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+// Get phone number associated with an item id
+itemsRouter.get(":id/phoneNumber", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const item = await client.query(
+      `SELECT phoneNumber FROM ${itemsTable} WHERE id=$1`,
+      [id]
+    );
+
+    res.json(item.rows[0]);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 // Retrieve Items by Category
 itemsRouter.get("/category/:category", async (req, res) => {
   try {
