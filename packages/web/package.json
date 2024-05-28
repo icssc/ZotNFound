@@ -30,6 +30,7 @@
     "react-resizable-panels": "^0.0.53",
     "react-router-dom": "^6.11.2",
     "swiper": "^10.2.0",
+    "universal-cookie": "^7.1.4",
     "vite": "^5.2.10",
     "vite-tsconfig-paths": "^4.3.2",
     "web-vitals": "^2.1.4"

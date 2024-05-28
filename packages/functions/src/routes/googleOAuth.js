@@ -14,9 +14,13 @@ import { createGoogleAuthorizationUrl } from "../server.js";
 googleOAuthRouter.get("/", async (req, res) => {
   try {
     const response = await createGoogleAuthorizationUrl();
-    const googleAuthUrl = response.data;
-    console.log("Google Authorization URL: ", googleAuthUrl);
-    res.status(200).send(googleAuthUrl);
+    const googleAuthorizationUrl = response.data.googleAuthorizationUrl;
+
+    res.status(200).send({
+      googleAuthorizationUrl: googleAuthorizationUrl,
+      state: response.data.state,
+      codeVerifier: response.data.codeVerifier,
+    });
   } catch (error) {
     res.status(500).send("Server Error");
   }

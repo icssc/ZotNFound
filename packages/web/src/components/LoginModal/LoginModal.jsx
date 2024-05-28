@@ -23,28 +23,13 @@ import small_logo from "../../assets/images/small_logo.png";
 import DataContext from "../../context/DataContext";
 import google_logo from "../../assets/logos/google_logo.png";
 import { UserAuth } from "../../context/AuthContext";
+import Cookies from "universal-cookie";
 
 export default function LoginModal() {
   const { isLoginModalOpen, onLoginModalClose } = useContext(DataContext);
   const [isAttempt, setIsAttempt] = useState(false);
-  const [googleUrl, setGoogleUrl] = useState("");
   const { googleSignIn, user } = UserAuth();
-
-  // async function signInGoogle() {
-  //   try {
-  //     await googleSignIn();
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // }
-
-  // const signInGoogle = useCallback(async () => {
-  //   try {
-  //     await googleSignIn();
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // }, [googleSignIn]);
+  const cookies = new Cookies(null, { path: "/" });
 
   const signInGoogle = useCallback(async () => {
     console.log("Sign in with Google");
@@ -52,14 +37,12 @@ export default function LoginModal() {
       const res = await axios.get(
         `${import.meta.env.VITE_AWS_API_ENDPOINT}/googleOAuth`
       );
-      if (res.error) {
-        console.log(res.error);
-      } else if (res.success) {
-        console.log("res", res);
-        window.location.href = res;
-      }
-      // setGoogleUrl(res);
-      // console.log("googleUrl", googleUrl);
+      const url = res.data.googleAuthorizationUrl;
+      console.log("url: ", url);
+      // window.location.href = res.data;
+
+      cookies.set("state", res.data.state);
+      cookies.set("codeVerifier", res.data.codeVerifier);
     } catch (error) {
       console.log(error.message);
     }

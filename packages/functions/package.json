@@ -26,6 +26,7 @@
     "lucia": "^3.2.0",
     "nodemailer": "^6.9.13",
     "pg": "^8.11.5",
-    "serverless-http": "^3.2.0"
+    "serverless-http": "^3.2.0",
+    "universal-cookie": "^7.1.4"
   }
 }

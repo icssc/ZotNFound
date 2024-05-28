@@ -63,7 +63,11 @@ export const createGoogleAuthorizationUrl = async () => {
 
     return {
       success: true,
-      data: googleAuthorizationUrl,
+      data: {
+        state: state,
+        codeVerifier: codeVerifier,
+        googleAuthorizationUrl: googleAuthorizationUrl,
+      },
     };
   } catch (error) {
     return {
