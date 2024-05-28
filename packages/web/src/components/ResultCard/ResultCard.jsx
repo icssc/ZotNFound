@@ -11,6 +11,7 @@ import {
   Button,
   Flex,
   useDisclosure,
+  useColorMode,
 } from "@chakra-ui/react";
 import { InfoIcon } from "@chakra-ui/icons";
 import InfoModal from "../InfoModal/InfoModal.jsx";
@@ -19,6 +20,7 @@ import locate from "../../assets/logos/locate.svg";
 
 const ResultCard = React.memo(
   ({ props, setData, onResultsBarClose, setLeaderboard }) => {
+    const { colorMode } = useColorMode();
     const infoModalDisclosure = useDisclosure();
     const { id } = useParams();
 
@@ -59,9 +61,9 @@ const ResultCard = React.memo(
     return (
       <>
         <Card
-          bg="gray.50"
+          bg={colorMode === "light" ? "#2F363C" : "gray.50"}
           border="1px"
-          borderColor="gray.300"
+          borderColor={colorMode === "light" ? "#2F363C" : "gray.300"}
           maxW="lg"
           align={"center"}
           mb="10px"
@@ -96,10 +98,17 @@ const ResultCard = React.memo(
             </Flex>
             <Stack mt="6" spacing="3">
               <Flex justifyContent={"space-between"}>
-                <Text color="blue.600" fontSize="md" fontWeight="bold">
+                <Text
+                  color={colorMode === "light" ? "white" : "blue.600"}
+                  fontSize="md"
+                  fontWeight="bold"
+                >
                   {props.name}
                 </Text>
-                <Text color="blue.600" fontSize="sm">
+                <Text
+                  color={colorMode === "light" ? "white" : "blue.600"}
+                  fontSize="sm"
+                >
                   {formattedDate}
                 </Text>
               </Flex>
@@ -109,8 +118,8 @@ const ResultCard = React.memo(
           <CardFooter>
             <Flex justifyContent={"space-between"}>
               <Button
-                variant="outline"
-                colorScheme="blue"
+                variant={colorMode === "light" ? "solid" : "outline"}
+                colorScheme={"blue"}
                 leftIcon={<InfoIcon />}
                 size="md"
                 w="60%"
