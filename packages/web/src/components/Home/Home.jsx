@@ -142,8 +142,7 @@ export default function Home() {
     e.preventDefault();
     try {
       await axios.patch(
-        `${
-          import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
+        `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
         }/leaderboard/changeSubscription`,
         {
           email: user.email,
@@ -564,7 +563,7 @@ export default function Home() {
                 colorScheme="#74a2fa"
                 color="#5f85cf"
                 spacing={3}
-                // boxShadow="5px 2px 9px rgba(0, 0, 0, 0.2);"
+              // boxShadow="5px 2px 9px rgba(0, 0, 0, 0.2);"
               >
                 <Button
                   backgroundColor="white"
