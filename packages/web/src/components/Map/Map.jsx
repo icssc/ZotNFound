@@ -33,7 +33,7 @@ import { UserAuth } from "../../context/AuthContext";
 
 import axios from "axios";
 
-import { filterItem } from '../../utils/Utils.js';
+import { filterItem } from "../../utils/Utils.js";
 
 /**
  * Map is uses react-leaflet's API to communicate user actions to map entities and information
@@ -72,6 +72,7 @@ export default function Map({
   setUploadImg,
   setLeaderboard,
 }) {
+  console.log(position);
   // Contexts
   const { user } = UserAuth();
   const { data, setLoading, token, setData } = useContext(DataContext);
@@ -148,8 +149,7 @@ export default function Map({
           item.isresolved
             ? iconsMap["resolved"][item.islost]
             : (iconsMap[item.type] || iconsMap["others"])[item.islost]
-        }
-      ></Marker>
+        }></Marker>
     );
   });
 
@@ -193,7 +193,9 @@ export default function Map({
           islost: newAddedItem.islost,
           name: newAddedItem.name,
           description: newAddedItem.description,
+          preferredContact: newAddedItem.preferredContact,
           email: user.email,
+          phoneNumber: newAddedItem.phoneNumber,
           location: [position.lat, position.lng],
           itemdate: newAddedItem.itemdate,
           date: date.toISOString(),
@@ -213,7 +215,9 @@ export default function Map({
           islost: newAddedItem.islost,
           name: newAddedItem.name,
           description: newAddedItem.description,
+          preferredContact: newAddedItem.preferredContact,
           email: user.email,
+          phoneNumber: newAddedItem.phoneNumber,
           location: [position.lat, position.lng],
           date: date.toISOString(),
           itemdate: newAddedItem.itemdate,
@@ -231,6 +235,8 @@ export default function Map({
           name: "",
           description: "",
           itemdate: "",
+          preferredContact: "email",
+          phoneNumber: "",
           isresolved: false,
           ishelped: null,
         });
@@ -316,8 +322,7 @@ export default function Map({
         eventHandlers={eventHandlers}
         position={position}
         ref={markerRef}
-        icon={othersDrag}
-      >
+        icon={othersDrag}>
         <Popup minWidth={90} closeButton={false}>
           <span className="popup" onClick={() => toggleDraggable()}>
             Click to Confirm Location 🤔
@@ -339,8 +344,7 @@ export default function Map({
         zoomControl={false}
         attributionControl={false}
         maxBounds={mapBounds}
-        maxBoundsViscosity={1.0}
-      >
+        maxBoundsViscosity={1.0}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

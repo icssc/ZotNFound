@@ -64,10 +64,12 @@ export default function InfoModal({
   }, [onClose, navigate]);
 
   // Reveals the email of the user who posted the item
+  // modify to retrieve the preferred contact method and email or phone number of the user based on the user's preference
   const handleShowEmail = useCallback(() => {
     if (user) {
       // Retrieves the email of the item poster
       getItemEmail(props, token).then((itemsData) => {
+        console.log("ITEMSDATA:", itemsData);
         setItemEmail(itemsData.data.email);
       });
       setShowEmail(true);
@@ -127,8 +129,7 @@ export default function InfoModal({
       size={"lg"}
       gap={2}
       isDisabled={props.isresolved && true}
-      onClick={handleShowEmail}
-    >
+      onClick={handleShowEmail}>
       <EmailIcon /> View Contact
     </Button>
   );
@@ -146,8 +147,7 @@ export default function InfoModal({
       <Modal
         isOpen={isOpen}
         onClose={handleClose}
-        size={{ base: "full", md: "5xl" }}
-      >
+        size={{ base: "full", md: "5xl" }}>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton
@@ -163,23 +163,20 @@ export default function InfoModal({
             paddingY={"5%"}
             width={"100%"}
             flexDir={{ base: "column", md: "row" }}
-            overflowX={"hidden"}
-          >
+            overflowX={"hidden"}>
             <ImageContainer image={props.image} isresolved={props.isresolved} />
             <Flex
               flexDir={"column"}
               w={{ base: "90%", md: "40%" }}
               gap={5}
-              mt={{ md: 0, base: 5 }}
-            >
+              mt={{ md: 0, base: 5 }}>
               {/* HEADING */}
               <Flex flexDir={"column"} gap={2}>
                 <Heading
                   // mt="20px"
                   fontSize="4xl"
                   fontFamily={"body"}
-                  fontWeight={"bold"}
-                >
+                  fontWeight={"bold"}>
                   {props.name}
                 </Heading>
 
@@ -205,8 +202,7 @@ export default function InfoModal({
                   fontSize={"md"}
                   mt={3}
                   overflowY={"auto"}
-                  maxHeight={"200"}
-                >
+                  maxHeight={"200"}>
                   {props.description}
                 </Text>
               </Flex>
@@ -221,8 +217,7 @@ export default function InfoModal({
                     size={"lg"}
                     gap={2}
                     onClick={handleResolve}
-                    isDisabled={props.isresolved ? true : false}
-                  >
+                    isDisabled={props.isresolved ? true : false}>
                     <CheckIcon /> Resolve
                   </Button>
                 )}
@@ -232,8 +227,7 @@ export default function InfoModal({
                     colorScheme="red"
                     size={"lg"}
                     gap={2}
-                    onClick={handleDelete}
-                  >
+                    onClick={handleDelete}>
                     <CheckIcon /> Delete
                   </Button>
                 )}
@@ -242,8 +236,7 @@ export default function InfoModal({
                   size={"lg"}
                   variant={"outline"}
                   gap={2}
-                  onClick={handleShare}
-                >
+                  onClick={handleShare}>
                   <LinkIcon /> {!isShared ? "Share" : "Copied"}
                 </Button>
               </Flex>

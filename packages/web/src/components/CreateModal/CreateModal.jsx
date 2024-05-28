@@ -67,9 +67,8 @@ export default function CreateModal({
   upload,
   user,
 }) {
+  console.log(newAddedItem);
   const [isLoading, setIsLoading] = useState(false);
-  const [preferredContact, setPreferredContact] = useState("email");
-  const [phoneNumber, setPhoneNumber] = useState("");
 
   const uploadFile = useCallback(async () => {
     if (!newAddedItem.image) return;
@@ -183,6 +182,8 @@ export default function CreateModal({
           name: "",
           description: "",
           itemdate: "",
+          preferredContact: "",
+          phoneNumber: "",
           isresolved: false,
           ishelped: null,
         });
@@ -203,8 +204,8 @@ export default function CreateModal({
         (activeStep === 2 && newAddedItem.itemdate === "") ||
         (activeStep === 3 && uploadImg === "") ||
         (activeStep === 4 &&
-          preferredContact === "phone" &&
-          phoneNumber.length < 10)
+          newAddedItem.preferredContact === "phone" &&
+          newAddedItem.phoneNumber.length < 10)
       }
       variant={"solid"}
       colorScheme="blue"
@@ -223,7 +224,8 @@ export default function CreateModal({
         newAddedItem.type === "" ||
         newAddedItem.name === "" ||
         newAddedItem.description === "" ||
-        phoneNumber === ""
+        (newAddedItem.preferredContact === "phone" &&
+          newAddedItem.phoneNumber === "")
       }
       variant={"solid"}
       type="submit"
@@ -234,7 +236,7 @@ export default function CreateModal({
         setActiveStep(0);
         setIsCreate(false);
       }}>
-      Submit
+      Continue
     </Button>
   );
 
@@ -286,6 +288,24 @@ export default function CreateModal({
     [setNewAddedItem]
   );
 
+  const handleAddPreferredContact = useCallback(
+    (e) =>
+      setNewAddedItem((prev) => ({
+        ...prev,
+        preferredContact: e,
+      })),
+    [setNewAddedItem]
+  );
+
+  const handleAddPhoneNumber = useCallback(
+    (e) =>
+      setNewAddedItem((prev) => ({
+        ...prev,
+        phoneNumber: e.target.value,
+      })),
+    [setNewAddedItem]
+  );
+
   const phoneNumberBox = (
     // get this to accept numbers only
     <InputGroup>
@@ -295,8 +315,8 @@ export default function CreateModal({
       <Input
         type="tel"
         placeholder="Phone number"
-        value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
+        value={newAddedItem.phoneNumber}
+        onChange={handleAddPhoneNumber}
         maxLength={10} // US phone numbers are 10 digits
       />
     </InputGroup>
@@ -317,7 +337,7 @@ export default function CreateModal({
     <>
       <PhoneIcon color="gray.300" />
       <Text ml="2%" fontSize={15} w={"100%"}>
-        {phoneNumber}
+        {newAddedItem.phoneNumber}
       </Text>
     </>
   );
@@ -342,6 +362,8 @@ export default function CreateModal({
             name: "",
             description: "",
             itemdate: "",
+            preferredContact: "email",
+            phoneNumber: "",
             isresolved: false,
             ishelped: null,
           });
@@ -349,8 +371,6 @@ export default function CreateModal({
           setActiveStep(0);
           setIsCreate(true);
           setIsEdit(false);
-          setPhoneNumber("");
-          setPreferredContact("email");
           onClose();
         }}
         size={"4xl"}
@@ -553,19 +573,19 @@ export default function CreateModal({
                         mb={5}
                         gap={3}>
                         <RadioGroup
-                          onChange={setPreferredContact} // make a function to set the value -- if email, then display email | if phone, then ask for phone number and set it
-                          value={preferredContact}>
+                          onChange={handleAddPreferredContact} // make a function to set the value -- if email, then display email | if phone, then ask for phone number and set it
+                          value={newAddedItem.preferredContact}>
                           <VStack direction="row" spacing={5}>
                             <Radio value="email">Email</Radio>
                             <Radio value="phone">Phone</Radio>
-                            {preferredContact === "phone"
+                            {newAddedItem.preferredContact === "phone"
                               ? phoneNumberBox
                               : displayEmail}
                           </VStack>
                         </RadioGroup>
                       </Flex>
                     </FormControl>
-                    {console.log(preferredContact)}
+                    {console.log(newAddedItem.preferredContact)}
                   </Flex>
                 )}
                 {/* sixth step */}
@@ -669,7 +689,7 @@ export default function CreateModal({
                         flexDir={{ base: "column", md: "row" }}
                         justifyContent={"center"}
                         alignItems={"center"}>
-                        {preferredContact === "phone"
+                        {newAddedItem.preferredContact === "phone"
                           ? displayPhoneNumber
                           : displayEmail}
                       </Flex>
