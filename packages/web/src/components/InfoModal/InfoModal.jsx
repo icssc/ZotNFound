@@ -18,7 +18,12 @@ import DataContext from "../../context/DataContext";
 import ImageContainer from "../ImageContainer/ImageContainer";
 import FeedbackModal from "../FeedbackModal/FeedbackModal";
 import { LinkIcon, CheckIcon, EmailIcon } from "@chakra-ui/icons";
-import { getItemEmail, deleteItem } from "../../utils/ApiUtils";
+import {
+  getItemEmail,
+  getItemContactMethod,
+  getItemPhoneNumber,
+  deleteItem,
+} from "../../utils/ApiUtils";
 // import axios from "axios";
 
 export default function InfoModal({
@@ -28,8 +33,9 @@ export default function InfoModal({
   props,
   setLeaderboard,
 }) {
-  const [showEmail, setShowEmail] = useState(false);
-  const [itemEmail, setItemEmail] = useState("");
+  const [showContact, setShowContact] = useState(false);
+  const [itemContact, setitemContact] = useState("");
+  const [itemContactMethod, setItemContactMethod] = useState("");
   const [isShared, setIsShared] = useState(false);
   const { onLoginModalOpen, token, setLoading } = useContext(DataContext);
   const { user } = UserAuth();
@@ -63,16 +69,28 @@ export default function InfoModal({
     navigate("/");
   }, [onClose, navigate]);
 
-  // Reveals the email of the user who posted the item
-  // modify to retrieve the preferred contact method and email or phone number of the user based on the user's preference
-  const handleShowEmail = useCallback(() => {
+  // Reveals either the email or phone number of the user who posted the item based on their preferred method of contact
+  const handleShowContactInfo = useCallback(() => {
     if (user) {
-      // Retrieves the email of the item poster
-      getItemEmail(props, token).then((itemsData) => {
-        console.log("ITEMSDATA:", itemsData);
-        setItemEmail(itemsData.data.email);
+      // Retrieves the user's preferred contact method
+      getItemContactMethod(props, token).then((itemsData) => {
+        const preferredContact = itemsData.data.preferredcontact;
+        setItemContactMethod(preferredContact);
+
+        // Based on the preferred contact method, retrieve the email or phone number
+        if (itemContactMethod === "phone") {
+          // Retrieve phone number
+          getItemPhoneNumber(props, token).then((itemsData) => {
+            setItemContact(itemsData.data.phonenumber);
+          });
+        } else if (itemContactMethod === "email") {
+          // Retrieve email
+          getItemEmail(props, token).then((itemsData) => {
+            setItemContact(itemsData.data.email);
+          });
+        }
       });
-      setShowEmail(true);
+      setShowContact(true);
     } else {
       onLoginModalOpen();
     }
@@ -129,7 +147,7 @@ export default function InfoModal({
       size={"lg"}
       gap={2}
       isDisabled={props.isresolved && true}
-      onClick={handleShowEmail}>
+      onClick={handleShowContactInfo}>
       <EmailIcon /> View Contact
     </Button>
   );
@@ -137,7 +155,7 @@ export default function InfoModal({
   //Shows the email of the user who posted the item - visible to all users with an @uci.edu email AND if the user has clicked the "View Contact" button
   const showContactButton = (
     <Button size="lg" variant="outline" colorScheme="blue">
-      {itemEmail}
+      {itemContact}
     </Button>
   );
 
