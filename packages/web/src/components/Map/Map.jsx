@@ -132,26 +132,28 @@ export default function Map({
   );
 
   const markersData = results.length > 0 ? results : data;
-  const allMarkers = markersData.filter(filterItemCallback).map((item) => {
-    return (
-      <Marker
-        key={item.key}
-        position={item.location}
-        eventHandlers={{
-          click: () => {
-            onOpen();
-            setItemData(item);
-            setFocusLocation(item.location);
-          },
-        }}
-        icon={
-          item.isresolved
-            ? iconsMap["resolved"][item.islost]
-            : (iconsMap[item.type] || iconsMap["others"])[item.islost]
-        }
-      ></Marker>
-    );
-  });
+  const allMarkers = useMemo(() => {
+    return markersData.filter(filterItemCallback).map((item) => {
+      return (
+        <Marker
+          key={item.key}
+          position={item.location}
+          eventHandlers={{
+            click: () => {
+              onOpen();
+              setItemData(item);
+              setFocusLocation(item.location);
+            },
+          }}
+          icon={
+            item.isresolved
+              ? iconsMap["resolved"][item.islost]
+              : (iconsMap[item.type] || iconsMap["others"])[item.islost]
+          }
+        ></Marker>
+      );
+    });
+  }, [markersData, filterItemCallback]);
 
   // moves map when focusLocation state changes
   function MapFocusLocation({ location }) {
@@ -178,10 +180,10 @@ export default function Map({
     }),
     [setPosition]
   );
-  async function handleSubmit() {
+  const handleSubmit = useCallback(async () => {
     const date = new Date();
 
-    if (!token) {
+    if (!token || !newAddedItem) {
       return;
     }
     axios
@@ -264,7 +266,7 @@ export default function Map({
       .catch((err) => console.log(err));
 
     setLoading(true);
-  }
+  }, [token, newAddedItem]);
 
   const toggleDraggable = () => {
     if (!bounds.contains(position)) {
@@ -300,7 +302,6 @@ export default function Map({
       </>
     );
   }
-
   const NewItemMarker = () => {
     useMapEvents({
       click(event) {
@@ -348,7 +349,6 @@ export default function Map({
         {!isEdit && (
           <MapFocusLocation location={focusLocation} search={search} />
         )}
-        {!isEdit}
         {!isEdit && allMarkers}
 
         {isEdit && <NewItemMarker />}

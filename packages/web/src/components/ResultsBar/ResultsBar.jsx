@@ -61,7 +61,6 @@ export default function ResultsBar({
 
 
 
-
   // Display only the 10 items on the screen and only 4 buttons (the last one is always there)
   const itemsOnScreenLimit = 10;
   const buttonLimit = 3;
@@ -69,6 +68,7 @@ export default function ResultsBar({
   const [selectedPageNumber, setSelectedPageNumber] = useState(1);
   const [paginationButtons, setPaginationButtons] = useState([])
   const [viewableResults, setViewableResults] = useState([])
+  const resultsBarRef = useRef(null);
 
   const changeViewToNewPage = useCallback((newSelectedPage) => {
     const pageStart = (newSelectedPage * itemsOnScreenLimit) - itemsOnScreenLimit
@@ -78,6 +78,9 @@ export default function ResultsBar({
       pageStart,
       pageEnd
     ));
+    resultsBarRef.current.scrollTo({
+      top: 0,
+    });
   }, [allResults, allResults.length]);
 
   const updatePaginationButtons = useCallback(
@@ -134,7 +137,7 @@ export default function ResultsBar({
       }
       else {
         startPage = selectedPageNumber + (3 - ((selectedPageNumber - 1) % 3));
-        selected = startPage + ((selectedPageNumber - 1) % 3);
+        selected = selectedPageNumber + 3;
         if (startPage > maxIndex - buttonLimit)
           startPage = maxIndex - buttonLimit;
       }
@@ -154,7 +157,7 @@ export default function ResultsBar({
       }
       else {
         startPage = selectedPageNumber - (3 + (selectedPageNumber - 1) % 3);
-        selected = startPage + ((selectedPageNumber - 1) % 3);
+        selected = selectedPageNumber - 3;
       }
 
       setSelectedPageNumber(selected);
@@ -194,19 +197,19 @@ export default function ResultsBar({
   return (
     <Box
       paddingX="5px"
+      paddingY="20px"
       width={{ base: "30vw", md: "21vw" }}
       height="80vh"
       overflowY="scroll"
       overflowX="hidden"
+      ref={resultsBarRef}
     >
       {allResults.length > 0 ? viewableResults : noResults}
-      <Box height="100%" width="100%" display="flex">
-        <Box height="100%" width="100%" display="flex" justifyContent={"space-between"}>
-          <IconButton icon={<ChevronLeftIcon />} height="40px" width="10px" marginTop="10px" marginBottom="10px" onClick={() => handlePageArrowClick("left")} />
-          {paginationButtons}
-          <PageButton keyProp={Math.floor(allResults.length / 10) + 1} selected={Math.floor(allResults.length / 10) + 1 == selectedPageNumber} />
-          <IconButton icon={<ChevronRightIcon />} height="40px" width="10px" marginTop="10px" marginBottom="10px" onClick={() => handlePageArrowClick("right")} />
-        </Box>
+      <Box width="100%" display="flex" justifyContent={"space-between"}>
+        <IconButton icon={<ChevronLeftIcon />} height="40px" width="10px" marginTop="10px" marginBottom="10px" onClick={() => handlePageArrowClick("left")} />
+        {paginationButtons}
+        <PageButton keyProp={Math.floor(allResults.length / 10) + 1} selected={Math.floor(allResults.length / 10) + 1 == selectedPageNumber} />
+        <IconButton icon={<ChevronRightIcon />} height="40px" width="10px" marginTop="10px" marginBottom="10px" onClick={() => handlePageArrowClick("right")} />
       </Box>
     </Box>
   );
