@@ -93,20 +93,20 @@ export default function ResultsBar({
   const scrollToTopButton = (
     <IconButton
       isRound={true}
-      size="lg"
+      size={["md", "lg"]}
       position="absolute"
-      top="10%"
-      right="20%"
+      top={["5%", "10%"]}
+      right={["10%", "20%"]}
+      // top={['5%', '10%']}
+      // right={['5%', '10%', '20%']}
       onClick={handleScrollToTop}
       variant={"solid"}
       colorScheme="blue"
-      // marginTop="10px"
-      // marginBottom="10px"
       opacity={0.5}
       _hover={{
         opacity: "1"
       }}
-      icon={<ArrowUpIcon boxSize={50} />}
+      icon={<ArrowUpIcon/>}
     />
   );
 
