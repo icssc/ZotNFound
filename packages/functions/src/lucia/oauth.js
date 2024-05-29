@@ -1,9 +1,9 @@
 import { Google } from "arctic";
 
 const google = new Google(
-  process.env.CLENT_ID,
-  process.env.CLIENT_SECRET,
-  process.env.REDIRECT_URI
+  process.env.VITE_CLIENT_ID,
+  process.env.VITE_CLIENT_SECRET,
+  process.env.REDIRECT_URI_OAUTH
 );
 
 export default google;

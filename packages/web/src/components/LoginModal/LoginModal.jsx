@@ -28,7 +28,8 @@ import Cookies from "universal-cookie";
 export default function LoginModal() {
   const { isLoginModalOpen, onLoginModalClose } = useContext(DataContext);
   const [isAttempt, setIsAttempt] = useState(false);
-  const { googleSignIn, user } = UserAuth();
+  // const { googleSignIn, user } = UserAuth();
+  const [user, setUser] = useState(null);
   const cookies = new Cookies(null, { path: "/" });
 
   const signInGoogle = useCallback(async () => {
@@ -39,10 +40,18 @@ export default function LoginModal() {
       );
       const url = res.data.googleAuthorizationUrl;
       console.log("url: ", url);
-      // window.location.href = res.data;
+      window.location.href = url;
 
-      cookies.set("state", res.data.state);
-      cookies.set("codeVerifier", res.data.codeVerifier);
+      cookies.set("state", res.data.state, {
+        secure: process.env.NODE_ENV === "production",
+        httpOnly: true,
+      });
+      cookies.set("codeVerifier", res.data.codeVerifier, {
+        secure: process.env.NODE_ENV === "production",
+        httpOnly: true,
+      });
+
+      // setUser(1);
     } catch (error) {
       console.log(error.message);
     }

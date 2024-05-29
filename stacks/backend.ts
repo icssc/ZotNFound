@@ -16,6 +16,9 @@ export function BackendStack({ stack }: StackContext) {
           REFRESH_TOKEN: process.env.REFRESH_TOKEN!,
           CLIENT_SECRET: process.env.CLIENT_SECRET!,
           CLIENT_ID: process.env.CLIENT_ID!,
+          VITE_CLIENT_SECRET: process.env.VITE_CLIENT_SECRET!,
+          VITE_CLIENT_ID: process.env.VITE_CLIENT_ID!,
+          REDIRECT_URI_OAUTH: process.env.REDIRECT_URI_OAUTH!,
           REDIRECT_URI: process.env.REDIRECT_URI!,
 
           NODE_ENV: process.env.NODE_ENV!,

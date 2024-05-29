@@ -12,38 +12,38 @@ export const lucia = new Lucia(adapter, {
   },
 });
 
-export const validateRequest = cache(async () => {
-  //   const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
-  console.log("req cookies: ", req.cookies);
-  const sessionId = req.cookies[lucia.sessionCookieName] ?? null;
+// export const validateRequest = cache(async () => {
+//   //   const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
+//   console.log("req cookies: ", req.cookies);
+//   const sessionId = req.cookies[lucia.sessionCookieName] ?? null;
 
-  if (!sessionId)
-    return {
-      user: null,
-      session: null,
-    };
+//   if (!sessionId)
+//     return {
+//       user: null,
+//       session: null,
+//     };
 
-  const { user, session } = await lucia.validateSession(sessionId);
-  try {
-    if (session && session.fresh) {
-      const sessionCookie = lucia.createSessionCookie(session.id);
-      setCookie(
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes
-      );
-    }
-    if (!session) {
-      const sessionCookie = lucia.createBlankSessionCookie();
-      setCookie(
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes
-      );
-    }
-  } catch {}
-  return {
-    user,
-    session,
-  };
-});
+//   const { user, session } = await lucia.validateSession(sessionId);
+//   try {
+//     if (session && session.fresh) {
+//       const sessionCookie = lucia.createSessionCookie(session.id);
+//       setCookie(
+//         sessionCookie.name,
+//         sessionCookie.value,
+//         sessionCookie.attributes
+//       );
+//     }
+//     if (!session) {
+//       const sessionCookie = lucia.createBlankSessionCookie();
+//       setCookie(
+//         sessionCookie.name,
+//         sessionCookie.value,
+//         sessionCookie.attributes
+//       );
+//     }
+//   } catch {}
+//   return {
+//     user,
+//     session,
+//   };
+// });
