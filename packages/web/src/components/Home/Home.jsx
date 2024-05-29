@@ -4,7 +4,7 @@ import axios from "axios";
 import { UserAuth } from "../../context/AuthContext";
 import DataContext from "../../context/DataContext";
 
-import { Spinner, useToast } from "@chakra-ui/react";
+import { Spinner, color, useToast } from "@chakra-ui/react";
 
 import {
   Input,
@@ -35,7 +35,14 @@ import {
   useColorMode,
   InputLeftElement,
 } from "@chakra-ui/react";
-import { SettingsIcon, StarIcon, Search2Icon } from "@chakra-ui/icons";
+import {
+  SettingsIcon,
+  StarIcon,
+  Search2Icon,
+  MoonIcon,
+  SunIcon,
+  CloseIcon,
+} from "@chakra-ui/icons";
 import upload from "../../assets/images/download.png";
 
 import logout from "../../assets/logos/logout.svg";
@@ -55,6 +62,7 @@ import Leaderboard from "./Leaderboard";
 import ZotNFoundLogoText from "./ZotNFoundLogoText";
 import DateRangeFilter from "./DateRangeFilter";
 import ListItemButton from "./ListItemButton";
+import FeedbackButtonMobile from "./FeedbackButtonMobile";
 
 import { MdAssignment } from "react-icons/md";
 
@@ -323,14 +331,14 @@ export default function Home() {
       <Box
         w={"100vw"}
         h={"100vh"}
-        background={colorMode === "light" ? "#1A1E22" : ""}
+        background={colorMode === "dark" ? "#1A1E22" : ""}
       >
         <Flex
           justifyContent="space-between"
           shadow="md"
           alignItems="center"
           className="big"
-          background={colorMode === "light" ? "#2F363C" : ""}
+          background={colorMode === "dark" ? "#2F363C" : ""}
         >
           {/* LOGO + TEXT */}
           <ZotNFoundLogoText />
@@ -346,9 +354,9 @@ export default function Home() {
                 <Search2Icon color="gray.300" />
               </InputLeftElement>
               <Input
-                color={colorMode === "light" ? "white" : "black"}
-                bg={colorMode === "light" ? "#15181a" : ""}
-                border={colorMode === "light" ? "1px" : ""}
+                color={colorMode === "dark" ? "white" : "black"}
+                bg={colorMode === "dark" ? "#15181a" : ""}
+                border={colorMode === "dark" ? "1px" : ""}
                 type="teal"
                 value={search}
                 placeholder="Search Items ..."
@@ -364,7 +372,11 @@ export default function Home() {
             mr={7}
             gap={{ base: 3, md: 5 }}
           >
+            <Button onClick={toggleColorMode}>
+              {colorMode === "light" ? <SunIcon /> : <MoonIcon />}
+            </Button>
             <Button
+              display={{ base: "none", md: "block" }}
               leftIcon={<MdAssignment />}
               colorScheme="blue"
               onClick={() => {
@@ -530,9 +542,10 @@ export default function Home() {
                 <Search2Icon color="gray.300" />
               </InputLeftElement>
               <Input
-                color={colorMode === "light" ? "white" : "black"}
-                bg={colorMode === "light" ? "#15181a" : ""}
-                border={colorMode === "light" ? "1px" : ""}
+                color={colorMode === "dark" ? "white" : "black"}
+                bg={colorMode === "dark" ? "#15181a" : ""}
+                border={colorMode === "dark" ? "1px" : "1px"}
+                borderColor={colorMode === "light" ? "blue" : "gray.300"}
                 type="teal"
                 value={search}
                 placeholder="Search Items ..."
@@ -548,7 +561,6 @@ export default function Home() {
           marginTop={{ base: "1vh", md: "2%" }}
           px={{ base: 0, md: "2%" }}
         >
-          {/* <CreateModal /> */}
           <Flex
             width={{ base: "100vw", md: "75vw" }}
             padding={{ base: 3, md: 5 }}
@@ -580,12 +592,14 @@ export default function Home() {
                 <ButtonGroup
                   variant="outline"
                   colorScheme="#74a2fa"
-                  color="#5f85cf"
+                  color={colorMode === "light" ? "#5f85cf" : "white"}
                   spacing={3}
                   // boxShadow="5px 2px 9px rgba(0, 0, 0, 0.2);"
                 >
                   <Button
-                    backgroundColor="white"
+                    backgroundColor={
+                      colorMode === "light" ? "white" : "#2F363C"
+                    }
                     onClick={onOpen}
                     size="lg"
                     gap={1}
@@ -613,7 +627,11 @@ export default function Home() {
                   color={"white"}
                   onClick={onResultsBarOpen}
                   fontSize="2xl"
-                  boxShadow="7px 7px 14px #666666"
+                  boxShadow={
+                    colorMode === "light"
+                      ? "7px 7px 14px #666666"
+                      : "7px 7px 14px #1A1E22"
+                  }
                   size="lg"
                   gap={2}
                   justifyContent={"center"}
@@ -691,7 +709,7 @@ export default function Home() {
 
           <Flex
             position="absolute"
-            background={colorMode === "light" ? "#1A1E22" : ""}
+            background={colorMode === "dark" ? "#1A1E22" : ""}
           >
             <ListItemButton
               switchState={!isEdit}
@@ -701,6 +719,15 @@ export default function Home() {
               right={10}
               bottom={10}
             />
+            <Flex
+              zIndex={1000}
+              variant="solid"
+              position="absolute"
+              left={10}
+              bottom={10}
+            ></Flex>
+            <FeedbackButtonMobile />
+
             <Map
               newAddedItem={newAddedItem}
               setNewAddedItem={setNewAddedItem}
@@ -727,7 +754,7 @@ export default function Home() {
             top={0}
             right={5}
             display={{ base: "none", md: "flex" }}
-            background={colorMode === "light" ? "#1A1E22" : ""}
+            background={colorMode === "dark" ? "#1A1E22" : ""}
           >
             <ResultsBar
               search={search}

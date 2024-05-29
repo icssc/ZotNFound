@@ -1,4 +1,11 @@
-import { Button, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import {
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  useColorMode,
+} from "@chakra-ui/react";
 import { useState, useContext } from "react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import DataContext from "../../context/DataContext";
@@ -12,6 +19,7 @@ import {
 } from "../../utils/HomeUtils";
 
 export default function DateRangeFilter() {
+  const { colorMode } = useColorMode();
   const [DateRangeFilter, setDateRangeFilter] = useState("Date Range");
   const { setLoading, setData } = useContext(DataContext);
 
@@ -20,7 +28,7 @@ export default function DateRangeFilter() {
       <MenuButton
         as={Button}
         rightIcon={<ChevronDownIcon />}
-        backgroundColor="white"
+        backgroundColor={colorMode === "light" ? "white" : "#2F363C"}
         size="lg"
         fontSize={{ base: "xl", md: "2xl" }}
         borderWidth={2}

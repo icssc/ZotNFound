@@ -25,6 +25,7 @@ import {
   ModalCloseButton,
   Textarea,
   Spinner,
+  useColorMode,
 } from "@chakra-ui/react";
 // import logo from "../../assets/images/small_logo.png";
 import { storage } from "../../firebase";
@@ -55,6 +56,7 @@ export default function CreateModal({
   upload,
 }) {
   const [isLoading, setIsLoading] = useState(false);
+  const { colorMode } = useColorMode();
 
   const uploadFile = useCallback(async () => {
     if (!newAddedItem.image) return;
@@ -516,7 +518,9 @@ export default function CreateModal({
 
                     <Flex
                       flex={1}
-                      backgroundColor={"#f9f9f9"}
+                      backgroundColor={
+                        colorMode === "light" ? "#f9f9f9" : "#2c2c2c"
+                      }
                       flexDir={"column"}
                       borderRadius={"10%"}
                       padding={"1vw"}

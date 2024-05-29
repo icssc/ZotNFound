@@ -25,7 +25,7 @@ import {
   Circle,
   useMapEvents,
 } from "react-leaflet";
-import { useDisclosure } from "@chakra-ui/react";
+import { useDisclosure, useColorMode } from "@chakra-ui/react";
 import InfoModal from "../InfoModal/InfoModal";
 
 import DataContext from "../../context/DataContext";
@@ -74,6 +74,7 @@ export default function Map({
 }) {
   // Contexts
   const { user } = UserAuth();
+  const { colorMode } = useColorMode();
   const { data, setLoading, token, setData } = useContext(DataContext);
 
   // State: isOpen - if InfoModal is open
@@ -342,7 +343,11 @@ export default function Map({
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url={import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL}
+          url={
+            colorMode === "dark"
+              ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL
+              : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          }
         />
         {!isEdit && (
           <MapFocusLocation location={focusLocation} search={search} />

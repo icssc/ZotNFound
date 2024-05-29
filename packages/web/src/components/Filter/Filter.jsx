@@ -16,6 +16,7 @@ import {
   DrawerOverlay,
   DrawerContent,
   Button,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import "./Filter.css";
 import { UserAuth } from "../../context/AuthContext";
@@ -77,9 +78,14 @@ export default function Filter({ findFilter, setFindFilter, onClose, isOpen }) {
     onClose();
   }, []);
 
+  const placement = useBreakpointValue({
+    base: "right",
+    md: "left",
+  });
+
   return (
     <>
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+      <Drawer isOpen={isOpen} placement={placement} onClose={onClose}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader fontSize="4xl">Filter Markers</DrawerHeader>
