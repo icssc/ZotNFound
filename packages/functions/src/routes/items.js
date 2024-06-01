@@ -21,9 +21,9 @@ itemsRouter.post("/", async (req, res) => {
       location,
       date,
       itemdate,
-      preferredContact,
+      preferred_contact,
       email,
-      phoneNumber,
+      phone_number,
       image,
       isresolved,
       ishelped,
@@ -34,7 +34,7 @@ itemsRouter.post("/", async (req, res) => {
     }
 
     const item = await client.query(
-      `INSERT INTO ${itemsTable} (name, description, type, islost, location, date, itemdate, preferredContact, email, phoneNumber, image, isresolved, ishelped) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+      `INSERT INTO ${itemsTable} (name, description, type, islost, location, date, itemdate, preferred_contact, email, phone_number, image, isresolved, ishelped) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
       [
         name,
         description,
@@ -43,9 +43,9 @@ itemsRouter.post("/", async (req, res) => {
         location,
         date,
         itemdate,
-        preferredContact,
+        preferred_contact,
         email,
-        phoneNumber,
+        phone_number,
         image,
         isresolved,
         ishelped,
@@ -221,12 +221,12 @@ itemsRouter.get("/:id/email", async (req, res) => {
 });
 
 // Get preferred contact method associated with an item id
-itemsRouter.get(":id/contactMethod", async (req, res) => {
+itemsRouter.get("/:id/contactMethod", async (req, res) => {
   try {
     const { id } = req.params;
 
     const item = await client.query(
-      `SELECT preferredContact FROM ${itemsTable} WHERE id=$1`,
+      `SELECT preferred_contact FROM ${itemsTable} WHERE id=$1`,
       [id]
     );
 
@@ -237,12 +237,12 @@ itemsRouter.get(":id/contactMethod", async (req, res) => {
 });
 
 // Get phone number associated with an item id
-itemsRouter.get(":id/phoneNumber", async (req, res) => {
+itemsRouter.get("/:id/phoneNumber", async (req, res) => {
   try {
     const { id } = req.params;
 
     const item = await client.query(
-      `SELECT phoneNumber FROM ${itemsTable} WHERE id=$1`,
+      `SELECT phone_number FROM ${itemsTable} WHERE id=$1`,
       [id]
     );
 
