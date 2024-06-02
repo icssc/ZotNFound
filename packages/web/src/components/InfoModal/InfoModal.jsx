@@ -34,7 +34,7 @@ export default function InfoModal({
   setLeaderboard,
 }) {
   const [showContact, setShowContact] = useState(false);
-  const [itemContact, setitemContact] = useState("");
+  const [itemContact, setItemContact] = useState("");
   const [itemContactMethod, setItemContactMethod] = useState("");
   const [isShared, setIsShared] = useState(false);
   const { onLoginModalOpen, token, setLoading } = useContext(DataContext);
@@ -69,27 +69,39 @@ export default function InfoModal({
     navigate("/");
   }, [onClose, navigate]);
 
+  const handleRetrieveItemEmail = useCallback(() => {
+    getItemEmail(props, token)
+      .then((itemsData) => {
+        setItemContact(itemsData.data.email);
+      })
+      .catch((err) => console.log(err));
+  }, [props, token]);
+
+  const handleRetrieveItemPhoneNumber = useCallback(() => {
+    getItemPhoneNumber(props, token)
+      .then((itemsData) => {
+        setItemContact(itemsData.data.phone_number);
+      })
+      .catch((err) => console.log(err));
+  }, [props, token]);
+
   // Reveals either the email or phone number of the user who posted the item based on their preferred method of contact
   const handleShowContactInfo = useCallback(() => {
     if (user) {
       // Retrieves the user's preferred contact method
-      getItemContactMethod(props, token).then((itemsData) => {
-        const preferredContact = itemsData.data.preferredcontact;
-        setItemContactMethod(preferredContact);
-
-        // Based on the preferred contact method, retrieve the email or phone number
-        if (itemContactMethod === "phone") {
-          // Retrieve phone number
-          getItemPhoneNumber(props, token).then((itemsData) => {
-            setItemContact(itemsData.data.phonenumber);
-          });
-        } else if (itemContactMethod === "email") {
-          // Retrieve email
-          getItemEmail(props, token).then((itemsData) => {
-            setItemContact(itemsData.data.email);
-          });
-        }
-      });
+      getItemContactMethod(props, token)
+        .then((itemsData) => {
+          const preferred_contact = itemsData.data.preferred_contact;
+          // Based on the preferred contact method, retrieve the email or phone number
+          if (preferred_contact === "phone") {
+            // Retrieve phone number
+            handleRetrieveItemPhoneNumber();
+          } else {
+            // Retrieve email
+            handleRetrieveItemEmail();
+          }
+        })
+        .catch((err) => console.log(err));
       setShowContact(true);
     } else {
       onLoginModalOpen();
@@ -227,8 +239,8 @@ export default function InfoModal({
               <hr />
 
               <Flex gap={5} justifyContent={"center"} alignItems={"center"}>
-                {currentEmail !== props.email &&
-                  (!showEmail ? viewContactButton : showContactButton)}
+                {currentEmail === props.email &&
+                  (!showContact ? viewContactButton : showContactButton)}
                 {currentEmail === props.email && (
                   <Button
                     colorScheme="green"

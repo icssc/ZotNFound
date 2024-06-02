@@ -121,12 +121,11 @@ export default function Home() {
     name: "",
     description: "",
     itemdate: "",
-    preferredContact: "email",
-    phoneNumber: "",
+    preferred_contact: "email",
+    phone_number: "",
     isresolved: false,
     ishelped: null,
   });
-  console.log(newAddedItem);
 
   const [isEdit, setIsEdit] = useState(false);
   const [isCreate, setIsCreate] = useState(true);
@@ -215,8 +214,8 @@ export default function Home() {
       name: "",
       description: "",
       itemdate: "",
-      preferredContact: "email",
-      phoneNumber: "",
+      preferred_contact: "email",
+      phone_number: "",
       isresolved: false,
       ishelped: null,
     });
@@ -255,50 +254,50 @@ export default function Home() {
 
   //LEADERBOARD GET INFO
   useEffect(() => {
-    // const getLeaderboard = async () => {
-    //   try {
-    //     const { data: leaderboardData } = await axios.get(
-    //       `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`
-    //     );
-    //     setLeaderboard(
-    //       leaderboardData.map((item) => ({ ...item, id: item.id }))
-    //     );
-    //     // Check if the current user's email exists in the leaderboard
-    //     const userEmailExists = leaderboardData.some(
-    //       (entry) => entry.email === user?.email
-    //     );
-    //     // If it does not exist, add the user to the leaderboard
-    //     if (!userEmailExists && user) {
-    //       // added user to prevent race condition (user is undefined before auth resolves)
-    //       await axios.post(
-    //         `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
-    //         {
-    //           email: user.email,
-    //           points: 5, // You can modify this as per your requirements
-    //         },
-    //         {
-    //           headers: {
-    //             Authorization: `Bearer ${token}`, // verify auth
-    //           },
-    //         }
-    //       );
-    //       // Fetch the leaderboard again after insertion
-    //       const { data: updatedLeaderboardData } = await axios.get(
-    //         `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`
-    //       );
-    //       setLeaderboard(
-    //         updatedLeaderboardData.map((item) => ({ ...item, id: item.id }))
-    //       );
-    //     }
-    //   } catch (err) {
-    //     console.log(err);
-    //   } finally {
-    //     setLoading(true);
-    //   }
-    // };
+    const getLeaderboard = async () => {
+      try {
+        const { data: leaderboardData } = await axios.get(
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`
+        );
+        setLeaderboard(
+          leaderboardData.map((item) => ({ ...item, id: item.id }))
+        );
+        // Check if the current user's email exists in the leaderboard
+        const userEmailExists = leaderboardData.some(
+          (entry) => entry.email === user?.email
+        );
+        // If it does not exist, add the user to the leaderboard
+        if (!userEmailExists && user) {
+          // added user to prevent race condition (user is undefined before auth resolves)
+          await axios.post(
+            `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
+            {
+              email: user.email,
+              points: 5, // You can modify this as per your requirements
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // verify auth
+              },
+            }
+          );
+          // Fetch the leaderboard again after insertion
+          const { data: updatedLeaderboardData } = await axios.get(
+            `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`
+          );
+          setLeaderboard(
+            updatedLeaderboardData.map((item) => ({ ...item, id: item.id }))
+          );
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(true);
+      }
+    };
 
     if (user) {
-      // getLeaderboard();
+      getLeaderboard();
       setSubscription(user.subscription);
     }
   }, [user, token]);

@@ -72,7 +72,6 @@ export default function Map({
   setUploadImg,
   setLeaderboard,
 }) {
-  console.log(position);
   // Contexts
   const { user } = UserAuth();
   const { data, setLoading, token, setData } = useContext(DataContext);
@@ -193,9 +192,9 @@ export default function Map({
           islost: newAddedItem.islost,
           name: newAddedItem.name,
           description: newAddedItem.description,
-          preferredContact: newAddedItem.preferredContact,
+          preferred_contact: newAddedItem.preferred_contact,
           email: user.email,
-          phoneNumber: newAddedItem.phoneNumber,
+          phone_number: newAddedItem.phone_number,
           location: [position.lat, position.lng],
           itemdate: newAddedItem.itemdate,
           date: date.toISOString(),
@@ -215,9 +214,9 @@ export default function Map({
           islost: newAddedItem.islost,
           name: newAddedItem.name,
           description: newAddedItem.description,
-          preferredContact: newAddedItem.preferredContact,
+          preferred_contact: newAddedItem.preferred_contact,
           email: user.email,
-          phoneNumber: newAddedItem.phoneNumber,
+          phone_number: newAddedItem.phone_number,
           location: [position.lat, position.lng],
           date: date.toISOString(),
           itemdate: newAddedItem.itemdate,
@@ -235,8 +234,8 @@ export default function Map({
           name: "",
           description: "",
           itemdate: "",
-          preferredContact: "email",
-          phoneNumber: "",
+          preferred_contact: "email",
+          phone_number: "",
           isresolved: false,
           ishelped: null,
         });

@@ -24,6 +24,7 @@ import {
   Stepper,
   Stack,
   VStack,
+  HStack,
   useSteps,
   Box,
   ModalCloseButton,
@@ -67,11 +68,11 @@ export default function CreateModal({
   upload,
   user,
 }) {
-  console.log(newAddedItem);
   const [isLoading, setIsLoading] = useState(false);
 
   const uploadFile = useCallback(async () => {
     if (!newAddedItem.image) return;
+    console.log(newAddedItem.image);
 
     // const apiUrl = process.env.API_URL;
     const response = await fetch(
@@ -182,8 +183,8 @@ export default function CreateModal({
           name: "",
           description: "",
           itemdate: "",
-          preferredContact: "",
-          phoneNumber: "",
+          preferred_contact: "",
+          phone_number: "",
           isresolved: false,
           ishelped: null,
         });
@@ -204,8 +205,8 @@ export default function CreateModal({
         (activeStep === 2 && newAddedItem.itemdate === "") ||
         (activeStep === 3 && uploadImg === "") ||
         (activeStep === 4 &&
-          newAddedItem.preferredContact === "phone" &&
-          newAddedItem.phoneNumber.length < 10)
+          newAddedItem.preferred_contact === "phone" &&
+          newAddedItem.phone_number.length < 10)
       }
       variant={"solid"}
       colorScheme="blue"
@@ -224,8 +225,8 @@ export default function CreateModal({
         newAddedItem.type === "" ||
         newAddedItem.name === "" ||
         newAddedItem.description === "" ||
-        (newAddedItem.preferredContact === "phone" &&
-          newAddedItem.phoneNumber === "")
+        (newAddedItem.preferred_contact === "phone" &&
+          newAddedItem.phone_number === "")
       }
       variant={"solid"}
       type="submit"
@@ -292,7 +293,7 @@ export default function CreateModal({
     (e) =>
       setNewAddedItem((prev) => ({
         ...prev,
-        preferredContact: e,
+        preferred_contact: e,
       })),
     [setNewAddedItem]
   );
@@ -301,7 +302,7 @@ export default function CreateModal({
     (e) =>
       setNewAddedItem((prev) => ({
         ...prev,
-        phoneNumber: e.target.value,
+        phone_number: e.target.value,
       })),
     [setNewAddedItem]
   );
@@ -315,11 +316,20 @@ export default function CreateModal({
       <Input
         type="tel"
         placeholder="Phone number"
-        value={newAddedItem.phoneNumber}
+        value={newAddedItem.phone_number}
         onChange={handleAddPhoneNumber}
         maxLength={10} // US phone numbers are 10 digits
       />
     </InputGroup>
+  );
+
+  const emailBox = (
+    <HStack border="1px solid grey" borderRadius={5} padding={1}>
+      <MdEmail color="gray.300" />
+      <Text ml="2%" fontSize={15} w={"100%"}>
+        {user?.email}
+      </Text>
+    </HStack>
   );
 
   const displayEmail = (
@@ -337,12 +347,11 @@ export default function CreateModal({
     <>
       <PhoneIcon color="gray.300" />
       <Text ml="2%" fontSize={15} w={"100%"}>
-        {newAddedItem.phoneNumber}
+        {newAddedItem.phone_number}
       </Text>
     </>
   );
 
-  const emailIcon = <MdEmail size={"1.3em"} />;
   useEffect(() => {
     if (newAddedItem.image && typeof newAddedItem.image !== "string") {
       setIsLoading(true);
@@ -362,8 +371,8 @@ export default function CreateModal({
             name: "",
             description: "",
             itemdate: "",
-            preferredContact: "email",
-            phoneNumber: "",
+            preferred_contact: "email",
+            phone_number: "",
             isresolved: false,
             ishelped: null,
           });
@@ -574,18 +583,19 @@ export default function CreateModal({
                         gap={3}>
                         <RadioGroup
                           onChange={handleAddPreferredContact} // make a function to set the value -- if email, then display email | if phone, then ask for phone number and set it
-                          value={newAddedItem.preferredContact}>
+                          value={newAddedItem.preferred_contact}>
                           <VStack direction="row" spacing={5}>
                             <Radio value="email">Email</Radio>
+                            {newAddedItem.preferred_contact === "email" &&
+                              emailBox}
                             <Radio value="phone">Phone</Radio>
-                            {newAddedItem.preferredContact === "phone"
-                              ? phoneNumberBox
-                              : displayEmail}
+                            {newAddedItem.preferred_contact === "phone" &&
+                              phoneNumberBox}
                           </VStack>
                         </RadioGroup>
                       </Flex>
                     </FormControl>
-                    {console.log(newAddedItem.preferredContact)}
+                    {console.log(newAddedItem.preferred_contact)}
                   </Flex>
                 )}
                 {/* sixth step */}
@@ -689,7 +699,7 @@ export default function CreateModal({
                         flexDir={{ base: "column", md: "row" }}
                         justifyContent={"center"}
                         alignItems={"center"}>
-                        {newAddedItem.preferredContact === "phone"
+                        {newAddedItem.preferred_contact === "phone"
                           ? displayPhoneNumber
                           : displayEmail}
                       </Flex>
