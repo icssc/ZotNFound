@@ -129,7 +129,7 @@ export default function Home() {
 
   const [isEdit, setIsEdit] = useState(false);
   const [isCreate, setIsCreate] = useState(true);
-  const centerPosition = [33.6461, -117.8427];
+  const centerPosition = L.latLng(33.6461, -117.8427);
   const [position, setPosition] = useState(centerPosition);
   const [focusLocation, setFocusLocation] = useState();
   const [uploadImg, setUploadImg] = useState("");
