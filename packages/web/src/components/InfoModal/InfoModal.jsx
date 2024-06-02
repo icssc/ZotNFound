@@ -239,7 +239,7 @@ export default function InfoModal({
               <hr />
 
               <Flex gap={5} justifyContent={"center"} alignItems={"center"}>
-                {currentEmail === props.email &&
+                {currentEmail !== props.email &&
                   (!showContact ? viewContactButton : showContactButton)}
                 {currentEmail === props.email && (
                   <Button
