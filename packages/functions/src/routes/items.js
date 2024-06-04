@@ -11,6 +11,7 @@ import { leaderboardTable, itemsTable } from "../config/db-config.js";
 
 //Add a item
 itemsRouter.post("/", async (req, res) => {
+  console.log("Item posted:", req.body);
   try {
     const {
       name,
@@ -20,7 +21,9 @@ itemsRouter.post("/", async (req, res) => {
       location,
       date,
       itemdate,
+      preferred_contact,
       email,
+      phone_number,
       image,
       isresolved,
       ishelped,
@@ -31,7 +34,7 @@ itemsRouter.post("/", async (req, res) => {
     }
 
     const item = await client.query(
-      `INSERT INTO ${itemsTable} (name, description, type, islost, location, date, itemdate, email, image, isresolved, ishelped) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+      `INSERT INTO ${itemsTable} (name, description, type, islost, location, date, itemdate, preferred_contact, email, phone_number, image, isresolved, ishelped) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
       [
         name,
         description,
@@ -40,7 +43,9 @@ itemsRouter.post("/", async (req, res) => {
         location,
         date,
         itemdate,
+        preferred_contact,
         email,
+        phone_number,
         image,
         isresolved,
         ishelped,
@@ -206,6 +211,38 @@ itemsRouter.get("/:id/email", async (req, res) => {
 
     const item = await client.query(
       `SELECT email FROM ${itemsTable} WHERE id=$1`,
+      [id]
+    );
+
+    res.json(item.rows[0]);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+// Get preferred contact method associated with an item id
+itemsRouter.get("/:id/contactMethod", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const item = await client.query(
+      `SELECT preferred_contact FROM ${itemsTable} WHERE id=$1`,
+      [id]
+    );
+
+    res.json(item.rows[0]);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+// Get phone number associated with an item id
+itemsRouter.get("/:id/phoneNumber", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const item = await client.query(
+      `SELECT phone_number FROM ${itemsTable} WHERE id=$1`,
       [id]
     );
 

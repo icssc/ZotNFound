@@ -121,13 +121,15 @@ export default function Home() {
     name: "",
     description: "",
     itemdate: "",
+    preferred_contact: "email",
+    phone_number: "",
     isresolved: false,
     ishelped: null,
   });
 
   const [isEdit, setIsEdit] = useState(false);
   const [isCreate, setIsCreate] = useState(true);
-  const centerPosition = [33.6461, -117.8427];
+  const centerPosition = L.latLng(33.6461, -117.8427);
   const [position, setPosition] = useState(centerPosition);
   const [focusLocation, setFocusLocation] = useState();
   const [uploadImg, setUploadImg] = useState("");
@@ -212,6 +214,8 @@ export default function Home() {
       name: "",
       description: "",
       itemdate: "",
+      preferred_contact: "email",
+      phone_number: "",
       isresolved: false,
       ishelped: null,
     });
@@ -315,28 +319,24 @@ export default function Home() {
         isLoginModalOpen: isLoginModalOpen,
         onLoginModalClose: onLoginModalClose,
         onLoginModalOpen: onLoginModalOpen,
-      }}
-    >
+      }}>
       <Flex
         justifyContent="space-between"
         shadow="md"
         alignItems="center"
-        className="big"
-      >
+        className="big">
         {/* LOGO + TEXT */}
         <ZotNFoundLogoText />
 
         {/* SEARCH BAR */}
         <HStack
           w={{ base: "100%", md: "40%" }}
-          display={{ base: "none", md: "block" }}
-        >
+          display={{ base: "none", md: "block" }}>
           <InputGroup
             mt="1%"
             size={{ base: "md", md: "lg" }}
             mb="1%"
-            padding={8}
-          >
+            padding={8}>
             <InputLeftAddon children="🔎" />
             <Input
               type="teal"
@@ -352,15 +352,13 @@ export default function Home() {
           alignItems="center"
           justifyContent="space-between"
           mr={7}
-          gap={{ base: 3, md: 5 }}
-        >
+          gap={{ base: 3, md: 5 }}>
           <Button
             leftIcon={<MdAssignment />}
             colorScheme="blue"
             onClick={() => {
               window.open("https://forms.gle/Uud594N7QE6VbiDY6", "_blank");
-            }}
-          >
+            }}>
             Feedback
           </Button>
           {user ? (
@@ -379,8 +377,7 @@ export default function Home() {
                   background: "#365fad",
                 }}
                 cursor={"pointer"}
-                onClick={onLeaderboardOpen}
-              >
+                onClick={onLeaderboardOpen}>
                 <Image
                   ref={btnRef}
                   src={cookie}
@@ -390,8 +387,7 @@ export default function Home() {
                 <Text
                   as={"b"}
                   fontSize={{ base: "sm", md: "lg" }}
-                  color={"white"}
-                >
+                  color={"white"}>
                   {user
                     ? leaderboard.find((u) => u.email === user.email)?.points
                     : 0}
@@ -425,8 +421,7 @@ export default function Home() {
                         isYourPosts: !prev.isYourPosts,
                       }));
                       onOpen();
-                    }}
-                  >
+                    }}>
                     <Image
                       boxSize="1.2rem"
                       src={yourposts}
@@ -480,8 +475,7 @@ export default function Home() {
               fontSize="xl"
               variant="outline"
               colorScheme="black"
-              onClick={onLoginModalOpen}
-            >
+              onClick={onLoginModalOpen}>
               Sign in
             </Button>
           )}
@@ -502,6 +496,7 @@ export default function Home() {
               setUploadImg={setUploadImg}
               uploadImg={uploadImg}
               upload={upload}
+              user={user}
             />
           </Flex>
         </Flex>
@@ -512,8 +507,7 @@ export default function Home() {
         w="100%"
         display={{ base: "flex", md: "none" }}
         justifyContent="center"
-        alignItems="center"
-      >
+        alignItems="center">
         <Flex width="95%">
           <InputGroup mt="3%" size={{ base: "md", md: "lg" }} mb="1%">
             <InputLeftAddon children="🔎" />
@@ -530,8 +524,7 @@ export default function Home() {
       <Flex
         position="relative"
         marginTop={{ base: "1vh", md: "2%" }}
-        px={{ base: 0, md: "2%" }}
-      >
+        px={{ base: 0, md: "2%" }}>
         {/* <CreateModal /> */}
         <Flex
           width={{ base: "100vw", md: "75vw" }}
@@ -539,8 +532,7 @@ export default function Home() {
           position="absolute"
           zIndex={1000}
           flexDirection="row"
-          justifyContent="space-between"
-        >
+          justifyContent="space-between">
           {isEdit ? (
             <Flex>
               <Alert
@@ -551,8 +543,7 @@ export default function Home() {
                 height="80px"
                 border="3px red solid"
                 borderRadius="20px"
-                boxShadow="xl"
-              >
+                boxShadow="xl">
                 <AlertIcon />
                 <AlertTitle>Click on the Map to place your item 📍</AlertTitle>
               </Alert>
@@ -574,8 +565,7 @@ export default function Home() {
                   fontSize={{ base: "xl", md: "2xl" }}
                   borderRadius={"lg"}
                   borderWidth={2}
-                  leftIcon={<SettingsIcon />}
-                >
+                  leftIcon={<SettingsIcon />}>
                   Filter
                 </Button>
                 <DateRangeFilter />
@@ -599,8 +589,7 @@ export default function Home() {
                 size="lg"
                 gap={2}
                 justifyContent={"center"}
-                alignItems={"center"}
-              >
+                alignItems={"center"}>
                 <StarIcon />
               </Button>
 
@@ -608,8 +597,7 @@ export default function Home() {
                 isOpen={isResultsBarOpen}
                 placement="right"
                 onClose={onResultsBarClose}
-                size="full"
-              >
+                size="full">
                 <DrawerOverlay />
                 <DrawerContent>
                   <DrawerCloseButton size="lg" />
@@ -632,8 +620,7 @@ export default function Home() {
                           mb="1%"
                           width="90%"
                           mx="auto"
-                          size={{ base: "md", md: "lg" }}
-                        >
+                          size={{ base: "md", md: "lg" }}>
                           <InputLeftAddon children="🔎" />
                           <Input
                             type="teal"
@@ -649,8 +636,7 @@ export default function Home() {
                           size="md"
                           fontSize="xl"
                           mr={3}
-                          onClick={onOpen}
-                        >
+                          onClick={onOpen}>
                           <SettingsIcon />
                         </Button>
                       </Flex>
@@ -705,8 +691,7 @@ export default function Home() {
           position="absolute"
           top={0}
           right={5}
-          display={{ base: "none", md: "flex" }}
-        >
+          display={{ base: "none", md: "flex" }}>
           <ResultsBar
             search={search}
             findFilter={findFilter}
@@ -718,8 +703,7 @@ export default function Home() {
           display={{ base: "block", md: "none" }}
           position="fixed"
           bottom="2.5%"
-          width="100vw"
-        >
+          width="100vw">
           <CreateModal
             setIsCreate={setIsCreate}
             isCreate={isCreate}
@@ -732,6 +716,7 @@ export default function Home() {
             setUploadImg={setUploadImg}
             uploadImg={uploadImg}
             upload={upload}
+            user={user}
           />
         </Box>
       </Flex>
@@ -743,8 +728,7 @@ export default function Home() {
           opacity="0.8"
           justifyContent="center"
           alignItems="center"
-          zIndex={1000000000}
-        >
+          zIndex={1000000000}>
           <Spinner
             thickness="4px"
             speed="0.65s"
