@@ -334,7 +334,7 @@ export default function Map({
     ) : null;
   };
 
-  console.log("Map URL:", mapUrl);
+  console.log("Map URL:", import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL);
   console.log("test:", import.meta.env.VITE_REACT_APP_AUTH_DOMAIN);
 
   return (
