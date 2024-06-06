@@ -304,8 +304,7 @@ export default function Map({
 
   const mapUrl =
     colorMode === "dark"
-      ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL ||
-        "fallback_dark_url_here"
+      ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL
       : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
   const NewItemMarker = () => {
@@ -333,9 +332,6 @@ export default function Map({
       </Marker>
     ) : null;
   };
-
-  console.log("Map URL:", import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL);
-  console.log("test:", import.meta.env.VITE_REACT_APP_AUTH_DOMAIN);
 
   return (
     <div>
