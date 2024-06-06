@@ -25,9 +25,9 @@ googleOAuthRouter.get("/", async (req, res) => {
   }
 });
 
-googleOAuthRouter.get("/validate", async (req, res) => {
+googleOAuthRouter.post("/validate", async (req, res) => {
   try {
-    const { code, codeVerifier, authuser } = req.query;
+    const { code, codeVerifier, authuser } = req.body;
 
     if (!code || !codeVerifier || !authuser) {
       return res.status(400).send("Missing required parameters");

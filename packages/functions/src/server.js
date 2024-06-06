@@ -43,12 +43,6 @@ app.use("/leaderboard", leaderboard);
 app.use("/nodemailer", nodemailer);
 app.use("/googleOAuth", googleOAuth);
 
-if (process.env.NODE_ENV === "development") {
-  app.listen(3001, () => {
-    console.log("Server is running on port 3001");
-  });
-}
-
 export const createGoogleAuthorizationUrl = async () => {
   try {
     const state = generateState();

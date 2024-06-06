@@ -20,14 +20,12 @@ export default function OAuth2Callback() {
       }
 
       try {
-        const res = await axios.get(
+        const res = await axios.post(
           `${import.meta.env.VITE_AWS_API_ENDPOINT}/googleOAuth/validate`,
           {
-            params: {
-              code: authorizationCode,
-              codeVerifier: codeVerifier,
-              authuser: authuser,
-            },
+            code: authorizationCode,
+            codeVerifier: codeVerifier,
+            authuser: authuser,
           }
         );
 
