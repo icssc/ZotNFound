@@ -335,6 +335,7 @@ export default function Map({
   };
 
   console.log("Map URL:", mapUrl);
+  console.log("test:", import.meta.env.VITE_REACT_APP_AUTH_DOMAIN);
 
   return (
     <div>
