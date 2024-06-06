@@ -29,8 +29,11 @@ export default function LoginModal() {
   const { isLoginModalOpen, onLoginModalClose } = useContext(DataContext);
   const [isAttempt, setIsAttempt] = useState(false);
   // const { googleSignIn, user } = UserAuth();
-  const [user, setUser] = useState(null);
-  const cookies = new Cookies(null, { path: "/" });
+  const [user, setUser] = useState(null, {
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+  });
+  const cookies = new Cookies();
 
   const signInGoogle = useCallback(async () => {
     console.log("Sign in with Google");
@@ -39,19 +42,11 @@ export default function LoginModal() {
         `${import.meta.env.VITE_AWS_API_ENDPOINT}/googleOAuth`
       );
       const url = res.data.googleAuthorizationUrl;
-      console.log("url: ", url);
+
+      cookies.set("state", res.data.state);
+      cookies.set("codeVerifier", res.data.codeVerifier);
+
       window.location.href = url;
-
-      cookies.set("state", res.data.state, {
-        secure: process.env.NODE_ENV === "production",
-        httpOnly: true,
-      });
-      cookies.set("codeVerifier", res.data.codeVerifier, {
-        secure: process.env.NODE_ENV === "production",
-        httpOnly: true,
-      });
-
-      // setUser(1);
     } catch (error) {
       console.log(error.message);
     }

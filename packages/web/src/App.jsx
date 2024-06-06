@@ -6,6 +6,7 @@ import Login from "./components/Login/Login";
 import Home from "./components/Home/Home";
 import UpdatePage from "./components/UpdatePage/UpdatePage";
 import Playground from "./components/Playground/Playground";
+import OAuth2Callback from "./components/OAuth2Callback/OAuth2Callback";
 
 import { ChakraProvider } from "@chakra-ui/react";
 import "leaflet/dist/leaflet.css";
@@ -35,6 +36,7 @@ function App() {
             <Route path="/:id" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/playground" element={<Playground />} />
+            <Route path="/oauth2callback" element={<OAuth2Callback />} />
           </Routes>
         </div>
       </ChakraProvider>
