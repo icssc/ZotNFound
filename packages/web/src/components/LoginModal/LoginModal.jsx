@@ -33,7 +33,14 @@ export default function LoginModal() {
     path: "/",
     secure: process.env.NODE_ENV === "production",
   });
-  const cookies = new Cookies();
+  const cookies = new Cookies(
+    {},
+    {
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+    }
+  );
 
   const signInGoogle = useCallback(async () => {
     console.log("Sign in with Google");
@@ -46,6 +53,7 @@ export default function LoginModal() {
       cookies.set("state", res.data.state);
       cookies.set("codeVerifier", res.data.codeVerifier);
 
+      console.log("url = ", url);
       window.location.href = url;
     } catch (error) {
       console.log(error.message);

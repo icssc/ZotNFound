@@ -55,7 +55,7 @@ export const createGoogleAuthorizationUrl = async () => {
     const codeVerifier = generateCodeVerifier();
 
     const googleAuthorizationUrl = await google.createAuthorizationURL(
-      state,
+      // state,
       codeVerifier,
       {
         scopes: ["email", "profile"],
