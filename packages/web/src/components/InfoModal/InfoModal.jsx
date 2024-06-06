@@ -11,6 +11,7 @@ import {
   Flex,
   Tag,
   useDisclosure,
+  useColorMode,
 } from "@chakra-ui/react";
 import { formatDate } from "../../utils/DateUtils";
 import { UserAuth } from "../../context/AuthContext";
@@ -28,6 +29,7 @@ export default function InfoModal({
   props,
   setLeaderboard,
 }) {
+  const { colorMode } = useColorMode();
   const [showEmail, setShowEmail] = useState(false);
   const [itemEmail, setItemEmail] = useState("");
   const [isShared, setIsShared] = useState(false);
@@ -153,7 +155,7 @@ export default function InfoModal({
           <ModalCloseButton
             size="lg"
             border={"4px green solid"}
-            background={"white"}
+            background={colorMode === "light" ? "white" : "black"}
           />
 
           <Flex

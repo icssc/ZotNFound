@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, Text, Button } from "@chakra-ui/react";
+import { Image, Text, Button, useColorMode } from "@chakra-ui/react";
 
 export default function TypeCard({
   type,
@@ -7,6 +7,7 @@ export default function TypeCard({
   setNewAddedItem,
   newAddedItem,
 }) {
+  const { colorMode } = useColorMode();
   const handleOnClick = () => {
     setNewAddedItem((prev) => ({
       ...prev,
@@ -16,7 +17,13 @@ export default function TypeCard({
 
   return (
     <Button
-      backgroundColor={newAddedItem.type === type ? "#787092" : "white"}
+      backgroundColor={
+        newAddedItem.type === type
+          ? "#787092"
+          : colorMode === "light"
+          ? "white"
+          : "#2c2c2c"
+      }
       variant="outline"
       border="5px rgb(166, 152, 216) solid"
       minW={{ md: "10vw", base: "13vh" }}

@@ -37,9 +37,13 @@ export function FrontendStack({ app, stack }: StackContext) {
         process.env.VITE_REACT_APP_MESSAGING_SENDER_ID!,
       VITE_REACT_APP_APP_ID: process.env.VITE_REACT_APP_APP_ID!,
       VITE_REACT_APP_MEASUREMENT_ID: process.env.VITE_REACT_APP_MEASUREMENT_ID!,
+      VITE_REACT_APP_MAPBOX_DARK_URL:
+        process.env.VITE_REACT_APP_MAPBOX_DARK_URL!,
+      VITE_REACT_APP_MAPBOX_LIGHT_URL:
+        process.env.VITE_REACT_APP_MAPBOX_LIGHT_URL!,
     },
   });
-  
+
   stack.addOutputs({
     WebEndpoint: web.customDomainUrl,
   });

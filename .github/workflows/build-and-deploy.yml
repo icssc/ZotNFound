@@ -58,6 +58,8 @@ jobs:
           VITE_REACT_APP_APP_ID: ${{  secrets.VITE_REACT_APP_APP_ID }}
           VITE_REACT_APP_MEASUREMENT_ID: ${{  secrets.VITE_REACT_APP_MEASUREMENT_ID }}
           VITE_REACT_APP_AWS_BACKEND_URL: ${{  secrets.VITE_REACT_APP_AWS_BACKEND_URL }}
+          VITE_REACT_APP_MAPBOX_DARK_URL: ${{  secrets.VITE_REACT_APP_MAPBOX_DARK_URL }}
+          VITE_REACT_APP_MAPBOX_LIGHT_URL: ${{  secrets.VITE_REACT_APP_MAPBOX_LIGHT_URL }}
           EMAIL: ${{  secrets.EMAIL }}
           REFRESH_TOKEN: ${{  secrets.REFRESH_TOKEN }}
           CLIENT_SECRET: ${{  secrets.CLIENT_SECRET }}
@@ -71,4 +73,3 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           NODE_ENV: ${{ github.event_name == 'pull_request' && 'staging' || 'production' }}
-      

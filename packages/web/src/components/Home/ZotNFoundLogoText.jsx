@@ -6,6 +6,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  useColorMode,
 } from "@chakra-ui/react";
 
 import { useState } from "react";
@@ -41,7 +42,7 @@ export default function ZotNFoundLogoText() {
           size={{ base: "4xl", md: "4xl" }}
           ml="3%"
           fontSize={{ base: "xl", md: "4xl" }}
-          background="white"
+          background="none"
           justifyContent="center"
           alignItems="center"
           padding={2}

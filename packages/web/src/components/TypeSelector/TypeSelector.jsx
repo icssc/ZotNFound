@@ -1,9 +1,10 @@
 import { React } from "react";
-import { Flex } from "@chakra-ui/react";
+import { Flex, useColorMode } from "@chakra-ui/react";
 import TypeCard from "../Type/TypeCard";
 import { iconsMap } from "../Map/MapIcons";
 
 export default function TypeSelector(props) {
+  const { colorMode } = useColorMode();
   const types = {
     headphone: iconsMap["headphone"][props.newAddedItem.islost].options.iconUrl,
     phone: iconsMap["phone"][props.newAddedItem.islost].options.iconUrl,

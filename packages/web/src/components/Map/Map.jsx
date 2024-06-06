@@ -25,7 +25,7 @@ import {
   Circle,
   useMapEvents,
 } from "react-leaflet";
-import { useDisclosure } from "@chakra-ui/react";
+import { useDisclosure, useColorMode } from "@chakra-ui/react";
 import InfoModal from "../InfoModal/InfoModal";
 
 import DataContext from "../../context/DataContext";
@@ -33,7 +33,7 @@ import { UserAuth } from "../../context/AuthContext";
 
 import axios from "axios";
 
-import { filterItem } from '../../utils/Utils.js';
+import { filterItem } from "../../utils/Utils.js";
 
 /**
  * Map is uses react-leaflet's API to communicate user actions to map entities and information
@@ -74,6 +74,7 @@ export default function Map({
 }) {
   // Contexts
   const { user } = UserAuth();
+  const { colorMode } = useColorMode();
   const { data, setLoading, token, setData } = useContext(DataContext);
 
   // State: isOpen - if InfoModal is open
@@ -301,6 +302,11 @@ export default function Map({
     );
   }
 
+  const mapUrl =
+    colorMode === "dark"
+      ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL
+      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
   const NewItemMarker = () => {
     useMapEvents({
       click(event) {
@@ -331,7 +337,6 @@ export default function Map({
     <div>
       {/* Styles applied to MapContainer don't render unless page is reloaded */}
       <MapContainer
-        style={{ border: "3px dotted black" }}
         className="map-container"
         center={centerPosition}
         zoom={17}
@@ -343,7 +348,7 @@ export default function Map({
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url={mapUrl}
         />
         {!isEdit && (
           <MapFocusLocation location={focusLocation} search={search} />

@@ -1,6 +1,5 @@
 // Define callback function to return filtered items (filtered according to search bar and filter markers)
 const filterItem = (item, findFilter, user) => {
-  console.log(item);
   return (
     ((findFilter.islost && item.islost) ||
       (findFilter.isFound && !item.islost)) &&

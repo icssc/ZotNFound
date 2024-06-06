@@ -11,14 +11,17 @@ import {
   Button,
   Flex,
   useDisclosure,
+  useColorMode,
 } from "@chakra-ui/react";
 import { InfoIcon } from "@chakra-ui/icons";
 import InfoModal from "../InfoModal/InfoModal.jsx";
 import { formatDate } from "../../utils/DateUtils.js";
 import locate from "../../assets/logos/locate.svg";
+import locate_dark from "../../assets/logos/locate_dark.svg";
 
 const ResultCard = React.memo(
   ({ props, setData, onResultsBarClose, setLeaderboard }) => {
+    const { colorMode } = useColorMode();
     const infoModalDisclosure = useDisclosure();
     const { id } = useParams();
 
@@ -37,7 +40,7 @@ const ResultCard = React.memo(
         gap={1}
         onClick={onResultsBarClose}
       >
-        <Image src={locate} />
+        <Image src={colorMode === "dark" ? locate_dark : locate} />
         Lost
       </Button>
     );
@@ -52,16 +55,16 @@ const ResultCard = React.memo(
         gap={1}
         onClick={onResultsBarClose}
       >
-        <Image src={locate} />
+        <Image src={colorMode === "dark" ? locate_dark : locate} />
         Found
       </Button>
     );
     return (
       <>
         <Card
-          bg="gray.50"
+          bg={colorMode === "dark" ? "#2F363C" : "gray.50"}
           border="1px"
-          borderColor="gray.300"
+          borderColor={colorMode === "dark" ? "#2F363C" : "gray.300"}
           maxW="lg"
           align={"center"}
           mb="10px"
@@ -96,10 +99,17 @@ const ResultCard = React.memo(
             </Flex>
             <Stack mt="6" spacing="3">
               <Flex justifyContent={"space-between"}>
-                <Text color="blue.600" fontSize="md" fontWeight="bold">
+                <Text
+                  color={colorMode === "dark" ? "white" : "blue.600"}
+                  fontSize="md"
+                  fontWeight="bold"
+                >
                   {props.name}
                 </Text>
-                <Text color="blue.600" fontSize="sm">
+                <Text
+                  color={colorMode === "dark" ? "white" : "blue.600"}
+                  fontSize="sm"
+                >
                   {formattedDate}
                 </Text>
               </Flex>
@@ -109,8 +119,8 @@ const ResultCard = React.memo(
           <CardFooter>
             <Flex justifyContent={"space-between"}>
               <Button
-                variant="outline"
-                colorScheme="blue"
+                variant={colorMode === "dark" ? "solid" : "outline"}
+                colorScheme={"blue"}
                 leftIcon={<InfoIcon />}
                 size="md"
                 w="60%"
