@@ -302,6 +302,12 @@ export default function Map({
     );
   }
 
+  const mapUrl =
+    colorMode === "dark"
+      ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL ||
+        "fallback_dark_url_here"
+      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
   const NewItemMarker = () => {
     useMapEvents({
       click(event) {
@@ -328,6 +334,8 @@ export default function Map({
     ) : null;
   };
 
+  console.log("Map URL:", mapUrl);
+
   return (
     <div>
       {/* Styles applied to MapContainer don't render unless page is reloaded */}
@@ -343,11 +351,7 @@ export default function Map({
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url={
-            colorMode === "dark"
-              ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL
-              : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          }
+          url={mapUrl}
         />
         {!isEdit && (
           <MapFocusLocation location={focusLocation} search={search} />
