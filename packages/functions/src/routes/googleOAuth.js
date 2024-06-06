@@ -5,9 +5,6 @@ import express from "express";
 import { lucia } from "../lucia/index.js";
 import google from "../lucia/oauth.js";
 
-// import { eq } from "drizzle-orm";
-// import { cookies } from "next/headers";
-// import { NextRequest, NextResponse } from "next/server";
 const googleOAuthRouter = express.Router();
 import { createGoogleAuthorizationUrl } from "../server.js";
 
@@ -46,7 +43,7 @@ googleOAuthRouter.get("/validate", async (req, res) => {
     );
 
     const { accessToken, idToken, accessTokenExpiresAt, refreshToken } =
-      await google.validateAuthorizationCode(codeVerifier);
+      await google.validateAuthorizationCode(code, codeVerifier);
     console.log(accessToken, idToken, accessTokenExpiresAt, refreshToken);
 
     const res = await fetch("https://www.googleapis.com/oauth2/v1/userinfo", {

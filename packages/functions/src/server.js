@@ -5,14 +5,14 @@ import serverless from "serverless-http";
 import { generateCodeVerifier, generateState } from "arctic";
 dotenv.config();
 const app = express();
+import cookieParser from "cookie-parser";
 // const port = 8080;
 // ROUTES
-import cookieParser from "cookie-parser";
 import items from "./routes/items.js";
 import nodemailer from "./routes/nodeMailer.js";
 import leaderboard from "./routes/leaderboard.js";
 import googleOAuth from "./routes/googleOAuth.js";
-// import oauth2CallbackRouter from "./routes/oauth2Callback.js";
+
 import google from "./lucia/oauth.js";
 
 app.use(cors());
