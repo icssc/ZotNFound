@@ -46,7 +46,7 @@ export default function LoginModal() {
     console.log("Sign in with Google");
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_AWS_API_ENDPOINT}/googleOAuth`
+        `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/googleOAuth`
       );
       const url = res.data.googleAuthorizationUrl;
 
