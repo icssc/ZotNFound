@@ -16,8 +16,11 @@ import {
 } from "@chakra-ui/react";
 import { InfoIcon, TimeIcon, CalendarIcon } from "@chakra-ui/icons";
 import { FaMapMarkerAlt } from "react-icons/fa";
+import { motion } from "framer-motion";
 import InfoModal from "../InfoModal/InfoModal.jsx";
 import { formatDate } from "../../utils/DateUtils.js";
+
+const MotionBox = motion(Box);
 
 const ResultCard = React.memo(
   ({ props, setData, onResultsBarClose, setLeaderboard }) => {
@@ -36,15 +39,18 @@ const ResultCard = React.memo(
 
     return (
       <>
-        <Box
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           bg={bgColor}
           borderWidth="1px"
           borderColor={accentColor}
           borderRadius="xl"
           overflow="hidden"
           boxShadow="lg"
-          transition="all 0.3s"
-          _hover={{ transform: "translateY(-5px)", boxShadow: "xl" }}
           mb={4}
           position="relative"
           width="100%"
@@ -108,6 +114,9 @@ const ResultCard = React.memo(
               </Text>
               <HStack spacing={2} mt={2}>
                 <Button
+                  as={motion.button}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   leftIcon={<InfoIcon />}
                   size="sm"
                   colorScheme={props.islost ? "red" : "green"}
@@ -118,6 +127,9 @@ const ResultCard = React.memo(
                   View Details
                 </Button>
                 <Button
+                  as={motion.button}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   leftIcon={<FaMapMarkerAlt />}
                   size="sm"
                   colorScheme="blue"
@@ -146,7 +158,7 @@ const ResultCard = React.memo(
               RETURNED
             </Box>
           )}
-        </Box>
+        </MotionBox>
         {(infoModalDisclosure.isOpen || id) && (
           <InfoModal
             props={props}
