@@ -1,23 +1,26 @@
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import {
-  Card,
-  CardBody,
-  CardFooter,
-  Image,
-  Stack,
-  Text,
-  Divider,
-  Button,
+  Box,
   Flex,
-  useDisclosure,
+  Image,
+  Text,
+  Badge,
+  Button,
   useColorMode,
+  useDisclosure,
+  VStack,
+  HStack,
+  Icon,
+  Tooltip,
 } from "@chakra-ui/react";
-import { InfoIcon } from "@chakra-ui/icons";
+import { InfoIcon, TimeIcon, CalendarIcon } from "@chakra-ui/icons";
+import { FaMapMarkerAlt } from "react-icons/fa";
+import { motion } from "framer-motion";
 import InfoModal from "../InfoModal/InfoModal.jsx";
 import { formatDate } from "../../utils/DateUtils.js";
-import locate from "../../assets/logos/locate.svg";
-import locate_dark from "../../assets/logos/locate_dark.svg";
+
+const MotionBox = motion(Box);
 
 const ResultCard = React.memo(
   ({ props, setData, onResultsBarClose, setLeaderboard }) => {
@@ -30,108 +33,132 @@ const ResultCard = React.memo(
       [props.date]
     );
 
-    // Define JSX for 'Lost' button on result card
-    const lostButton = (
-      <Button
-        colorScheme="red"
-        ml="20%"
-        size="md"
-        w="40"
-        gap={1}
-        onClick={onResultsBarClose}
-      >
-        <Image src={colorMode === "dark" ? locate_dark : locate} />
-        Lost
-      </Button>
-    );
+    const bgColor = colorMode === "dark" ? "gray.700" : "white";
+    const textColor = colorMode === "dark" ? "white" : "gray.800";
+    const accentColor = props.islost ? "red.400" : "green.400";
 
-    // Define JSX for 'Found' button on result card
-    const foundButton = (
-      <Button
-        colorScheme="green"
-        ml="20%"
-        size="md"
-        w="40"
-        gap={1}
-        onClick={onResultsBarClose}
-      >
-        <Image src={colorMode === "dark" ? locate_dark : locate} />
-        Found
-      </Button>
-    );
     return (
       <>
-        <Card
-          bg={colorMode === "dark" ? "#2F363C" : "gray.50"}
-          border="1px"
-          borderColor={colorMode === "dark" ? "#2F363C" : "gray.300"}
-          maxW="lg"
-          align={"center"}
-          mb="10px"
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          bg={bgColor}
+          borderWidth="1px"
+          borderColor={accentColor}
+          borderRadius="xl"
+          overflow="hidden"
+          boxShadow="lg"
+          mb={4}
+          position="relative"
+          width="100%"
         >
-          <CardBody>
-            <Flex justifyContent={"center"} alignItems={"center"}>
-              {props.isresolved && (
-                <Flex
-                  backgroundColor={"rgba(255, 123, 0, 0.9)"}
-                  position={"absolute"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  marginTop={30}
-                  flexDir={"column"}
-                  w={450}
-                >
-                  <Text fontSize={18} as="b" color={"white"}>
-                    RETURNED
-                  </Text>
-                  <Text fontSize={15} color={"white"}>
-                    This item has been returned.
-                  </Text>
-                </Flex>
-              )}
+          <Flex direction={{ base: "column", sm: "row" }}>
+            <Box position="relative" width={{ base: "100%", sm: "40%" }}>
               <Image
-                border="1px"
-                borderColor="gray.300"
-                rounded={"lg"}
                 src={props.image}
-                loading="lazy"
+                alt={props.name}
+                objectFit="cover"
+                width="100%"
+                height={{ base: "200px", sm: "100%" }}
               />
-            </Flex>
-            <Stack mt="6" spacing="3">
-              <Flex justifyContent={"space-between"}>
-                <Text
-                  color={colorMode === "dark" ? "white" : "blue.600"}
-                  fontSize="md"
-                  fontWeight="bold"
-                >
-                  {props.name}
-                </Text>
-                <Text
-                  color={colorMode === "dark" ? "white" : "blue.600"}
-                  fontSize="sm"
-                >
-                  {formattedDate}
-                </Text>
-              </Flex>
-            </Stack>
-          </CardBody>
-          <Divider />
-          <CardFooter>
-            <Flex justifyContent={"space-between"}>
-              <Button
-                variant={colorMode === "dark" ? "solid" : "outline"}
-                colorScheme={"blue"}
-                leftIcon={<InfoIcon />}
-                size="md"
-                w="60%"
-                onClick={infoModalDisclosure.onOpen}
+              <Badge
+                position="absolute"
+                top="10px"
+                left="10px"
+                colorScheme={props.islost ? "red" : "green"}
+                fontSize="0.8em"
+                px={2}
+                py={1}
+                borderRadius="full"
               >
-                View
-              </Button>
-              {props.islost ? lostButton : foundButton}
-            </Flex>
-          </CardFooter>
-        </Card>
+                {props.islost ? "Lost" : "Found"}
+              </Badge>
+            </Box>
+            <VStack
+              align="stretch"
+              p={4}
+              spacing={3}
+              width={{ base: "100%", sm: "60%" }}
+            >
+              <Text
+                fontWeight="bold"
+                fontSize={{ base: "lg", md: "xl" }}
+                color={textColor}
+                noOfLines={2}
+              >
+                {props.name}
+              </Text>
+              <HStack spacing={4}>
+                <Tooltip label="Date item was reported" placement="top">
+                  <Flex align="center">
+                    <Icon as={CalendarIcon} color={accentColor} mr={1} />
+                    <Text fontSize="sm" color="gray.500">
+                      {formattedDate}
+                    </Text>
+                  </Flex>
+                </Tooltip>
+                <Tooltip label="Time item was lost/found" placement="top">
+                  <Flex align="center">
+                    <Icon as={TimeIcon} color={accentColor} mr={1} />
+                    <Text fontSize="sm" color="gray.500">
+                      {props.itemdate}
+                    </Text>
+                  </Flex>
+                </Tooltip>
+              </HStack>
+              <Text fontSize="sm" color={textColor} noOfLines={2}>
+                {props.description}
+              </Text>
+              <HStack spacing={2} mt={2}>
+                <Button
+                  as={motion.button}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  leftIcon={<InfoIcon />}
+                  size="sm"
+                  colorScheme={props.islost ? "red" : "green"}
+                  variant="solid"
+                  onClick={infoModalDisclosure.onOpen}
+                  flex={1}
+                >
+                  View Details
+                </Button>
+                <Button
+                  as={motion.button}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  leftIcon={<FaMapMarkerAlt />}
+                  size="sm"
+                  colorScheme="blue"
+                  variant="outline"
+                  onClick={onResultsBarClose}
+                  flex={1}
+                >
+                  Locate
+                </Button>
+              </HStack>
+            </VStack>
+          </Flex>
+          {props.isresolved && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              right={0}
+              bg="orange.500"
+              color="white"
+              textAlign="center"
+              py={1}
+              fontSize="sm"
+              fontWeight="bold"
+            >
+              RETURNED
+            </Box>
+          )}
+        </MotionBox>
         {(infoModalDisclosure.isOpen || id) && (
           <InfoModal
             props={props}

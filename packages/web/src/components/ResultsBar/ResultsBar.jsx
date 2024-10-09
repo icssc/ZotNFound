@@ -34,6 +34,7 @@ export default function ResultsBar({
         }}
         _hover={{ transform: "scale(0.99)" }}
         transition="transform .3s ease"
+        width="100%"
       >
         <ResultCard
           props={item}
@@ -60,7 +61,6 @@ export default function ResultsBar({
       ? data.filter(filterItemCallback).map(mapItem)
       : results.filter(filterItemCallback).map(mapItem);
 
-  // Callback function that increases the number of items displayed on the screen by 10
   const handleLoadMore = useCallback(() => {
     setItemsOnScreenLimit(itemsonScreenLimit + 10);
   }, [itemsonScreenLimit]);
@@ -99,9 +99,9 @@ export default function ResultsBar({
 
   return (
     <Box
-      paddingX="5px"
-      width={{ base: "90vw", md: "21vw" }}
-      height="80vh"
+      paddingX={{ base: "10px", md: "15px" }}
+      width="400px"
+      height={{ base: "calc(100vh - 120px)", md: "80vh" }}
       overflowY="scroll"
       overflowX="hidden"
     >
