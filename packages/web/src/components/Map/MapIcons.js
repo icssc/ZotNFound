@@ -16,7 +16,15 @@ import others_lost from "../../assets/logos/Others_lost.png";
 import others_found from "../../assets/logos/Others_found.png";
 import others_black from "../../assets/logos/others_black.svg";
 
+import you from "../../assets/logos/peter-running.png"
+
 import fly_img from "../../assets/images/fly_img.png";
+
+export const youIcon = L.icon({
+  iconUrl: you,
+  iconSize: [60, 60],
+  iconAnchor: [20, 30],
+});
 
 const resolvedIcon = L.icon({
   iconUrl: resolved,

@@ -13,7 +13,6 @@ import "./Map.css";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Fuse from "fuse.js";
-
 import { othersDrag, flyImg, iconsMap } from "./MapIcons";
 import {
   MapContainer,
@@ -25,14 +24,15 @@ import {
   Circle,
   useMapEvents,
 } from "react-leaflet";
-import { useDisclosure, useColorMode } from "@chakra-ui/react";
+import { useDisclosure, useColorMode, IconButton } from "@chakra-ui/react";
+import { MdMyLocation } from "react-icons/md";
 import InfoModal from "../InfoModal/InfoModal";
 
 import DataContext from "../../context/DataContext";
 import { UserAuth } from "../../context/AuthContext";
 
 import axios from "axios";
-
+import { youIcon } from "./MapIcons";
 import { filterItem } from "../../utils/Utils.js";
 
 /**
@@ -54,6 +54,27 @@ import { filterItem } from "../../utils/Utils.js";
  *
  * @returns {JSX.Element} Leaflet Map component
  */
+
+// New component for handling geolocation
+function LocationMarker() {
+  const [position, setPosition] = useState(null);
+  const map = useMapEvents({
+    locationfound(e) {
+      setPosition(e.latlng);
+      map.flyTo(e.latlng, map.getZoom());
+    },
+  });
+
+  useEffect(() => {
+    map.locate();
+  }, [map]);
+
+  return position === null ? null : (
+    <Marker position={position} icon={youIcon}>
+      <Popup>You are here</Popup>
+    </Marker>
+  );
+}
 
 export default function Map({
   isEdit,
@@ -333,10 +354,20 @@ export default function Map({
     ) : null;
   };
 
+  const mapRef = useRef(null);
+
+  // New function to handle geolocation button click
+  const handleGeolocationClick = () => {
+    if (mapRef.current) {
+      mapRef.current.locate({setView: true, maxZoom: 16});
+    }
+  };
+
   return (
     <div>
       {/* Styles applied to MapContainer don't render unless page is reloaded */}
       <MapContainer
+        ref={mapRef}
         className="map-container"
         center={centerPosition}
         zoom={17}
@@ -369,7 +400,26 @@ export default function Map({
           </>
         )}
         <SetBoundsRectangles />
+        <LocationMarker />
       </MapContainer>
+      <IconButton
+        aria-label="Locate me"
+        icon={<MdMyLocation />}
+        onClick={handleGeolocationClick}
+        position="absolute"
+        top="80px"
+        left="10px"
+        zIndex={1000}
+        colorScheme={colorMode === 'dark' ? 'whiteAlpha' : 'blackAlpha'}
+        bg={colorMode === 'dark' ? 'gray.800' : 'white'}
+        color={colorMode === 'dark' ? 'white' : 'black'}
+        _hover={{
+          bg: colorMode === 'dark' ? 'gray.700' : 'gray.100',
+        }}
+        boxShadow="md"
+        borderRadius="full"
+        size="lg"
+      />
       {isOpen && (
         <InfoModal
           props={itemData}
