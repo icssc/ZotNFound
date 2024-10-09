@@ -101,7 +101,7 @@ export default function ResultsBar({
     <Box
       paddingX="5px"
       width={{ base: "90vw", md: "21vw" }}
-      height="80vh"
+      height="80dvh"
       overflowY="scroll"
       overflowX="hidden"
     >

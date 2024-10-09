@@ -19,7 +19,7 @@ export default function Login() {
   return (
     <Stack
       width={"100vw"}
-      minH={"100vh"}
+      minH={"100dvh"}
       direction={{ base: "column", md: "row" }}
     >
       <Flex p={8} flex={1} align={"center"} justify={"center"}>
@@ -47,7 +47,7 @@ export default function Login() {
       <Flex flex={1}>
         <Image
           width="100%"
-          height="100vh"
+          height="100dvh"
           alt={"Login Image"}
           objectFit={"cover"}
           src={wallpaper}
