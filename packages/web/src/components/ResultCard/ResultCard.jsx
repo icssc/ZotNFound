@@ -12,6 +12,7 @@ import {
   VStack,
   HStack,
   Icon,
+  Tooltip,
 } from "@chakra-ui/react";
 import { InfoIcon, TimeIcon, CalendarIcon } from "@chakra-ui/icons";
 import { FaMapMarkerAlt } from "react-icons/fa";
@@ -85,18 +86,22 @@ const ResultCard = React.memo(
                 {props.name}
               </Text>
               <HStack spacing={4}>
-                <Flex align="center">
-                  <Icon as={CalendarIcon} color={accentColor} mr={1} />
-                  <Text fontSize="sm" color="gray.500">
-                    {formattedDate}
-                  </Text>
-                </Flex>
-                <Flex align="center">
-                  <Icon as={TimeIcon} color={accentColor} mr={1} />
-                  <Text fontSize="sm" color="gray.500">
-                    {props.itemdate}
-                  </Text>
-                </Flex>
+                <Tooltip label="Date item was reported" placement="top">
+                  <Flex align="center">
+                    <Icon as={CalendarIcon} color={accentColor} mr={1} />
+                    <Text fontSize="sm" color="gray.500">
+                      {formattedDate}
+                    </Text>
+                  </Flex>
+                </Tooltip>
+                <Tooltip label="Time item was lost/found" placement="top">
+                  <Flex align="center">
+                    <Icon as={TimeIcon} color={accentColor} mr={1} />
+                    <Text fontSize="sm" color="gray.500">
+                      {props.itemdate}
+                    </Text>
+                  </Flex>
+                </Tooltip>
               </HStack>
               <Text fontSize="sm" color={textColor} noOfLines={2}>
                 {props.description}
