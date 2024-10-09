@@ -726,8 +726,7 @@ export default function Home() {
               left={10}
               bottom={10}
             ></Flex>
-            <FeedbackButtonMobile />
-
+            <FeedbackButtonMobile /> 
             <Map
               newAddedItem={newAddedItem}
               setNewAddedItem={setNewAddedItem}
