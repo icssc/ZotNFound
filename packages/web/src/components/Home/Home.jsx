@@ -65,6 +65,7 @@ import ListItemButton from "./ListItemButton";
 import FeedbackButtonMobile from "./FeedbackButtonMobile";
 
 import { MdAssignment } from "react-icons/md";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -341,178 +342,465 @@ export default function Home() {
           background={colorMode === "dark" ? "#2F363C" : ""}
         >
           {/* LOGO + TEXT */}
-          <ZotNFoundLogoText />
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <ZotNFoundLogoText />
+          </motion.div>
 
           {/* SEARCH BAR */}
           <HStack
             w={{ base: "100%", md: "30%" }}
             display={{ base: "none", md: "block" }}
           >
-            {/* size={{ base: "md", md: "lg" }} */}
-            <InputGroup>
-              <InputLeftElement pointerEvents="none">
-                <Search2Icon color="gray.300" />
-              </InputLeftElement>
-              <Input
-                color={colorMode === "dark" ? "white" : "black"}
-                bg={colorMode === "dark" ? "#15181a" : ""}
-                border={colorMode === "dark" ? "1px" : ""}
-                type="teal"
-                value={search}
-                placeholder="Search Items ..."
-                isDisabled={!loading}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </InputGroup>
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              {/* size={{ base: "md", md: "lg" }} */}
+              <InputGroup>
+                <InputLeftElement pointerEvents="none">
+                  <Search2Icon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  color={colorMode === "dark" ? "white" : "black"}
+                  bg={colorMode === "dark" ? "#15181a" : ""}
+                  border={colorMode === "dark" ? "1px" : ""}
+                  type="teal"
+                  value={search}
+                  placeholder="Search Items ..."
+                  isDisabled={!loading}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </InputGroup>
+            </motion.div>
           </HStack>
 
-          <Flex
-            alignItems="center"
-            justifyContent="space-between"
-            mr={7}
-            gap={{ base: 3, md: 5 }}
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Button onClick={toggleColorMode}>
-              {colorMode === "light" ? <SunIcon /> : <MoonIcon />}
-            </Button>
-            <Button
-              display={{ base: "none", md: "block" }}
-              leftIcon={<MdAssignment />}
-              colorScheme="blue"
-              onClick={() => {
-                window.open("https://forms.gle/Uud594N7QE6VbiDY6", "_blank");
-              }}
+            <Flex
+              alignItems="center"
+              justifyContent="space-between"
+              mr={7}
+              gap={{ base: 3, md: 5 }}
             >
-              Feedback
-            </Button>
-            {user ? (
-              <>
-                <Flex
-                  alignItems={"center"}
-                  gap={{ base: 1, md: 1.5 }}
-                  justifyContent={"center"}
-                  background={"#74a2fa"}
-                  padding={{ base: "5px", md: 1.5 }}
-                  borderRadius={"xl"}
-                  _hover={{
-                    background: "#365fad",
-                  }}
-                  _active={{
-                    background: "#365fad",
-                  }}
-                  cursor={"pointer"}
-                  onClick={onLeaderboardOpen}
-                >
-                  <Image
-                    ref={btnRef}
-                    src={cookie}
-                    h={{ base: "15px", md: "20px" }}
-                    w={{ base: "15px", md: "25px" }}
-                  />
-                  <Text
-                    as={"b"}
-                    fontSize={{ base: "sm", md: "lg" }}
-                    color={"white"}
-                  >
-                    {user
-                      ? leaderboard.find((u) => u.email === user.email)?.points
-                      : 0}
-                  </Text>
-                </Flex>
-                <Menu>
-                  <MenuButton>
-                    <Image
-                      src={user?.photoURL}
-                      h={{ base: "27px", md: "80px" }}
-                      w={{ base: "27px", md: "80px" }}
-                      borderRadius="100%"
-                    />
-                  </MenuButton>
-
-                  {/* User Emblem Dropdown */}
-                  <MenuList zIndex={10000}>
-                    <MenuItem _focus={{ bg: "white" }}>
-                      <Image
-                        boxSize="1.2rem"
-                        src={userlogo}
-                        alt="logoutbutton"
-                        mr="12px"
-                      />
-                      {user?.email}
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        setFindFilter((prev) => ({
-                          ...prev,
-                          isYourPosts: !prev.isYourPosts,
-                        }));
-                        onOpen();
-                      }}
-                    >
-                      <Image
-                        boxSize="1.2rem"
-                        src={yourposts}
-                        alt="logoutbutton"
-                        mr="12px"
-                      />
-                      Your Posts
-                    </MenuItem>
-
-                    <MenuItem onClick={subscribeToggle}>
-                      {subscription ? (
-                        <>
-                          <Image
-                            boxSize="1.2rem"
-                            src={unsubscribe}
-                            alt="Unsubscribe from newsletter button"
-                            mr="12px"
-                          />
-                          Unsubscribe
-                        </>
-                      ) : (
-                        <>
-                          <Image
-                            boxSize="1.2rem"
-                            src={subscribe}
-                            alt="Subscribe from newsletter button"
-                            mr="12px"
-                          />
-                          Subscribe
-                        </>
-                      )}
-                    </MenuItem>
-
-                    <MenuItem onClick={handleLogout}>
-                      <Image
-                        boxSize="1.2rem"
-                        src={logout}
-                        alt="logoutbutton"
-                        mr="12px"
-                      />
-                      Logout
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
-              </>
-            ) : (
-              <Button
-                h={{ base: "6vh", md: "7vh" }}
-                w={{ base: "30vw", md: "8vw" }}
-                borderRadius={20}
-                fontSize="xl"
-                variant="outline"
-                colorScheme="black"
-                onClick={onLoginModalOpen}
-              >
-                Sign in
+              <Button onClick={toggleColorMode}>
+                {colorMode === "light" ? <SunIcon /> : <MoonIcon />}
               </Button>
-            )}
+              <Button
+                display={{ base: "none", md: "block" }}
+                leftIcon={<MdAssignment />}
+                colorScheme="blue"
+                onClick={() => {
+                  window.open("https://forms.gle/Uud594N7QE6VbiDY6", "_blank");
+                }}
+              >
+                Feedback
+              </Button>
+              {user ? (
+                <>
+                  <Flex
+                    alignItems={"center"}
+                    gap={{ base: 1, md: 1.5 }}
+                    justifyContent={"center"}
+                    background={"#74a2fa"}
+                    padding={{ base: "5px", md: 1.5 }}
+                    borderRadius={"xl"}
+                    _hover={{
+                      background: "#365fad",
+                    }}
+                    _active={{
+                      background: "#365fad",
+                    }}
+                    cursor={"pointer"}
+                    onClick={onLeaderboardOpen}
+                  >
+                    <Image
+                      ref={btnRef}
+                      src={cookie}
+                      h={{ base: "15px", md: "20px" }}
+                      w={{ base: "15px", md: "25px" }}
+                    />
+                    <Text
+                      as={"b"}
+                      fontSize={{ base: "sm", md: "lg" }}
+                      color={"white"}
+                    >
+                      {user
+                        ? leaderboard.find((u) => u.email === user.email)
+                            ?.points
+                        : 0}
+                    </Text>
+                  </Flex>
+                  <Menu>
+                    <MenuButton>
+                      <Image
+                        src={user?.photoURL}
+                        h={{ base: "27px", md: "80px" }}
+                        w={{ base: "27px", md: "80px" }}
+                        borderRadius="100%"
+                      />
+                    </MenuButton>
 
-            <Flex display={{ base: "none", md: "block" }}>
+                    {/* User Emblem Dropdown */}
+                    <MenuList zIndex={10000}>
+                      <MenuItem _focus={{ bg: "white" }}>
+                        <Image
+                          boxSize="1.2rem"
+                          src={userlogo}
+                          alt="logoutbutton"
+                          mr="12px"
+                        />
+                        {user?.email}
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          setFindFilter((prev) => ({
+                            ...prev,
+                            isYourPosts: !prev.isYourPosts,
+                          }));
+                          onOpen();
+                        }}
+                      >
+                        <Image
+                          boxSize="1.2rem"
+                          src={yourposts}
+                          alt="logoutbutton"
+                          mr="12px"
+                        />
+                        Your Posts
+                      </MenuItem>
+
+                      <MenuItem onClick={subscribeToggle}>
+                        {subscription ? (
+                          <>
+                            <Image
+                              boxSize="1.2rem"
+                              src={unsubscribe}
+                              alt="Unsubscribe from newsletter button"
+                              mr="12px"
+                            />
+                            Unsubscribe
+                          </>
+                        ) : (
+                          <>
+                            <Image
+                              boxSize="1.2rem"
+                              src={subscribe}
+                              alt="Subscribe from newsletter button"
+                              mr="12px"
+                            />
+                            Subscribe
+                          </>
+                        )}
+                      </MenuItem>
+
+                      <MenuItem onClick={handleLogout}>
+                        <Image
+                          boxSize="1.2rem"
+                          src={logout}
+                          alt="logoutbutton"
+                          mr="12px"
+                        />
+                        Logout
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                </>
+              ) : (
+                <Button
+                  h={{ base: "6vh", md: "7vh" }}
+                  w={{ base: "30vw", md: "8vw" }}
+                  borderRadius={20}
+                  fontSize="xl"
+                  variant="outline"
+                  colorScheme="black"
+                  onClick={onLoginModalOpen}
+                >
+                  Sign in
+                </Button>
+              )}
+
+              <Flex display={{ base: "none", md: "block" }}>
+                <CreateModal
+                  isOpen={isOpenCreateModal}
+                  onOpen={onOpenCreateModal}
+                  onClose={onCloseCreateModal}
+                  setIsCreate={setIsCreate}
+                  isCreate={isCreate}
+                  isEdit={isEdit}
+                  setIsEdit={setIsEdit}
+                  setPosition={setPosition}
+                  centerPosition={centerPosition}
+                  newAddedItem={newAddedItem}
+                  setNewAddedItem={setNewAddedItem}
+                  setUploadImg={setUploadImg}
+                  uploadImg={uploadImg}
+                  upload={upload}
+                />
+              </Flex>
+            </Flex>
+          </motion.div>
+        </Flex>
+
+        {/* Mobile Search */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+        >
+          <Flex
+            w="100%"
+            display={{ base: "flex", md: "none" }}
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Flex width="95%">
+              <InputGroup>
+                <InputLeftElement pointerEvents="none">
+                  <Search2Icon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  color={colorMode === "dark" ? "white" : "black"}
+                  bg={colorMode === "dark" ? "#15181a" : ""}
+                  border={colorMode === "dark" ? "1px" : "1px"}
+                  borderColor={colorMode === "light" ? "blue" : "gray.300"}
+                  type="teal"
+                  value={search}
+                  placeholder="Search Items ..."
+                  isDisabled={!loading}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </InputGroup>
+            </Flex>
+          </Flex>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+        >
+          <Flex
+            position="relative"
+            marginTop={{ base: "1vh", md: "2%" }}
+            px={{ base: 0, md: "2%" }}
+          >
+            <Flex
+              width={{ base: "100vw", md: "75vw" }}
+              padding={{ base: 3, md: 5 }}
+              position="absolute"
+              zIndex={1000}
+              flexDirection="row"
+              justifyContent="space-between"
+            >
+              {isEdit ? (
+                <Flex>
+                  <Alert
+                    status="warning"
+                    textAlign="center"
+                    alignItems="center"
+                    justifyContent="center"
+                    height="80px"
+                    border="3px red solid"
+                    borderRadius="20px"
+                    boxShadow="xl"
+                  >
+                    <AlertIcon />
+                    <AlertTitle>
+                      Click on the Map to place your item 📍
+                    </AlertTitle>
+                  </Alert>
+                </Flex>
+              ) : (
+                <Flex gap="4">
+                  <ButtonGroup
+                    variant="outline"
+                    colorScheme="#74a2fa"
+                    color={colorMode === "light" ? "#5f85cf" : "white"}
+                    spacing={3}
+                    // boxShadow="5px 2px 9px rgba(0, 0, 0, 0.2);"
+                  >
+                    <Button
+                      backgroundColor={
+                        colorMode === "light" ? "white" : "#2F363C"
+                      }
+                      onClick={onOpen}
+                      size="lg"
+                      gap={1}
+                      fontSize={{ base: "xl", md: "2xl" }}
+                      borderRadius={"lg"}
+                      borderWidth={2}
+                      leftIcon={<SettingsIcon />}
+                    >
+                      Filter
+                    </Button>
+                    <DateRangeFilter />
+                  </ButtonGroup>
+
+                  <Filter
+                    setFindFilter={setFindFilter}
+                    findFilter={findFilter}
+                    onOpen={onOpen}
+                    isOpen={isOpen}
+                    onClose={onClose}
+                  />
+
+                  <Button
+                    display={{ md: "none" }}
+                    background={"#74a2fa"}
+                    color={"white"}
+                    onClick={onResultsBarOpen}
+                    fontSize="2xl"
+                    boxShadow={
+                      colorMode === "light"
+                        ? "7px 7px 14px #666666"
+                        : "7px 7px 14px #1A1E22"
+                    }
+                    size="lg"
+                    gap={2}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                  >
+                    <StarIcon />
+                  </Button>
+
+                  <Drawer
+                    isOpen={isResultsBarOpen}
+                    placement="right"
+                    onClose={onResultsBarClose}
+                    size="full"
+                  >
+                    <DrawerOverlay />
+                    <DrawerContent>
+                      <DrawerCloseButton size="lg" />
+                      <DrawerHeader>
+                        {isFilterOff() ? (
+                          <Text fontSize="2xl">All Posts</Text>
+                        ) : (
+                          <Flex alignItems="center" gap={1}>
+                            <Text fontSize="2xl" color="green">
+                              Filter: ON
+                            </Text>
+                            <SettingsIcon color="green" />
+                          </Flex>
+                        )}
+                      </DrawerHeader>
+                      <DrawerBody overflow="hidden">
+                        <Flex width="100%" flexDir="column">
+                          <Flex>
+                            <InputGroup
+                              mb="1%"
+                              width="90%"
+                              mx="auto"
+                              size={{ base: "md", md: "lg" }}
+                            >
+                              <InputLeftAddon children="🔎" />
+                              <Input
+                                type="teal"
+                                value={search}
+                                placeholder="Search Items ..."
+                                isDisabled={!loading}
+                                onChange={(e) => setSearch(e.target.value)}
+                              />
+                            </InputGroup>
+
+                            <Button
+                              colorScheme="green"
+                              size="md"
+                              fontSize="xl"
+                              mr={3}
+                              onClick={onOpen}
+                            >
+                              <SettingsIcon />
+                            </Button>
+                          </Flex>
+
+                          <ResultsBar
+                            search={search}
+                            findFilter={findFilter}
+                            setFocusLocation={setFocusLocation}
+                            onResultsBarClose={onResultsBarClose}
+                            setLeaderboard={setLeaderboard}
+                          />
+                        </Flex>
+                      </DrawerBody>
+                      <DrawerFooter></DrawerFooter>
+                    </DrawerContent>
+                  </Drawer>
+                </Flex>
+              )}
+            </Flex>
+
+            <Flex
+              position="absolute"
+              background={colorMode === "dark" ? "#1A1E22" : ""}
+            >
+              <ListItemButton
+                switchState={!isEdit}
+                addCallback={handleListItemButtonClick}
+                cancelCallback={handleCancelItemButtonClick}
+                position="absolute"
+                right={10}
+                bottom={10}
+              />
+              <Flex
+                zIndex={1000}
+                variant="solid"
+                position="absolute"
+                left={10}
+                bottom={10}
+              ></Flex>
+              <FeedbackButtonMobile />
+
+              <Map
+                newAddedItem={newAddedItem}
+                setNewAddedItem={setNewAddedItem}
+                isEdit={isEdit}
+                email={user?.email}
+                setIsEdit={setIsEdit}
+                search={search}
+                findFilter={findFilter}
+                setIsCreate={setIsCreate}
+                isCreate={isCreate}
+                centerPosition={centerPosition}
+                position={position}
+                setPosition={setPosition}
+                focusLocation={focusLocation}
+                setFocusLocation={setFocusLocation}
+                setUploadImg={setUploadImg}
+                uploadImg={uploadImg}
+                upload={upload}
+                setLeaderboard={setLeaderboard}
+              />
+            </Flex>
+            <Flex
+              position="absolute"
+              top={0}
+              right={5}
+              display={{ base: "none", md: "flex" }}
+              background={colorMode === "dark" ? "#1A1E22" : ""}
+            >
+              <ResultsBar
+                search={search}
+                findFilter={findFilter}
+                setFocusLocation={setFocusLocation}
+                setLeaderboard={setLeaderboard}
+              />
+            </Flex>
+            <Box
+              display={{ base: "block", md: "none" }}
+              position="fixed"
+              bottom="2.5%"
+              width="100vw"
+            >
               <CreateModal
-                isOpen={isOpenCreateModal}
-                onOpen={onOpenCreateModal}
-                onClose={onCloseCreateModal}
                 setIsCreate={setIsCreate}
                 isCreate={isCreate}
                 isEdit={isEdit}
@@ -525,265 +813,9 @@ export default function Home() {
                 uploadImg={uploadImg}
                 upload={upload}
               />
-            </Flex>
+            </Box>
           </Flex>
-        </Flex>
-
-        {/* Mobile Search */}
-        <Flex
-          w="100%"
-          display={{ base: "flex", md: "none" }}
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Flex width="95%">
-            <InputGroup>
-              <InputLeftElement pointerEvents="none">
-                <Search2Icon color="gray.300" />
-              </InputLeftElement>
-              <Input
-                color={colorMode === "dark" ? "white" : "black"}
-                bg={colorMode === "dark" ? "#15181a" : ""}
-                border={colorMode === "dark" ? "1px" : "1px"}
-                borderColor={colorMode === "light" ? "blue" : "gray.300"}
-                type="teal"
-                value={search}
-                placeholder="Search Items ..."
-                isDisabled={!loading}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </InputGroup>
-          </Flex>
-        </Flex>
-
-        <Flex
-          position="relative"
-          marginTop={{ base: "1vh", md: "2%" }}
-          px={{ base: 0, md: "2%" }}
-        >
-          <Flex
-            width={{ base: "100vw", md: "75vw" }}
-            padding={{ base: 3, md: 5 }}
-            position="absolute"
-            zIndex={1000}
-            flexDirection="row"
-            justifyContent="space-between"
-          >
-            {isEdit ? (
-              <Flex>
-                <Alert
-                  status="warning"
-                  textAlign="center"
-                  alignItems="center"
-                  justifyContent="center"
-                  height="80px"
-                  border="3px red solid"
-                  borderRadius="20px"
-                  boxShadow="xl"
-                >
-                  <AlertIcon />
-                  <AlertTitle>
-                    Click on the Map to place your item 📍
-                  </AlertTitle>
-                </Alert>
-              </Flex>
-            ) : (
-              <Flex gap="4">
-                <ButtonGroup
-                  variant="outline"
-                  colorScheme="#74a2fa"
-                  color={colorMode === "light" ? "#5f85cf" : "white"}
-                  spacing={3}
-                  // boxShadow="5px 2px 9px rgba(0, 0, 0, 0.2);"
-                >
-                  <Button
-                    backgroundColor={
-                      colorMode === "light" ? "white" : "#2F363C"
-                    }
-                    onClick={onOpen}
-                    size="lg"
-                    gap={1}
-                    fontSize={{ base: "xl", md: "2xl" }}
-                    borderRadius={"lg"}
-                    borderWidth={2}
-                    leftIcon={<SettingsIcon />}
-                  >
-                    Filter
-                  </Button>
-                  <DateRangeFilter />
-                </ButtonGroup>
-
-                <Filter
-                  setFindFilter={setFindFilter}
-                  findFilter={findFilter}
-                  onOpen={onOpen}
-                  isOpen={isOpen}
-                  onClose={onClose}
-                />
-
-                <Button
-                  display={{ md: "none" }}
-                  background={"#74a2fa"}
-                  color={"white"}
-                  onClick={onResultsBarOpen}
-                  fontSize="2xl"
-                  boxShadow={
-                    colorMode === "light"
-                      ? "7px 7px 14px #666666"
-                      : "7px 7px 14px #1A1E22"
-                  }
-                  size="lg"
-                  gap={2}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                >
-                  <StarIcon />
-                </Button>
-
-                <Drawer
-                  isOpen={isResultsBarOpen}
-                  placement="right"
-                  onClose={onResultsBarClose}
-                  size="full"
-                >
-                  <DrawerOverlay />
-                  <DrawerContent>
-                    <DrawerCloseButton size="lg" />
-                    <DrawerHeader>
-                      {isFilterOff() ? (
-                        <Text fontSize="2xl">All Posts</Text>
-                      ) : (
-                        <Flex alignItems="center" gap={1}>
-                          <Text fontSize="2xl" color="green">
-                            Filter: ON
-                          </Text>
-                          <SettingsIcon color="green" />
-                        </Flex>
-                      )}
-                    </DrawerHeader>
-                    <DrawerBody overflow="hidden">
-                      <Flex width="100%" flexDir="column">
-                        <Flex>
-                          <InputGroup
-                            mb="1%"
-                            width="90%"
-                            mx="auto"
-                            size={{ base: "md", md: "lg" }}
-                          >
-                            <InputLeftAddon children="🔎" />
-                            <Input
-                              type="teal"
-                              value={search}
-                              placeholder="Search Items ..."
-                              isDisabled={!loading}
-                              onChange={(e) => setSearch(e.target.value)}
-                            />
-                          </InputGroup>
-
-                          <Button
-                            colorScheme="green"
-                            size="md"
-                            fontSize="xl"
-                            mr={3}
-                            onClick={onOpen}
-                          >
-                            <SettingsIcon />
-                          </Button>
-                        </Flex>
-
-                        <ResultsBar
-                          search={search}
-                          findFilter={findFilter}
-                          setFocusLocation={setFocusLocation}
-                          onResultsBarClose={onResultsBarClose}
-                          setLeaderboard={setLeaderboard}
-                        />
-                      </Flex>
-                    </DrawerBody>
-                    <DrawerFooter></DrawerFooter>
-                  </DrawerContent>
-                </Drawer>
-              </Flex>
-            )}
-          </Flex>
-
-          <Flex
-            position="absolute"
-            background={colorMode === "dark" ? "#1A1E22" : ""}
-          >
-            <ListItemButton
-              switchState={!isEdit}
-              addCallback={handleListItemButtonClick}
-              cancelCallback={handleCancelItemButtonClick}
-              position="absolute"
-              right={10}
-              bottom={10}
-            />
-            <Flex
-              zIndex={1000}
-              variant="solid"
-              position="absolute"
-              left={10}
-              bottom={10}
-            ></Flex>
-            <FeedbackButtonMobile />
-
-            <Map
-              newAddedItem={newAddedItem}
-              setNewAddedItem={setNewAddedItem}
-              isEdit={isEdit}
-              email={user?.email}
-              setIsEdit={setIsEdit}
-              search={search}
-              findFilter={findFilter}
-              setIsCreate={setIsCreate}
-              isCreate={isCreate}
-              centerPosition={centerPosition}
-              position={position}
-              setPosition={setPosition}
-              focusLocation={focusLocation}
-              setFocusLocation={setFocusLocation}
-              setUploadImg={setUploadImg}
-              uploadImg={uploadImg}
-              upload={upload}
-              setLeaderboard={setLeaderboard}
-            />
-          </Flex>
-          <Flex
-            position="absolute"
-            top={0}
-            right={5}
-            display={{ base: "none", md: "flex" }}
-            background={colorMode === "dark" ? "#1A1E22" : ""}
-          >
-            <ResultsBar
-              search={search}
-              findFilter={findFilter}
-              setFocusLocation={setFocusLocation}
-              setLeaderboard={setLeaderboard}
-            />
-          </Flex>
-          <Box
-            display={{ base: "block", md: "none" }}
-            position="fixed"
-            bottom="2.5%"
-            width="100vw"
-          >
-            <CreateModal
-              setIsCreate={setIsCreate}
-              isCreate={isCreate}
-              isEdit={isEdit}
-              setIsEdit={setIsEdit}
-              setPosition={setPosition}
-              centerPosition={centerPosition}
-              newAddedItem={newAddedItem}
-              setNewAddedItem={setNewAddedItem}
-              setUploadImg={setUploadImg}
-              uploadImg={uploadImg}
-              upload={upload}
-            />
-          </Box>
-        </Flex>
+        </motion.div>
         {!loading && (
           <Flex
             width="100%"
