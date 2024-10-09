@@ -78,7 +78,7 @@ const ResultCard = React.memo(
             >
               <Text
                 fontWeight="bold"
-                fontSize={{ base: "xl", md: "2xl" }}
+                fontSize={{ base: "lg", md: "xl" }}
                 color={textColor}
                 noOfLines={2}
               >
