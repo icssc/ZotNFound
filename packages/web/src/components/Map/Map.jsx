@@ -25,7 +25,7 @@ import {
   Circle,
   useMapEvents,
 } from "react-leaflet";
-import { useDisclosure, useColorMode } from "@chakra-ui/react";
+import { useDisclosure, useColorMode, useColorModeValue, useToast } from "@chakra-ui/react";
 import InfoModal from "../InfoModal/InfoModal";
 
 import DataContext from "../../context/DataContext";
@@ -34,6 +34,12 @@ import { UserAuth } from "../../context/AuthContext";
 import axios from "axios";
 
 import { filterItem } from "../../utils/Utils.js";
+
+// Add this new import for the geocoding service
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
+import { Input, Button, Box, IconButton, Spinner, VStack, Text } from "@chakra-ui/react"; // Import Chakra UI components
+import { SearchIcon } from "@chakra-ui/icons";
+import debounce from 'lodash/debounce';
 
 /**
  * Map is uses react-leaflet's API to communicate user actions to map entities and information
@@ -94,11 +100,11 @@ export default function Map({
   ];
   const bounds = L.latLngBounds(allowedBounds);
 
-  const mapBoundsCoordinates = [
-    [33.625038, -117.875143],
-    [33.668298, -117.808742],
-  ];
-  const mapBounds = L.latLngBounds(mapBoundsCoordinates);
+  // const mapBoundsCoordinates = [
+  //   [33.625038, -117.875143],
+  //   [33.668298, -117.808742],
+  // ];
+  // const mapBounds = L.latLngBounds(mapBoundsCoordinates);
 
   const handleMarkerSelect = async () => {
     setShowDonut(true);
@@ -333,18 +339,32 @@ export default function Map({
     ) : null;
   };
 
+  const [locationSearch, setLocationSearch] = useState("");
+  const provider = useMemo(() => new OpenStreetMapProvider(), []);
+
+  const handleLocationSearch = useCallback(async () => {
+    if (locationSearch.trim() === "") return;
+
+    try {
+      const results = await provider.search({ query: locationSearch });
+      if (results.length > 0) {
+        const { x, y } = results[0];
+        setFocusLocation([y, x]);
+      }
+    } catch (error) {
+      console.error("Error searching for location:", error);
+    }
+  }, [locationSearch, provider, setFocusLocation]);
+
   return (
     <div>
-      {/* Styles applied to MapContainer don't render unless page is reloaded */}
       <MapContainer
         className="map-container"
         center={centerPosition}
         zoom={17}
-        minZoom={15}
+        minZoom={8}
         zoomControl={false}
         attributionControl={false}
-        maxBounds={mapBounds}
-        maxBoundsViscosity={1.0}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -368,8 +388,15 @@ export default function Map({
             />
           </>
         )}
-        <SetBoundsRectangles />
+        <MapControls
+          locationSearch={locationSearch}
+          setLocationSearch={setLocationSearch}
+          handleLocationSearch={handleLocationSearch}
+          focusLocation={focusLocation}
+          setFocusLocation={setFocusLocation}
+        />
       </MapContainer>
+
       {isOpen && (
         <InfoModal
           props={itemData}
@@ -381,5 +408,166 @@ export default function Map({
         />
       )}
     </div>
+  );
+}
+
+function MapControls({ locationSearch, setLocationSearch, handleLocationSearch, focusLocation, setFocusLocation }) {
+  const map = useMap();
+  const bg = useColorModeValue("white", "gray.800");
+  const color = useColorModeValue("gray.800", "white");
+  const placeholderColor = useColorModeValue("gray.500", "gray.400");
+  const [isLoading, setIsLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionsRef = useRef(null);
+
+  useEffect(() => {
+    if (focusLocation) {
+      map.flyTo(focusLocation, 18);
+    }
+  }, [focusLocation, map]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useMapEvents({
+    click: () => {
+      setShowSuggestions(false);
+    },
+  });
+
+  const fetchSuggestions = async (value) => {
+    if (value.length > 2) {
+      try {
+        const response = await axios.get(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${value}&limit=5`
+        );
+        setSuggestions(response.data);
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+      }
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  // Debounce the fetchSuggestions function
+  const debouncedFetchSuggestions = useCallback(
+    debounce(fetchSuggestions, 300),
+    []
+  );
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setLocationSearch(value);
+    debouncedFetchSuggestions(value);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      performSearch();
+    }
+  };
+
+  const performSearch = async () => {
+    setIsLoading(true);
+    setShowSuggestions(false);
+    try {
+      await handleLocationSearch();
+    } catch (error) {
+      console.error("Error searching for location:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setLocationSearch(suggestion.display_name);
+    setShowSuggestions(false);
+    setFocusLocation([parseFloat(suggestion.lat), parseFloat(suggestion.lon)]);
+  };
+
+  return (
+    <Box
+      position="absolute"
+      bottom={4}
+      left={4}
+      zIndex={1000}
+      ref={suggestionsRef}
+      width="250px"
+    >
+      {showSuggestions && suggestions.length > 0 && (
+        <VStack
+          mb={2}
+          align="stretch"
+          spacing={1}
+          bg={bg}
+          borderRadius="md"
+          boxShadow="lg"
+          maxHeight="200px"
+          overflowY="auto"
+        >
+          {suggestions.map((suggestion) => (
+            <Box
+              key={suggestion.place_id}
+              p={2}
+              _hover={{ bg: useColorModeValue("gray.100", "gray.700") }}
+              cursor="pointer"
+              onClick={() => handleSuggestionClick(suggestion)}
+            >
+              <Text fontSize="sm" isTruncated>{suggestion.display_name}</Text>
+            </Box>
+          ))}
+        </VStack>
+      )}
+      <Box
+        bg={bg}
+        color={color}
+        p={2}
+        borderRadius="full"
+        boxShadow="lg"
+        display="flex"
+        alignItems="center"
+      >
+        <Input
+          value={locationSearch}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Search location"
+          size="sm"
+          variant="unstyled"
+          pl={3}
+          pr={1}
+          _placeholder={{ color: placeholderColor }}
+          width="calc(100% - 40px)"
+        />
+        {isLoading ? (
+          <Spinner size="sm" color="blue.500" mr={2} />
+        ) : (
+          <IconButton
+            icon={<SearchIcon />}
+            onClick={performSearch}
+            size="sm"
+            colorScheme="blue"
+            variant="ghost"
+            borderRadius="full"
+            aria-label="Search location"
+            minWidth="40px"
+          />
+        )}
+      </Box>
+    </Box>
   );
 }
