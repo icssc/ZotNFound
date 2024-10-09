@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Button, Text, Flex, Stack, Icon, Image } from "@chakra-ui/react";
+import { Button, Text, Flex, Stack, Icon, Image, Box} from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -16,12 +16,18 @@ import about2 from "../../assets/images/about2.png";
 import about3 from "../../assets/images/about3.png";
 import about4 from "../../assets/images/about4.png";
 import { getItems, getLeaderboardCount } from "../../utils/ApiUtils";
+import { motion } from "framer-motion";
+import { useColorMode, useColorModeValue } from "@chakra-ui/react";
 
 export default function AboutPage() {
   const navigate = useNavigate();
   const [screenWidth, setScreenWidth] = useState(window.screen.width);
   const [data, setData] = useState([]);
   const [leaderboardCount, setLeaderboardCount] = useState(0);
+  const { colorMode } = useColorMode();
+  const bgColor = useColorModeValue("gray.50", "gray.900");
+  const textColor = useColorModeValue("gray.800", "gray.100");
+  const accentColor = useColorModeValue("blue.500", "blue.300");
 
   window.onresize = () => {
     setScreenWidth(window.screen.width);
@@ -42,325 +48,221 @@ export default function AboutPage() {
   }, []);
 
   return (
-    <Flex
-      alignItems={"center"}
-      direction={"column"}
-      height={"auto"}
-      paddingTop={"1em"}
-      gap={"1em"}
-      width={"auto"}
-      className="parent"
-      overflowX={"hidden"}
+    <Box
+      bg={bgColor}
+      color={textColor}
+      minHeight="100vh"
+      overflowY="auto"
     >
-      <Stack
-        direction={{ base: "column", md: "column", lg: "row" }}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        width={"100vw"}
+      <Flex
+        direction="column"
+        align="center"
+        maxWidth="1200px"
+        margin="0 auto"
+        minHeight="100vh"
       >
-        <Flex display={screenWidth < 992 ? "none" : "block"} marginLeft={10}>
-          <Button onClick={handleClick} visibility={"hidden"}>
-            <Icon as={ArrowBackIcon} marginRight={"2%"} />
-            Return Home{" "}
+        <Flex
+          as="header"
+          width="100%"
+          justify="space-between"
+          align="center"
+          py={4}
+          px={8}
+          position="sticky"
+          top={0}
+          bg={bgColor}
+          zIndex={10}
+        >
+          <Button onClick={handleClick} leftIcon={<ArrowBackIcon />}>
+            Return Home
           </Button>
+          <Flex align="center">
+            <Text fontSize="3xl" fontWeight="bold" mr={2}>
+              ZotnFound
+            </Text>
+            <Image w="50px" h="50px" src={small_logo} />
+          </Flex>
         </Flex>
-        <Flex alignItems={"center"} flexDir={{ md: "row", base: "column" }}>
-          <Text fontSize={{ base: "2rem", md: "3rem" }} as="b" width={"10em"}>
-            We are ZotnFound
-          </Text>
-          <Image w={"70px"} h={"70px"} src={small_logo} />
-        </Flex>
-        <Flex>
-          <Button onClick={handleClick} marginRight={{ lg: 10 }}>
-            <Icon as={ArrowBackIcon} marginRight={"2%"} />
-            Return Home{" "}
-          </Button>
-        </Flex>
-      </Stack>
-      <Text
-        fontSize={{ base: "1rem", md: "1.5rem" }}
-        width={{ base: "20em", md: "40em" }}
-      >
-        @ZotnFound!
-      </Text>
-      <Flex
-        direction={"row"}
-        justifyContent="center"
-        alignItems={"center"}
-        gap={"1em"}
-        width={"100vw"}
-        bg={"#fffcf6"}
-        mt={"1%"}
-        mb={"1%"}
-      >
-        <Flex direction={"column"} m={"1%"}>
-          <Text fontWeight={600} fontSize={{ base: "1.3rem", md: "2.4rem" }}>
-            {data.filter((item) => item.islost).length}
-          </Text>
-          <Text fontSize={{ base: "0.8rem", md: "1.2rem" }}>Lost Items</Text>
-        </Flex>
-        <Flex direction={"column"} m={"1%"}>
-          <Text fontWeight={600} fontSize={{ base: "1.3rem", md: "2.4rem" }}>
-            {data.filter((item) => !item.islost).length}
-          </Text>
-          <Text fontSize={{ base: "0.8rem", md: "1.2rem" }}>Found Items</Text>
-        </Flex>
-        <Flex direction={"column"} m={"1%"}>
-          <Text fontWeight={600} fontSize={{ base: "1.3rem", md: "2.4rem" }}>
-            {data.filter((item) => item.isresolved).length}
-          </Text>
-          <Text fontSize={{ base: "0.8rem", md: "1.2rem" }}>
-            Successful Returns
-          </Text>
-        </Flex>
-        <Flex direction={"column"} m={"1%"}>
-          <Text fontWeight={600} fontSize={{ base: "1.3rem", md: "2.4rem" }}>
-            {leaderboardCount}
-          </Text>
-          <Text fontSize={{ base: "0.8rem", md: "1.2rem" }}>Active Users</Text>
-        </Flex>
-      </Flex>
-      <Flex
-        flexBasis={"100%"}
-        alignItems={"center"}
-        justifyContent={"center"}
-        direction={"column"}
-        bg={"#fffcf6"}
-        w="100vw"
-      >
-        <Text
-          fontWeight={500}
-          fontSize={{ base: "4xl", md: "4xl" }}
-          mb={5}
-          mt={"1%"}
-        >
-          Explore how ZotnFound works
-        </Text>
-        <Flex width={{ base: "100%", md: "60em" }} mb={10}>
-          <Swiper
-            spaceBetween={10}
-            slidesPerView={1}
-            modules={[Navigation, Pagination]}
-            navigation
-            pagination={{ clickable: true, dynamicBullets: true }}
+
+        <Box width="100%" px={4} flex="1">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <SwiperSlide>
-              <Flex
-                direction="column"
-                justifyContent={"center"}
-                alignItems={"center"}
-              >
-                <Image src={about1} />
-                <Text
-                  fontWeight={500}
-                  fontSize={{ base: "1.3rem", md: "1.6rem" }}
-                  mt={"2%"}
-                >
-                  Get Started - It's Simple & Easy
-                </Text>
-                <Text
-                  fontSize={{ base: "0.8rem", md: "1rem" }}
-                  mt={"2%"}
-                  maxW={"40em"}
-                >
-                  Log in with your UCI email and start listing lost & found
-                  items! {"(No need to sign up or create an account)."}
-                </Text>
-              </Flex>
-            </SwiperSlide>
-            <SwiperSlide>
-              <Flex
-                direction="column"
-                justifyContent={"center"}
-                alignItems={"center"}
-              >
-                <Image src={about2} />
-                <Text
-                  fontWeight={500}
-                  fontSize={{ base: "1.3rem", md: "1.6rem" }}
-                  mt={"2%"}
-                >
-                  Navigate Around the Map
-                </Text>
-                <Text
-                  fontSize={{ base: "0.8rem", md: "1rem" }}
-                  mt={"2%"}
-                  maxW={"40em"}
-                >
-                  Effortlessly navigate UCI's interactive map to efficiently
-                  search for lost and found items. Explore the digital landscape
-                  with ease as you locate and reclaim belongings!
-                </Text>
-              </Flex>
-            </SwiperSlide>
-            <SwiperSlide>
-              <Flex
-                direction="column"
-                justifyContent={"center"}
-                alignItems={"center"}
-              >
-                <Image src={about3} />
-                <Text
-                  fontWeight={500}
-                  fontSize={{ base: "1.3rem", md: "1.6rem" }}
-                  mt={"2%"}
-                >
-                  Search for Lost & Found Items
-                </Text>
-                <Text
-                  fontSize={{ base: "0.8rem", md: "1rem" }}
-                  mt={"2%"}
-                  maxW={"40em"}
-                >
-                  Utilize the easy to use filter and search bar to look up
-                  specific items based off their name, description, type, or the
-                  time estimate of when the item was lost/found.
-                </Text>
-              </Flex>
-            </SwiperSlide>
-            <SwiperSlide>
-              <Flex
-                direction="column"
-                justifyContent={"center"}
-                alignItems={"center"}
-              >
-                <Image src={about4} />
-                <Text
-                  fontWeight={500}
-                  fontSize={{ base: "1.3rem", md: "1.6rem" }}
-                  mt={"2%"}
-                >
-                  Upload Your Items - Join the Community!
-                </Text>
-                <Text
-                  fontSize={{ base: "0.8rem", md: "1rem" }}
-                  mt={"2%"}
-                  maxW={"40em"}
-                >
-                  Show off the different items that you may have found or lost.
-                  Participate in helping return items back to the community and
-                  stay on a lookout for any items that may be yours!
-                </Text>
-              </Flex>
-            </SwiperSlide>
-            <SwiperSlide>
-              <Flex
-                direction="column"
-                justifyContent={"center"}
-                alignItems={"center"}
-              >
-                <Image src={login_page} />
-                <Text
-                  fontWeight={500}
-                  fontSize={{ base: "1.3rem", md: "1.6rem" }}
-                  mt={"2%"}
-                >
-                  Contact Others and Connect
-                </Text>
-                <Text
-                  fontSize={{ base: "0.8rem", md: "1rem" }}
-                  mt={"2%"}
-                  maxW={"40em"}
-                >
-                  Meet people in the community and create new friends! Easily
-                  contact people who may have found your items and vice versa.
-                </Text>
-              </Flex>
-            </SwiperSlide>
-          </Swiper>
-        </Flex>
-      </Flex>
-      <Flex
-        w={{ base: "80vw", md: "60vw" }}
-        flexWrap={{ base: "none", md: "wrap" }}
-        justifyContent={"space-between"}
-        direction={{ base: "column", md: "row" }}
-        h="100%"
-        mb="3%"
-      >
-        <Flex
-          flexBasis={"50%"}
-          alignItems={"center"}
-          justifyContent={"center"}
-          direction={"column"}
-          mb={5}
-        >
-          <Text fontWeight={500} fontSize={{ base: "3xl", md: "4xl" }} mb={5}>
-            Origin of ZotnFound
-          </Text>
-          <Text textAlign={"left"} fontSize={{ base: "0.8rem", md: "1rem" }}>
-            Many people are constantly losing their belongings, whether that be
-            their phones, keys, or watter bottles. This is especially true for
-            UCI students on the UCI subreddit, where there are countless posts
-            being created about lost and found items. Due to this problem, we
-            decided to take matters into our own hands and created an Instagram
-            account to help lost items return back to their original owners. We
-            have so far helped over 10 people and gained over 300+ followers.
-            The process on Instagram was very time consuming due to us having to
-            manually go through each message and create a post on each
-            individual item that was sent. Due to these restraints, we decided
-            to create a platform that will allow people to post items that they
-            found and lost. These posts had descriptions on the item and where
-            they were last seen.
-          </Text>
-        </Flex>
-        <Flex flexBasis={"50%"} justifyContent={"center"} alignItems={"center"}>
-          <Image
-            src={zotnfound_ig}
-            minW="15em"
-            h="15em"
-            borderRadius={"2xl"}
-            boxShadow={"2xl"}
-          />
-        </Flex>
-        <Flex
-          flexBasis={"50%"}
-          justifyContent={"center"}
-          alignItems={"center"}
-          display={{ base: "none", md: "block" }}
-          mt={"5%"}
-        >
-          <Image
-            src={zotnfound_win}
-            minW="15em"
-            h="15em"
-            borderRadius={"2xl"}
-            boxShadow={"2xl"}
-          />
-        </Flex>
-        <Flex
-          flexBasis={"50%"}
-          alignItems={"center"}
-          justifyContent={"center"}
-          direction={"column"}
-          mt={"5%"}
-        >
-          <Text fontWeight={500} fontSize={{ base: "3xl", md: "4xl" }} mb={5}>
-            What makes ZotnFound special?
-          </Text>
-          <Text
-            textAlign={"left"}
-            fontSize={{ base: "0.8rem", md: "1rem" }}
-            mb={5}
+            <Text fontSize="5xl" fontWeight="bold" textAlign="center" my={8}>
+              We are <Text as="span" color={accentColor}>ZotnFound</Text>
+            </Text>
+          </motion.div>
+
+          <Flex
+            justify="center"
+            align="center"
+            wrap="wrap"
+            gap={8}
+            my={12}
           >
-            ZotnFound is an interactive lost and found website designed
-            exclusively for students and faculty on campus. With its
-            user-friendly platform, searchable databases, photo uploads, and
-            communication protocols, finding lost belongings becomes stress-free
-            and efficient. It's more than just a website; it fosters a sense of
-            community and inspires connections between students through the
-            shared experience of reuniting with their lost items.
-          </Text>
-        </Flex>
-        <Flex
-          flexBasis={"50%"}
-          justifyContent={"center"}
-          alignItems={"center"}
-          display={{ base: "block", md: "none" }}
-        >
-          <Image src={zotnfound_win} borderRadius={"2xl"} boxShadow={"2xl"} />
-        </Flex>
+            <StatCard
+              label="Lost Items"
+              value={data.filter((item) => item.islost).length}
+              color="red.400"
+            />
+            <StatCard
+              label="Found Items"
+              value={data.filter((item) => !item.islost).length}
+              color="green.400"
+            />
+            <StatCard
+              label="Successful Returns"
+              value={data.filter((item) => item.isresolved).length}
+              color="yellow.400"
+            />
+            <StatCard
+              label="Active Users"
+              value={leaderboardCount}
+              color="purple.400"
+            />
+          </Flex>
+
+          <FeatureSection />
+
+          <AboutSection />
+        </Box>
+
+        <Footer />
       </Flex>
-    </Flex>
+    </Box>
   );
 }
+
+const StatCard = ({ label, value, color }) => (
+  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+    <Flex
+      direction="column"
+      align="center"
+      bg={useColorModeValue("white", "gray.800")}
+      p={6}
+      borderRadius="lg"
+      boxShadow="lg"
+      width="200px"
+    >
+      <Text fontSize="4xl" fontWeight="bold" color={color}>
+        {value}
+      </Text>
+      <Text fontSize="lg" mt={2}>
+        {label}
+      </Text>
+    </Flex>
+  </motion.div>
+);
+
+const FeatureSection = () => (
+  <Box my={16} width="100%">
+    <Text fontSize="3xl" fontWeight="bold" textAlign="center" mb={8}>
+      Explore how ZotnFound works
+    </Text>
+    <Swiper
+      spaceBetween={30}
+      slidesPerView={1}
+      modules={[Navigation, Pagination]}
+      navigation
+      pagination={{ clickable: true }}
+      breakpoints={{
+        640: {
+          slidesPerView: 2,
+        },
+        1024: {
+          slidesPerView: 3,
+        },
+      }}
+    >
+      <SwiperSlide>
+        <FeatureCard
+          image={about1}
+          title="Get Started - It's Simple & Easy"
+          description="Log in with your UCI email and start listing lost & found items!"
+        />
+      </SwiperSlide>
+      <SwiperSlide>
+        <FeatureCard
+          image={about2}
+          title="Navigate Around the Map"
+          description="Effortlessly navigate UCI's interactive map to efficiently search for lost and found items."
+        />
+      </SwiperSlide>
+      <SwiperSlide>
+        <FeatureCard
+          image={about3}
+          title="Search for Lost & Found Items"
+          description="Utilize the easy to use filter and search bar to look up specific items."
+        />
+      </SwiperSlide>
+      <SwiperSlide>
+        <FeatureCard
+          image={about4}
+          title="Upload Your Items - Join the Community!"
+          description="Show off the different items that you may have found or lost."
+        />
+      </SwiperSlide>
+    </Swiper>
+  </Box>
+);
+
+const FeatureCard = ({ image, title, description }) => (
+  <Flex
+    direction="column"
+    align="center"
+    bg={useColorModeValue("white", "gray.800")}
+    p={6}
+    borderRadius="lg"
+    boxShadow="lg"
+    height="100%"
+  >
+    <Image src={image} alt={title} mb={4} borderRadius="md" />
+    <Text fontSize="xl" fontWeight="bold" mb={2}>
+      {title}
+    </Text>
+    <Text textAlign="center">{description}</Text>
+  </Flex>
+);
+
+const AboutSection = () => (
+  <Flex
+    direction={{ base: "column", md: "row" }}
+    align="center"
+    justify="space-between"
+    wrap="wrap"
+    my={16}
+    px={8}
+  >
+    <Box flex={1} mr={{ base: 0, md: 8 }} mb={{ base: 8, md: 0 }}>
+      <Text fontSize="3xl" fontWeight="bold" mb={4}>
+        Origin of ZotnFound
+      </Text>
+      <Text>
+        Many people are constantly losing their belongings, whether that be their phones, keys, or water bottles. This is especially true for UCI students on the UCI subreddit, where there are countless posts being created about lost and found items. Due to this problem, we decided to take matters into our own hands and created an Instagram account to help lost items return back to their original owners. We have so far helped over 10 people and gained over 300+ followers.
+      </Text>
+    </Box>
+    <Image
+      src={zotnfound_ig}
+      alt="ZotnFound Instagram"
+      borderRadius="lg"
+      boxShadow="lg"
+      maxWidth="400px"
+    />
+  </Flex>
+);
+
+const Footer = () => (
+  <Flex
+    as="footer"
+    width="100%"
+    justify="center"
+    align="center"
+    py={8}
+    borderTop="1px"
+    borderColor={useColorModeValue("gray.200", "gray.700")}
+  >
+    <Text>&copy; 2023 ZotnFound. All rights reserved.</Text>
+  </Flex>
+);
