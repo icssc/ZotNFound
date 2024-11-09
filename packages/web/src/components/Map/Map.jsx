@@ -34,6 +34,7 @@ import { UserAuth } from "../../context/AuthContext";
 import axios from "axios";
 
 import { filterItem } from "../../utils/Utils.js";
+import MarkerClusterGroup from 'react-leaflet-cluster'
 
 /**
  * Map is uses react-leaflet's API to communicate user actions to map entities and information
@@ -133,8 +134,8 @@ export default function Map({
   );
 
   const markersData = results.length > 0 ? results : data;
-  const allMarkers = markersData.filter(filterItemCallback).map((item) => {
-    return (
+  const allMarkers = useMemo(() => {
+    return markersData.filter(filterItemCallback).map((item) => (
       <Marker
         key={item.key}
         position={item.location}
@@ -151,8 +152,8 @@ export default function Map({
             : (iconsMap[item.type] || iconsMap["others"])[item.islost]
         }
       ></Marker>
-    );
-  });
+    ));
+  }, [markersData, filterItemCallback, onOpen, setItemData, setFocusLocation]);
 
   // moves map when focusLocation state changes
   function MapFocusLocation({ location }) {
@@ -353,8 +354,11 @@ export default function Map({
         {!isEdit && (
           <MapFocusLocation location={focusLocation} search={search} />
         )}
-        {!isEdit}
-        {!isEdit && allMarkers}
+        {!isEdit && (
+          <MarkerClusterGroup chunkedLoading>
+            {allMarkers}
+          </MarkerClusterGroup>
+        )}
 
         {isEdit && <NewItemMarker />}
         {showDonut && focusLocation && (

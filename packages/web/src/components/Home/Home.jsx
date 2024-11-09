@@ -331,7 +331,7 @@ export default function Home() {
     >
       <Box
         w={"100vw"}
-        h={"100vh"}
+        h={"100dvh"}
         background={colorMode === "dark" ? "#1A1E22" : ""}
       >
         <Flex
