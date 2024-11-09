@@ -1,4 +1,4 @@
-import { useContext, useCallback, useState } from "react";
+import { useContext, useCallback, useState, useEffect, useRef } from "react";
 import "./ResultsBar.css";
 import ResultCard from "../ResultCard/ResultCard";
 import { Box, Flex, Text, Button } from "@chakra-ui/react";
@@ -19,6 +19,8 @@ export default function ResultsBar({
   const { user } = UserAuth();
 
   const [itemsonScreenLimit, setItemsOnScreenLimit] = useState(10);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
+  const resultsBarRef = useRef(null);
 
   const filterItemCallback = useCallback(
     (item) => filterItem(item, findFilter, user),
@@ -60,7 +62,6 @@ export default function ResultsBar({
       ? data.filter(filterItemCallback).map(mapItem)
       : results.filter(filterItemCallback).map(mapItem);
 
-  // Callback function that increases the number of items displayed on the screen by 10
   const handleLoadMore = useCallback(() => {
     setItemsOnScreenLimit(itemsonScreenLimit + 10);
   }, [itemsonScreenLimit]);
@@ -80,15 +81,11 @@ export default function ResultsBar({
     </Button>
   );
 
-  // Retrieve all items that meet the filter criteria
-
-  // Display only the first 10 items on the screen, all items if there are less than 10 items left to be loaded
   const viewableResults = allResults.slice(
     0,
     Math.min(itemsonScreenLimit, allResults.length)
   );
 
-  // Define JSX for empty results bar (no result cards)
   const noResults = (
     <Flex height="80%" width="100%" justifyContent="center" alignItems="center">
       <Text fontSize="4xl" as="b" color="gray">
@@ -97,6 +94,24 @@ export default function ResultsBar({
     </Flex>
   );
 
+  useEffect(() => {
+    let scrollInterval;
+    if (isAutoScrolling && resultsBarRef.current) {
+      scrollInterval = setInterval(() => {
+        if (resultsBarRef.current.scrollTop + resultsBarRef.current.clientHeight < resultsBarRef.current.scrollHeight) {
+          resultsBarRef.current.scrollTop += 1;
+        } else {
+          resultsBarRef.current.scrollTop = 0;
+        }
+      }, 50);
+    }
+    return () => clearInterval(scrollInterval);
+  }, [isAutoScrolling]);
+
+  const handleUserInteraction = () => {
+    setIsAutoScrolling(false);
+  };
+
   return (
     <Box
       paddingX="5px"
@@ -104,6 +119,10 @@ export default function ResultsBar({
       height="80vh"
       overflowY="scroll"
       overflowX="hidden"
+      ref={resultsBarRef}
+      onMouseEnter={handleUserInteraction}
+      onWheel={handleUserInteraction}
+      onTouchStart={handleUserInteraction}
     >
       {allResults.length > 0 ? viewableResults : noResults}
       {viewableResults.length < allResults.length && loadMoreButton}
