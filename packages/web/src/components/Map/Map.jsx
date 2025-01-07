@@ -25,7 +25,7 @@ import {
   Circle,
   useMapEvents,
 } from "react-leaflet";
-import { useDisclosure, useColorMode } from "@chakra-ui/react";
+import { useDisclosure, useColorMode, Button, ButtonGroup } from "@chakra-ui/react";
 import InfoModal from "../InfoModal/InfoModal";
 
 import DataContext from "../../context/DataContext";
@@ -35,6 +35,7 @@ import axios from "axios";
 
 import { filterItem } from "../../utils/Utils.js";
 import MarkerClusterGroup from 'react-leaflet-cluster'
+import geoData from '../../data/geo_backup.json';
 
 /**
  * Map is uses react-leaflet's API to communicate user actions to map entities and information
@@ -85,6 +86,8 @@ export default function Map({
   const [itemData, setItemData] = useState({});
   // State: showDonut - if red ring around selected marker shows
   const [showDonut, setShowDonut] = useState(false);
+  // State: mapView - current view (items or locations)
+  const [mapView, setMapView] = useState('items'); // 'items' or 'locations'
 
   // Allowed boundaries of markers (currently UCI borders)
   const allowedBounds = [
@@ -154,6 +157,37 @@ export default function Map({
       ></Marker>
     ));
   }, [markersData, filterItemCallback, onOpen, setItemData, setFocusLocation]);
+
+  const geoMarkers = useMemo(() => {
+    return geoData.map((location) => (
+      <Marker
+        key={location.id}
+        position={[location.lat, location.lng]}
+        icon={L.divIcon({
+          className: "custom-div-icon",
+          html: `<div style="
+            background-color: ${colorMode === 'dark' ? '#2D3748' : '#3182CE'};
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+          ">📍</div>`,
+          iconSize: [24, 24],
+          iconAnchor: [12, 24],
+          popupAnchor: [0, -24],
+        })}
+      >
+        <Popup>
+          <span>{location.name}</span>
+        </Popup>
+      </Marker>
+    ));
+  }, [colorMode]);
 
   // moves map when focusLocation state changes
   function MapFocusLocation({ location }) {
@@ -334,9 +368,40 @@ export default function Map({
     ) : null;
   };
 
+  // Add a toggle button component
+  const ViewToggle = () => {
+    return (
+      <ButtonGroup
+        size="sm"
+        isAttached
+        variant="outline"
+        position="absolute"
+        top={4}
+        right={4}
+        zIndex={1000}
+        bg={colorMode === "dark" ? "gray.800" : "white"}
+        borderRadius="md"
+        boxShadow="base"
+      >
+        <Button
+          onClick={() => setMapView('items')}
+          colorScheme={mapView === 'items' ? "blue" : "gray"}
+        >
+          Lost & Found
+        </Button>
+        <Button
+          onClick={() => setMapView('locations')}
+          colorScheme={mapView === 'locations' ? "blue" : "gray"}
+        >
+          UCI Locations
+        </Button>
+      </ButtonGroup>
+    );
+  };
+
   return (
-    <div>
-      {/* Styles applied to MapContainer don't render unless page is reloaded */}
+    <div style={{ position: "relative" }}>
+      <ViewToggle />
       <MapContainer
         className="map-container"
         center={centerPosition}
@@ -354,9 +419,14 @@ export default function Map({
         {!isEdit && (
           <MapFocusLocation location={focusLocation} search={search} />
         )}
-        {!isEdit && (
+        {!isEdit && mapView === 'items' && (
           <MarkerClusterGroup chunkedLoading>
             {allMarkers}
+          </MarkerClusterGroup>
+        )}
+        {!isEdit && mapView === 'locations' && (
+          <MarkerClusterGroup chunkedLoading>
+            {geoMarkers}
           </MarkerClusterGroup>
         )}
 
