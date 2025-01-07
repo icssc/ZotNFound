@@ -28,7 +28,7 @@ export default function ZotNFoundLogoText() {
       minWidth={{ base: "125px", md: "315px" }}
     >
       <Image
-        width={{ base: "50px", md: "100px" }}
+        width={{ base: "35px", md: "75px" }}
         src={logo}
         mb="5%"
         mt="3%"
