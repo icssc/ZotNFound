@@ -6,6 +6,7 @@ import Login from "./components/Login/Login";
 import Home from "./components/Home/Home";
 import UpdatePage from "./components/UpdatePage/UpdatePage";
 import Playground from "./components/Playground/Playground";
+import Footer from "./components/Footer/Footer";
 
 import "leaflet/dist/leaflet.css";
 import { AuthContextProvider } from "./context/AuthContext";
@@ -25,14 +26,17 @@ function App() {
 
   return (
     <div className="App">
-      <Routes>
-        <Route path="/update" element={<UpdatePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/:id" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/playground" element={<Playground />} />
-      </Routes>
+      <div className="content-wrapper">
+        <Routes>
+          <Route path="/update" element={<UpdatePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/:id" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/playground" element={<Playground />} />
+        </Routes>
+        <Footer />
+      </div>
     </div>
   );
 }
