@@ -29,7 +29,7 @@ importers:
         version: 10.3.0
       sst:
         specifier: ^2.41.5
-        version: 2.41.5(@aws-sdk/client-sso-oidc@3.572.0)(pg@8.11.5)
+        version: 2.41.5(@aws-sdk/client-sso-oidc@3.572.0)
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -45,13 +45,16 @@ importers:
         version: 20.12.7
       sst:
         specifier: ^2.41.5
-        version: 2.41.5(@aws-sdk/client-sso-oidc@3.572.0)(pg@8.11.5)
+        version: 2.41.5(@aws-sdk/client-sso-oidc@3.572.0)
       vitest:
         specifier: ^1.5.3
         version: 1.5.3(@types/node@20.12.7)
 
   packages/functions:
     dependencies:
+      aws-sdk:
+        specifier: ^2.1692.0
+        version: 2.1692.0
       cors:
         specifier: ^2.8.5
         version: 2.8.5
@@ -929,7 +932,7 @@ packages:
       - aws-crt
     dev: true
 
-  /@aws-sdk/client-sso-oidc@3.572.0:
+  /@aws-sdk/client-sso-oidc@3.572.0(@aws-sdk/client-sts@3.572.0):
     resolution: {integrity: sha512-S6C/S6xYesDakEuzYvlY1DMMKLtKQxdbbygq3hfeG2R0jUt9KpRLsQXK8qrBuVCKa3WcnjN/30hp4g/iUWFU/w==}
     engines: {node: '>=16.0.0'}
     dependencies:
@@ -974,6 +977,7 @@ packages:
       '@smithy/util-utf8': 2.3.0
       tslib: 2.6.2
     transitivePeerDependencies:
+      - '@aws-sdk/client-sts'
       - aws-crt
     dev: true
 
@@ -1171,7 +1175,7 @@ packages:
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
       '@aws-crypto/sha256-js': 3.0.0
-      '@aws-sdk/client-sso-oidc': 3.572.0
+      '@aws-sdk/client-sso-oidc': 3.572.0(@aws-sdk/client-sts@3.572.0)
       '@aws-sdk/core': 3.572.0
       '@aws-sdk/credential-provider-node': 3.572.0(@aws-sdk/client-sso-oidc@3.572.0)(@aws-sdk/client-sts@3.572.0)
       '@aws-sdk/middleware-host-header': 3.567.0
@@ -1994,7 +1998,7 @@ packages:
     peerDependencies:
       '@aws-sdk/client-sso-oidc': 3.572.0
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.572.0
+      '@aws-sdk/client-sso-oidc': 3.572.0(@aws-sdk/client-sts@3.572.0)
       '@aws-sdk/types': 3.567.0
       '@smithy/property-provider': 2.2.0
       '@smithy/shared-ini-file-loader': 2.4.0
@@ -7245,6 +7249,22 @@ packages:
       xml2js: 0.6.2
     dev: true
 
+  /aws-sdk@2.1692.0:
+    resolution: {integrity: sha512-x511uiJ/57FIsbgUe5csJ13k3uzu25uWQE+XqfBis/sB0SFoiElJWXRkgEAUh0U6n40eT3ay5Ue4oPkRMu1LYw==}
+    engines: {node: '>= 10.0.0'}
+    requiresBuild: true
+    dependencies:
+      buffer: 4.9.2
+      events: 1.1.1
+      ieee754: 1.1.13
+      jmespath: 0.16.0
+      querystring: 0.2.0
+      sax: 1.2.1
+      url: 0.10.3
+      util: 0.12.5
+      uuid: 8.0.0
+      xml2js: 0.6.2
+
   /axios@1.4.0:
     resolution: {integrity: sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==}
     dependencies:
@@ -7376,9 +7396,8 @@ packages:
     resolution: {integrity: sha512-xq+q3SRMOxGivLhBNaUdC64hDTQwejJ+H0T/NB1XMtTVEwNTrfFF3gAxiyW0Bu/xWEGhjVKgUcMhCrUy2+uCWg==}
     dependencies:
       base64-js: 1.5.1
-      ieee754: 1.1.13
+      ieee754: 1.2.1
       isarray: 1.0.0
-    dev: true
 
   /buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
@@ -7440,7 +7459,7 @@ packages:
       '@aws-cdk/cloud-assembly-schema': 2.132.1
       '@aws-cdk/cx-api': 2.132.1(@aws-cdk/cloud-assembly-schema@2.132.1)
       archiver: 5.3.2
-      aws-sdk: 2.1618.0
+      aws-sdk: 2.1692.0
       glob: 7.2.3
       mime: 2.6.0
       yargs: 16.2.0
@@ -8121,7 +8140,6 @@ packages:
   /events@1.1.1:
     resolution: {integrity: sha512-kEcvvCBByWXGnZy6JUlgAp2gBIUjfCAV6P6TgT1/aaQKcmuAEC4OZTV1I4EWQLz2gxZw76atuVyvHhTxvi0Flw==}
     engines: {node: '>=0.4.x'}
-    dev: true
 
   /execa@8.0.1:
     resolution: {integrity: sha512-VyhnebXciFV2DESc+p6B+y0LjSm0krU4OgJN44qFAhBY0TJ+1V61tYD2+wHusZ6F9n5K+vl8k0sTy7PEfV4qpg==}
@@ -8871,7 +8889,6 @@ packages:
 
   /ieee754@1.1.13:
     resolution: {integrity: sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==}
-    dev: true
 
   /ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
@@ -9082,7 +9099,6 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       has-tostringtag: 1.0.2
-    dev: true
 
   /is-glob@4.0.3:
     resolution: {integrity: sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==}
@@ -9172,7 +9188,6 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       which-typed-array: 1.1.15
-    dev: true
 
   /is-unicode-supported@1.3.0:
     resolution: {integrity: sha512-43r2mRvz+8JRIKnWJ+3j8JtjRKZ6GmjzfaE/qiBJnikNnYv/6bagRJ1kUhNk8R5EX/GkobD+r+sfxCPJsiKBLQ==}
@@ -9200,7 +9215,6 @@ packages:
 
   /isarray@1.0.0:
     resolution: {integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==}
-    dev: true
 
   /isarray@2.0.5:
     resolution: {integrity: sha512-xHjhDr3cNBK0BzdUJSPXZntQUx/mwMS5Rw4A7lPJ90XGAO6ISP/ePDNuo0vhqOZU+UD5JoodwCAAoZQd3FeAKw==}
@@ -9282,7 +9296,6 @@ packages:
   /jmespath@0.16.0:
     resolution: {integrity: sha512-9FzQjJ7MATs1tSpnco1K6ayiYE3figslrXA72G2HQ/n76RzvYlofyi5QM+iX4YRs/pu3yzxlVQSST23+dMDknw==}
     engines: {node: '>= 0.6.0'}
-    dev: true
 
   /jose@4.15.5:
     resolution: {integrity: sha512-jc7BFxgKPKi94uOvEmzlSWFFe2+vASyXaKUpdQKatWAESU2MWjDfFf0fdfc83CDKcA5QecabZeNLyfhe3yKNkg==}
@@ -10402,7 +10415,6 @@ packages:
 
   /punycode@1.3.2:
     resolution: {integrity: sha512-RofWgt/7fL5wP1Y7fxE7/EmTLzQVnB0ycyibJ0OOHIlJqTNzglYFxVwETOcIoJqJmpDXJ9xImDv+Fq34F/d4Dw==}
-    dev: true
 
   /punycode@1.4.1:
     resolution: {integrity: sha512-jmYNElW7yvO7TV33CjSmvSiE2yco3bV2czu/OzDKdMNVZQWfxCblURLhf+47syQRBntjfLdd/H0egrzIG+oaFQ==}
@@ -10446,7 +10458,6 @@ packages:
     resolution: {integrity: sha512-X/xY82scca2tau62i9mDyU9K+I+djTMUsvwf7xnUX5GLvVzgJybOJf4Y6o9Zx3oJK/LSXg5tTZBjwzqVPaPO2g==}
     engines: {node: '>=0.4.x'}
     deprecated: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
-    dev: true
 
   /range-parser@1.2.1:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==}
@@ -10885,7 +10896,6 @@ packages:
 
   /sax@1.2.1:
     resolution: {integrity: sha512-8I2a3LovHTOpm7NV5yOyO8IHqgVsfK4+UuySrXU8YXkSRX7k6hCV9b3HrkKCr3nMpgj+0bmocaJJWpvp1oc7ZA==}
-    dev: true
 
   /scheduler@0.23.2:
     resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
@@ -11070,7 +11080,7 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /sst@2.41.5(@aws-sdk/client-sso-oidc@3.572.0)(pg@8.11.5):
+  /sst@2.41.5(@aws-sdk/client-sso-oidc@3.572.0):
     resolution: {integrity: sha512-IM1O1CnDcrjAAsl0ag9fXxQ7zyjYXyZDxBZwcdrAbjnijaSBMheC9v3b+WMXmRj1YBiVOjGAHIgzkTJVp/REvg==}
     hasBin: true
     peerDependencies:
@@ -11110,6 +11120,96 @@ packages:
       aws-cdk-lib: 2.132.1(constructs@10.3.0)
       aws-iot-device-sdk: 2.2.13
       aws-sdk: 2.1618.0
+      builtin-modules: 3.2.0
+      cdk-assets: 2.132.1
+      chalk: 5.3.0
+      chokidar: 3.6.0
+      ci-info: 3.9.0
+      colorette: 2.0.20
+      conf: 10.2.0
+      constructs: 10.3.0
+      cross-spawn: 7.0.3
+      dendriform-immer-patch-optimiser: 2.1.3(immer@9.0.21)
+      dotenv: 16.4.5
+      esbuild: 0.18.13
+      express: 4.19.2
+      fast-jwt: 3.3.3
+      get-port: 6.1.2
+      glob: 10.3.15
+      graphql: 16.8.1
+      graphql-yoga: 3.9.1(graphql@16.8.1)
+      immer: 9.0.21
+      ink: 4.4.1(react@18.3.1)
+      ink-spinner: 5.0.0(ink@4.4.1)(react@18.3.1)
+      kysely: 0.25.0
+      kysely-codegen: 0.10.1(kysely@0.25.0)(pg@8.11.5)
+      kysely-data-api: 0.2.1(@aws-sdk/client-rds-data@3.574.0)(kysely@0.25.0)
+      minimatch: 6.2.0
+      openid-client: 5.6.5
+      ora: 6.3.1
+      react: 18.3.1
+      remeda: 1.61.0
+      sst-aws-cdk: 2.132.1
+      tree-kill: 1.2.2
+      undici: 5.28.4
+      uuid: 9.0.1
+      ws: 8.17.0
+      yargs: 17.7.2
+      zod: 3.23.8
+    transitivePeerDependencies:
+      - '@aws-sdk/client-sso-oidc'
+      - '@types/react'
+      - aws-crt
+      - better-sqlite3
+      - bufferutil
+      - debug
+      - mysql2
+      - pg
+      - react-devtools-core
+      - supports-color
+      - utf-8-validate
+    dev: true
+
+  /sst@2.41.5(@aws-sdk/client-sso-oidc@3.572.0)(pg@8.11.5):
+    resolution: {integrity: sha512-IM1O1CnDcrjAAsl0ag9fXxQ7zyjYXyZDxBZwcdrAbjnijaSBMheC9v3b+WMXmRj1YBiVOjGAHIgzkTJVp/REvg==}
+    hasBin: true
+    peerDependencies:
+      '@sls-next/lambda-at-edge': ^3.7.0
+    peerDependenciesMeta:
+      '@sls-next/lambda-at-edge':
+        optional: true
+    dependencies:
+      '@aws-cdk/aws-lambda-python-alpha': 2.132.1-alpha.0(aws-cdk-lib@2.132.1)(constructs@10.3.0)
+      '@aws-cdk/cloud-assembly-schema': 2.132.1
+      '@aws-cdk/cloudformation-diff': 2.132.1
+      '@aws-cdk/cx-api': 2.132.1(@aws-cdk/cloud-assembly-schema@2.132.1)
+      '@aws-crypto/sha256-js': 5.2.0
+      '@aws-sdk/client-cloudformation': 3.574.0
+      '@aws-sdk/client-ecs': 3.574.0
+      '@aws-sdk/client-eventbridge': 3.574.0
+      '@aws-sdk/client-iam': 3.574.0
+      '@aws-sdk/client-iot': 3.574.0
+      '@aws-sdk/client-iot-data-plane': 3.574.0
+      '@aws-sdk/client-lambda': 3.574.0
+      '@aws-sdk/client-rds-data': 3.574.0
+      '@aws-sdk/client-s3': 3.577.0
+      '@aws-sdk/client-ssm': 3.574.0
+      '@aws-sdk/client-sts': 3.574.0
+      '@aws-sdk/config-resolver': 3.374.0
+      '@aws-sdk/credential-providers': 3.574.0(@aws-sdk/client-sso-oidc@3.572.0)
+      '@aws-sdk/middleware-retry': 3.374.0
+      '@aws-sdk/middleware-signing': 3.572.0
+      '@aws-sdk/signature-v4-crt': 3.572.0
+      '@aws-sdk/smithy-client': 3.374.0
+      '@babel/core': 7.24.5
+      '@babel/generator': 7.24.5
+      '@babel/plugin-syntax-typescript': 7.24.1(@babel/core@7.24.5)
+      '@smithy/signature-v4': 2.3.0
+      '@trpc/server': 9.16.0
+      adm-zip: 0.5.12
+      aws-cdk-lib: 2.132.1(constructs@10.3.0)
+      aws-iot-device-sdk: 2.2.13
+      aws-sdk: 2.1692.0
       builtin-modules: 3.2.0
       cdk-assets: 2.132.1
       chalk: 5.3.0
@@ -11508,7 +11608,6 @@ packages:
     dependencies:
       punycode: 1.3.2
       querystring: 0.2.0
-    dev: true
 
   /urlpattern-polyfill@8.0.2:
     resolution: {integrity: sha512-Qp95D4TPJl1kC9SKigDcqgyM2VDVO4RiJc2d4qe5GrYm+zbIQCWWKAFaJNQ4BhdFeDGwBmAxqJBwWSJDb9T3BQ==}
@@ -11554,7 +11653,6 @@ packages:
       is-generator-function: 1.0.10
       is-typed-array: 1.1.13
       which-typed-array: 1.1.15
-    dev: true
 
   /utils-merge@1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
@@ -11563,7 +11661,6 @@ packages:
   /uuid@8.0.0:
     resolution: {integrity: sha512-jOXGuXZAWdsTH7eZLtyXMqUb9EcWMGZNbL9YcGBJl4MH4nrxHmZJhEHvyLFrkxo+28uLb/NYRcStH48fnD0Vzw==}
     hasBin: true
-    dev: true
 
   /uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
@@ -11933,12 +12030,10 @@ packages:
     dependencies:
       sax: 1.2.1
       xmlbuilder: 11.0.1
-    dev: true
 
   /xmlbuilder@11.0.1:
     resolution: {integrity: sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==}
     engines: {node: '>=4.0'}
-    dev: true
 
   /xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
