@@ -35,6 +35,7 @@ import axios from "axios";
 
 import { filterItem } from "../../utils/Utils.js";
 import MarkerClusterGroup from 'react-leaflet-cluster'
+import { createClusterCustomIcon } from './MapIcons';
 
 /**
  * Map is uses react-leaflet's API to communicate user actions to map entities and information
@@ -334,6 +335,16 @@ export default function Map({
     ) : null;
   };
 
+  const createCluster = useMemo(() => {
+    // console.log("Current colorMode:", colorMode); // Debug log
+    return {
+      chunkedLoading: true,
+      iconCreateFunction: (cluster) => {
+        return createClusterCustomIcon(cluster, colorMode);
+      }
+    };
+  }, [colorMode]); // Make sure colorMode is in dependency array
+
   return (
     <div>
       {/* Styles applied to MapContainer don't render unless page is reloaded */}
@@ -355,7 +366,10 @@ export default function Map({
           <MapFocusLocation location={focusLocation} search={search} />
         )}
         {!isEdit && (
-          <MarkerClusterGroup chunkedLoading>
+          <MarkerClusterGroup
+            key={colorMode} // Force re-render when colorMode changes
+            {...createCluster}
+          >
             {allMarkers}
           </MarkerClusterGroup>
         )}
