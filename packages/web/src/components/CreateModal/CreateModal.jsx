@@ -29,7 +29,6 @@ import ItemTypeInput from "./components/ItemTypeInput";
 import DateInput from "./components/DateInput";
 import ImageInput from "./components/ImageInput";
 import CheckInfo from "./components/CheckInfo";
-import imageCompression from 'browser-image-compression';
 export default function CreateModal({
   isOpen,
   onOpen,
@@ -47,47 +46,6 @@ export default function CreateModal({
   upload,
 }) {
   const [isLoading, setIsLoading] = useState(false);
-
-  const uploadFile = useCallback(async () => {
-    if (!newAddedItem.image) return;
-    const options = {
-      maxSizeMB: 2,
-      maxWidthOrHeight: 2560,
-      useWebWorker: true,
-      fileType: "image/jpeg",
-    }
-    const compressedFile = await imageCompression(newAddedItem.image, options);
-    // const apiUrl = process.env.API_URL;
-    const response = await fetch(
-      `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/upload/image`,
-      {
-        body: compressedFile,
-        method: "POST",
-        headers: {
-          "Content-Type": "image/jpeg",
-        },
-      },
-    );
-    if (!response.ok) {
-      console.log(response);
-      throw new Error("Failed to upload file");
-    }
-
-    const data = await response.json();
-    console.log(data);
-    const url = data.url;
-    for (const [key, value] of response.headers.entries()) {
-      console.log(`${key}: ${value}`);
-    }
-    // const key = response.headers.get('Content-Disposition').split('=')[1].slice(1, -1);
-    // console.log(key)
-    // save key into database associated with use
-    setNewAddedItem((prev) => ({
-      ...prev,
-      image: url,
-    }));
-  }, [newAddedItem.image, setUploadImg, setNewAddedItem, setIsLoading]);
-
   const [date, setDate] = useState(new Date());
 
   const steps = [
@@ -210,7 +168,6 @@ export default function CreateModal({
       size="lg"
       onClick={() => {
         onClose();
-        uploadFile(); // submit ONLY when form is filled out
         setActiveStep(0);
         setIsCreate(false);
       }}
@@ -262,9 +219,7 @@ export default function CreateModal({
           image: e.target.files[0],
         }));
         console.log(uploadImg);
-        console.log(URL.createObjectURL(e.target.files[0]));
         setUploadImg(URL.createObjectURL(e.target.files[0]));
-        console.log(uploadImg);
         setIsLoading(false);
       } else {
         alert("Image exceeds size limit of 10 MB");

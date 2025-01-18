@@ -32,6 +32,7 @@ import DataContext from "../../context/DataContext";
 import { UserAuth } from "../../context/AuthContext";
 
 import axios from "axios";
+import imageCompression from 'browser-image-compression';
 
 import { filterItem } from "../../utils/Utils.js";
 import MarkerClusterGroup from 'react-leaflet-cluster'
@@ -183,7 +184,34 @@ export default function Map({
   );
   async function handleSubmit() {
     const date = new Date();
-
+    if (newAddedItem.image) {
+      const options = {
+        maxSizeMB: 2,
+        maxWidthOrHeight: 2560,
+        useWebWorker: true,
+        fileType: "image/jpeg",
+      };
+      try {
+        const compressedFile = await imageCompression(newAddedItem.image, options);
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/upload/image`,
+          {
+            body: compressedFile,
+            method: "POST",
+            headers: {
+              "Content-Type": "image/jpeg",
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Failed to upload file");
+        }
+        const data = await response.json();
+        newAddedItem.image = data.url;
+      } catch (err) {
+        console.error("Error uploading image:", err);
+      }
+    }
     if (!token) {
       return;
     }
