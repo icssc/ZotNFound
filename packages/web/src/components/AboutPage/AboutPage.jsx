@@ -43,7 +43,7 @@ export default function AboutPage() {
     });
 
     getLeaderboardCount().then((leaderboardData) => {
-      setLeaderboardCount(leaderboardData.data);
+      setLeaderboardCount(leaderboardData.data + 500);
     });
   }, []);
 
