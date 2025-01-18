@@ -4,8 +4,8 @@ import {
   Image,
   Menu,
   MenuButton,
-  MenuList,
   MenuItem,
+  MenuList,
   useColorMode,
 } from "@chakra-ui/react";
 
@@ -63,8 +63,10 @@ export default function ZotNFoundLogoText() {
               src={instagram}
               maxWidth="10%"
               maxHeight="10%"
-              ml="5%"
-            ></Image>
+              // Invert the color in dark mode (apparently Chakra UI doesn't actually affect stroke and such so manually invert svg)
+              filter={useColorMode().colorMode === "dark" ? "invert(100%)" : ""}
+            >
+            </Image>
           </MenuItem>
           <MenuItem
             alignItems={"center"}
