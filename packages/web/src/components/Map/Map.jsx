@@ -1,10 +1,10 @@
 import {
-  useState,
-  useRef,
-  useMemo,
+  useCallback,
   useContext,
   useEffect,
-  useCallback,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
 // import { useMapEvents } from "react-leaflet/hooks";
 // import mapuser from "../../assets/logos/mapuser.svg";
@@ -14,35 +14,34 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Fuse from "fuse.js";
 
-import { othersDrag, flyImg, iconsMap } from "./MapIcons";
+import { flyImg, iconsMap, othersDrag } from "./MapIcons";
 import {
+  Circle,
   MapContainer,
-  TileLayer,
   Marker,
   Popup,
-  useMap,
   Rectangle,
-  Circle,
+  TileLayer,
+  useMap,
   useMapEvents,
 } from "react-leaflet";
-import { useDisclosure, useColorMode } from "@chakra-ui/react";
+import { useColorMode, useDisclosure } from "@chakra-ui/react";
 import InfoModal from "../InfoModal/InfoModal";
 
 import DataContext from "../../context/DataContext";
 import { UserAuth } from "../../context/AuthContext";
 
 import axios from "axios";
-import imageCompression from 'browser-image-compression';
+import imageCompression from "browser-image-compression";
 
 import { filterItem } from "../../utils/Utils.js";
-import MarkerClusterGroup from 'react-leaflet-cluster'
-import { createClusterCustomIcon } from './MapIcons';
+import MarkerClusterGroup from "react-leaflet-cluster";
+import { createClusterCustomIcon } from "./MapIcons";
 
 /**
  * Map is uses react-leaflet's API to communicate user actions to map entities and information
  *
  * @component
- *
  *
  * @prop {number[]} focusLocation - coordinates to move map view to and zoom in on
  * @prop {string} search - search bar query
@@ -52,8 +51,6 @@ import { createClusterCustomIcon } from './MapIcons';
  * @prop {object} newAddedItem - updates as user adds new item information on {@link CreateModal}
  * @prop {number} centerPosition - center of map coordinates
  * @prop {object} findFilter - search filters
- *
- *
  *
  * @returns {JSX.Element} Leaflet Map component
  */
@@ -85,6 +82,7 @@ export default function Map({
   // State: itemData - currently selected item
   // ! (doesn't erase when clicked off of previously selected item)
   const [itemData, setItemData] = useState({});
+
   // State: showDonut - if red ring around selected marker shows
   const [showDonut, setShowDonut] = useState(false);
 
@@ -132,7 +130,7 @@ export default function Map({
 
   const filterItemCallback = useCallback(
     (item) => filterItem(item, findFilter, user),
-    [findFilter, user]
+    [findFilter, user],
   );
 
   const markersData = results.length > 0 ? results : data;
@@ -148,12 +146,11 @@ export default function Map({
             setFocusLocation(item.location);
           },
         }}
-        icon={
-          item.isresolved
-            ? iconsMap["resolved"][item.islost]
-            : (iconsMap[item.type] || iconsMap["others"])[item.islost]
-        }
-      ></Marker>
+        icon={item.isresolved
+          ? iconsMap["resolved"][item.islost]
+          : (iconsMap[item.type] || iconsMap["others"])[item.islost]}
+      >
+      </Marker>
     ));
   }, [markersData, filterItemCallback, onOpen, setItemData, setFocusLocation]);
 
@@ -164,9 +161,11 @@ export default function Map({
       map.flyTo(location, 18);
     }
 
-    return location ? (
-      <Marker position={location} icon={flyImg}></Marker> // ? there is no fly image??
-    ) : null;
+    return location
+      ? (
+        <Marker position={location} icon={flyImg}></Marker> // ? there is no fly image??
+      )
+      : null;
   }
 
   const markerRef = useRef(null);
@@ -180,7 +179,7 @@ export default function Map({
         }
       },
     }),
-    [setPosition]
+    [setPosition],
   );
   async function handleSubmit() {
     const date = new Date();
@@ -191,8 +190,14 @@ export default function Map({
         useWebWorker: true,
         fileType: "image/jpeg",
       };
+      if (!token) {
+        return;
+      }
       try {
-        const compressedFile = await imageCompression(newAddedItem.image, options);
+        const compressedFile = await imageCompression(
+          newAddedItem.image,
+          options,
+        );
         const response = await fetch(
           `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/upload/image`,
           {
@@ -201,19 +206,18 @@ export default function Map({
             headers: {
               "Content-Type": "image/jpeg",
             },
-          }
+          },
         );
         if (!response.ok) {
           throw new Error("Failed to upload file");
         }
         const data = await response.json();
-        newAddedItem.image = data.url;
+        console.log("Image uploaded:", data.url);
+        setNewAddedItem((prev) => ({ ...prev, image: data.url }));
+        setUploadImg(data.url);
       } catch (err) {
         console.error("Error uploading image:", err);
       }
-    }
-    if (!token) {
-      return;
     }
     axios
       .post(
@@ -235,7 +239,7 @@ export default function Map({
           headers: {
             Authorization: `Bearer ${token}`, // verify auth
           },
-        }
+        },
       )
       .then((item) => {
         const newItem = {
@@ -281,7 +285,7 @@ export default function Map({
             headers: {
               Authorization: `Bearer ${token}`, // verify auth
             },
-          }
+          },
         );
 
         setLeaderboard((prev) =>
@@ -298,6 +302,14 @@ export default function Map({
   }
 
   const toggleDraggable = () => {
+    if (position.lat == null || position.lng == null) {
+      alert(
+        "Latitude and longitude cannot be null. Please pick a valid location.",
+      );
+      setPosition({ lat: centerPosition[0], lng: centerPosition[1] }); // Reset position to center
+      return;
+    }
+
     if (!bounds.contains(position)) {
       alert("ITEM OUT OF BOUNDS (UCI ONLY)");
       return;
@@ -318,7 +330,7 @@ export default function Map({
           map.fitBounds(bounds);
         },
       }),
-      [map]
+      [map],
     );
 
     return (
@@ -332,10 +344,9 @@ export default function Map({
     );
   }
 
-  const mapUrl =
-    colorMode === "dark"
-      ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL
-      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const mapUrl = colorMode === "dark"
+    ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL
+    : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
   const NewItemMarker = () => {
     useMapEvents({
@@ -345,22 +356,24 @@ export default function Map({
     });
 
     return position.lat !== centerPosition[0] &&
-      position.lng !== centerPosition[1] ? (
-      <Marker
-        className="marker"
-        draggable={true}
-        eventHandlers={eventHandlers}
-        position={position}
-        ref={markerRef}
-        icon={othersDrag}
-      >
-        <Popup minWidth={90} closeButton={false}>
-          <span className="popup" onClick={() => toggleDraggable()}>
-            Click to Confirm Location 🤔
-          </span>
-        </Popup>
-      </Marker>
-    ) : null;
+        position.lng !== centerPosition[1]
+      ? (
+        <Marker
+          className="marker"
+          draggable={true}
+          eventHandlers={eventHandlers}
+          position={position}
+          ref={markerRef}
+          icon={othersDrag}
+        >
+          <Popup minWidth={90} closeButton={false}>
+            <span className="popup" onClick={() => toggleDraggable()}>
+              Click to Confirm Location 🤔
+            </span>
+          </Popup>
+        </Marker>
+      )
+      : null;
   };
 
   const createCluster = useMemo(() => {
@@ -369,7 +382,7 @@ export default function Map({
       chunkedLoading: true,
       iconCreateFunction: (cluster) => {
         return createClusterCustomIcon(cluster, colorMode);
-      }
+      },
     };
   }, [colorMode]); // Make sure colorMode is in dependency array
 
