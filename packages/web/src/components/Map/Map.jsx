@@ -183,6 +183,11 @@ export default function Map({
   );
   async function handleSubmit() {
     const date = new Date();
+    if (!token) {
+      return;
+    }
+    let imageUrl = "";
+
     if (newAddedItem.image) {
       const options = {
         maxSizeMB: 2,
@@ -190,9 +195,6 @@ export default function Map({
         useWebWorker: true,
         fileType: "image/jpeg",
       };
-      if (!token) {
-        return;
-      }
       try {
         const compressedFile = await imageCompression(
           newAddedItem.image,
@@ -212,18 +214,19 @@ export default function Map({
           throw new Error("Failed to upload file");
         }
         const data = await response.json();
-        console.log("Image uploaded:", data.url);
-        setNewAddedItem((prev) => ({ ...prev, image: data.url }));
-        setUploadImg(data.url);
+        imageUrl = data.url;
       } catch (err) {
+        // if url failed than image upload failed
         console.error("Error uploading image:", err);
+        return;
       }
     }
+
     axios
       .post(
         `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items`,
         {
-          image: newAddedItem.image,
+          image: imageUrl,
           type: newAddedItem.type,
           islost: newAddedItem.islost,
           name: newAddedItem.name,
@@ -237,13 +240,13 @@ export default function Map({
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // verify auth
+            Authorization: `Bearer ${token}`,
           },
         },
       )
       .then((item) => {
         const newItem = {
-          image: newAddedItem.image,
+          image: imageUrl,
           type: newAddedItem.type,
           islost: newAddedItem.islost,
           name: newAddedItem.name,
@@ -259,6 +262,7 @@ export default function Map({
         setData((prev) => [...prev, newItem]);
         setPosition(centerPosition);
         setFocusLocation(newItem.location);
+        // Reset state for new item form
         setNewAddedItem({
           image: "",
           type: "",
@@ -274,7 +278,6 @@ export default function Map({
 
         // Update the leaderboard
         const pointsToAdd = newAddedItem.islost ? 1 : 3;
-
         axios.put(
           `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`,
           {
@@ -300,7 +303,6 @@ export default function Map({
 
     setLoading(true);
   }
-
   const toggleDraggable = () => {
     if (position.lat == null || position.lng == null) {
       alert(
