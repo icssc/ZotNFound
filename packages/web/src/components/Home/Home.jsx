@@ -450,11 +450,11 @@ export default function Home() {
 
                     {/* User Emblem Dropdown */}
                     <MenuList zIndex={10000}>
-                      <MenuItem _focus={{ bg: "white" }}>
+                      <MenuItem>
                         <Image
                           boxSize="1.2rem"
                           src={userlogo}
-                          alt="logoutbutton"
+                          alt="user email"
                           mr="12px"
                         />
                         {user?.email}
