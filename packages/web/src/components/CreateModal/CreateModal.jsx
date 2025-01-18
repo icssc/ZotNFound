@@ -69,6 +69,7 @@ export default function CreateModal({
       },
     );
     if (!response.ok) {
+      console.log(response);
       throw new Error("Failed to upload file");
     }
 
@@ -81,6 +82,10 @@ export default function CreateModal({
     // const key = response.headers.get('Content-Disposition').split('=')[1].slice(1, -1);
     // console.log(key)
     // save key into database associated with use
+    setNewAddedItem((prev) => ({
+      ...prev,
+      image: url,
+    }));
   }, [newAddedItem.image, setUploadImg, setNewAddedItem, setIsLoading]);
 
   const [date, setDate] = useState(new Date());
@@ -210,7 +215,7 @@ export default function CreateModal({
         setIsCreate(false);
       }}
     >
-      Continue
+      Submit
     </Button>
   );
 
