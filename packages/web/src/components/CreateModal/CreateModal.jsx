@@ -4,10 +4,7 @@ import {
   Box,
   Button,
   Flex,
-  FormControl,
-  FormLabel,
   Image,
-  Input,
   Modal,
   ModalCloseButton,
   ModalContent,
@@ -22,22 +19,11 @@ import {
   StepSeparator,
   StepStatus,
   StepTitle,
-  Text,
-  Textarea,
   useColorMode,
   useSteps,
 } from "@chakra-ui/react";
-// import logo from "../../assets/images/small_logo.png";
-import { storage } from "../../firebase";
-import { MdDriveFileRenameOutline, MdOutlineDescription } from "react-icons/md";
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import { SlCalender } from "react-icons/sl";
-import Calendar from "react-calendar";
-// import "react-calendar/dist/Calendar.css";
 import "./Calendar.css";
 import img_placeholder from "../../assets/images/img_placeholder.jpeg";
-import TypeSelector from "../TypeSelector/TypeSelector";
-import LostFoundSwitch from "./LostFoundSwitch";
 import MissingItemInput from "./components/MissingItemInput";
 import ItemTypeInput from "./components/ItemTypeInput";
 import DateInput from "./components/DateInput";
@@ -61,7 +47,6 @@ export default function CreateModal({
   upload,
 }) {
   const [isLoading, setIsLoading] = useState(false);
-  const { colorMode } = useColorMode();
 
   const uploadFile = useCallback(async () => {
     if (!newAddedItem.image) return;
