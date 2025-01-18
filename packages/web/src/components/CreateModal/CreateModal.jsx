@@ -29,7 +29,7 @@ import ItemTypeInput from "./components/ItemTypeInput";
 import DateInput from "./components/DateInput";
 import ImageInput from "./components/ImageInput";
 import CheckInfo from "./components/CheckInfo";
-
+import imageCompression from 'browser-image-compression';
 export default function CreateModal({
   isOpen,
   onOpen,
@@ -50,15 +50,21 @@ export default function CreateModal({
 
   const uploadFile = useCallback(async () => {
     if (!newAddedItem.image) return;
-
+    const options = {
+      maxSizeMB: 2,
+      maxWidthOrHeight: 2560,
+      useWebWorker: true,
+      fileType: "image/jpeg",
+    }
+    const compressedFile = await imageCompression(newAddedItem.image, options);
     // const apiUrl = process.env.API_URL;
     const response = await fetch(
       `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/upload/image`,
       {
-        body: newAddedItem.image,
+        body: compressedFile,
         method: "POST",
         headers: {
-          "Content-Type": newAddedItem.image.type,
+          "Content-Type": "image/jpeg",
         },
       },
     );
