@@ -75,10 +75,6 @@ export default function CreateModal({
     // const key = response.headers.get('Content-Disposition').split('=')[1].slice(1, -1);
     // console.log(key)
     // save key into database associated with use
-
-    setUploadImg(url);
-    setNewAddedItem((prev) => ({ ...prev, image: url }));
-    setIsLoading(false);
   }, [newAddedItem.image, setUploadImg, setNewAddedItem, setIsLoading]);
 
   const [date, setDate] = useState(new Date());
@@ -248,24 +244,23 @@ export default function CreateModal({
   const handleItemImageChange = useCallback(
     (e) => {
       // image size limit of 2 MB
+      setIsLoading(true);
       if (e.target.files[0].size <= 10000000) {
         setNewAddedItem((prev) => ({
           ...prev,
           image: e.target.files[0],
         }));
+        console.log(uploadImg);
+        console.log(URL.createObjectURL(e.target.files[0]));
+        setUploadImg(URL.createObjectURL(e.target.files[0]));
+        console.log(uploadImg);
+        setIsLoading(false);
       } else {
         alert("Image exceeds size limit of 10 MB");
       }
     },
     [setNewAddedItem],
   );
-
-  useEffect(() => {
-    if (newAddedItem.image && typeof newAddedItem.image !== "string") {
-      setIsLoading(true);
-      // uploadFile(); plan to upload image later when form is submitted
-    }
-  }, [newAddedItem.image, uploadFile]);
 
   return (
     <>
