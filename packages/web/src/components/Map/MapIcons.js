@@ -15,6 +15,7 @@ import resolved from "../../assets/logos/resolved.png";
 import others_lost from "../../assets/logos/Others_lost.png";
 import others_found from "../../assets/logos/Others_found.png";
 import others_black from "../../assets/logos/others_black.svg";
+import others_white from "../../assets/logos/others_white.svg"
 
 import fly_img from "../../assets/images/fly_img.png";
 
@@ -84,8 +85,14 @@ const othersFound = L.icon({
   iconAnchor: [25, 40],
 });
 
-export const othersDrag = L.icon({
+export const othersDragBlack = L.icon({
   iconUrl: others_black,
+  iconSize: [40, 40],
+  iconAnchor: [25, 25],
+});
+
+export const othersDragWhite = L.icon({
+  iconUrl: others_white,
   iconSize: [40, 40],
   iconAnchor: [25, 25],
 });
