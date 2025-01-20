@@ -154,9 +154,7 @@ export default function Home() {
     e.preventDefault();
     try {
       await axios.patch(
-        `${
-          import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
-        }/leaderboard/changeSubscription`,
+        `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/changeSubscription`,
         {
           email: user.email,
           subscription: !subscription,
@@ -434,7 +432,7 @@ export default function Home() {
                     >
                       {user
                         ? leaderboard.find((u) => u.email === user.email)
-                            ?.points
+                          ?.points
                         : 0}
                     </Text>
                   </Flex>
@@ -600,7 +598,7 @@ export default function Home() {
               flexDirection="row"
               justifyContent="space-between"
             >
-              {isEdit ? (
+              {(isEdit && !isOpenCreateModal) ? (
                 <Flex>
                   <Alert
                     status="warning"
@@ -625,7 +623,7 @@ export default function Home() {
                     colorScheme="#74a2fa"
                     color={colorMode === "light" ? "#5f85cf" : "white"}
                     spacing={3}
-                    // boxShadow="5px 2px 9px rgba(0, 0, 0, 0.2);"
+                  // boxShadow="5px 2px 9px rgba(0, 0, 0, 0.2);"
                   >
                     <Button
                       backgroundColor={
