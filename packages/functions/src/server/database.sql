@@ -21,4 +21,9 @@ CREATE TABLE leaderboard(
     email VARCHAR(255),
     points INTEGER,
     subscription BOOLEAN
-)
+);
+
+CREATE TABLE SEARCHES (
+    keyword VARCHAR(50) PRIMARY KEY,
+    emails VARCHAR(254)[]
+);
