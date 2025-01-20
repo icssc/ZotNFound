@@ -17,6 +17,7 @@ import nodemailer from "./routes/nodeMailer.js";
 import leaderboard from "./routes/leaderboard.js";
 import upload from "./routes/upload.js";
 import email from "./routes/email.js";
+import searches from "./routes/searches.js";
 
 app.use(cors());
 app.use(express.json({ limit: "25mb" }));
@@ -39,5 +40,6 @@ app.use("/leaderboard", leaderboard);
 app.use("/nodemailer", nodemailer);
 app.use("/upload", upload);
 app.use("/email", email);
+app.use("/searches", searches);
 
 export const handler = serverless(app);
