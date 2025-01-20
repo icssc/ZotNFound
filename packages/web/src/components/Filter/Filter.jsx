@@ -197,10 +197,7 @@ export default function Filter({ findFilter, setFindFilter, onClose, isOpen }) {
 
           <DrawerFooter>
             <Button variant="outline" mr={3} onClick={handleCancel}>
-              Cancel
-            </Button>
-            <Button colorScheme="blue" onClick={onClose}>
-              Save
+              Reset Filter
             </Button>
           </DrawerFooter>
         </DrawerContent>
