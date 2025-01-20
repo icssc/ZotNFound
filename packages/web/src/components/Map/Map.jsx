@@ -324,7 +324,7 @@ export default function Map({
         eventHandlers={eventHandlers}
         position={position}
         ref={markerRef}
-        icon={colorMode == "dark" ? othersDragBlack : othersDragWhite}
+        icon={colorMode == "dark" ? othersDragWhite : othersDragBlack}
         
       >
         <Popup minWidth={90} closeButton={false}>
