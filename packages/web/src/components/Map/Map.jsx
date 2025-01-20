@@ -14,7 +14,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Fuse from "fuse.js";
 
-import { othersDrag, flyImg, iconsMap } from "./MapIcons";
+import { othersDragBlack, othersDragWhite, flyImg, iconsMap } from "./MapIcons";
 import {
   MapContainer,
   TileLayer,
@@ -324,7 +324,8 @@ export default function Map({
         eventHandlers={eventHandlers}
         position={position}
         ref={markerRef}
-        icon={othersDrag}
+        icon={colorMode == "dark" ? othersDragWhite : othersDragBlack}
+        
       >
         <Popup minWidth={90} closeButton={false}>
           <span className="popup" onClick={() => toggleDraggable()}>
