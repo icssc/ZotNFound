@@ -190,10 +190,12 @@ export default function Map({
 
     if (newAddedItem.image) {
       const options = {
-        maxSizeMB: 2,
-        maxWidthOrHeight: 2560,
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
         useWebWorker: true,
         fileType: "image/jpeg",
+        initialQuality: 0.8,
+        preserveExif: false, // optional, use preserve Exif metadata for JPEG image e.g., Camera model, Focal length, etc (default: false)
       };
       try {
         const compressedFile = await imageCompression(
