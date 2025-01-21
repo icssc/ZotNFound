@@ -1,44 +1,34 @@
 import * as React from "react";
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
-  Image,
+  Box,
   Button,
   Flex,
-  FormLabel,
-  Input,
+  Image,
   Modal,
-  ModalOverlay,
+  ModalCloseButton,
   ModalContent,
-  FormControl,
-  Text,
+  ModalOverlay,
+  Spinner,
   Step,
   StepDescription,
   StepIcon,
   StepIndicator,
   StepNumber,
+  Stepper,
   StepSeparator,
   StepStatus,
   StepTitle,
-  Stepper,
-  useSteps,
-  Box,
-  ModalCloseButton,
-  Textarea,
-  Spinner,
   useColorMode,
+  useSteps,
 } from "@chakra-ui/react";
-// import logo from "../../assets/images/small_logo.png";
-import { storage } from "../../firebase";
-import { MdDriveFileRenameOutline, MdOutlineDescription } from "react-icons/md";
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import { SlCalender } from "react-icons/sl";
-import Calendar from "react-calendar";
-// import "react-calendar/dist/Calendar.css";
 import "./Calendar.css";
 import img_placeholder from "../../assets/images/img_placeholder.jpeg";
-import TypeSelector from "../TypeSelector/TypeSelector";
-import LostFoundSwitch from "./LostFoundSwitch";
-
+import MissingItemInput from "./components/MissingItemInput";
+import ItemTypeInput from "./components/ItemTypeInput";
+import DateInput from "./components/DateInput";
+import ImageInput from "./components/ImageInput";
+import CheckInfo from "./components/CheckInfo";
 export default function CreateModal({
   isOpen,
   onOpen,
@@ -56,41 +46,6 @@ export default function CreateModal({
   upload,
 }) {
   const [isLoading, setIsLoading] = useState(false);
-  const { colorMode } = useColorMode();
-
-  const uploadFile = useCallback(async () => {
-    if (!newAddedItem.image) return;
-
-    // const apiUrl = process.env.API_URL;
-    const response = await fetch(
-      `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/upload/image`,
-      {
-        body: newAddedItem.image,
-        method: "POST",
-        headers: {
-          "Content-Type": newAddedItem.image.type,
-        },
-      }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to upload file");
-    }
-
-    const data = await response.json();
-    console.log(data);
-    const url = data.url;
-    for (const [key, value] of response.headers.entries()) {
-      console.log(`${key}: ${value}`);
-    }
-    // const key = response.headers.get('Content-Disposition').split('=')[1].slice(1, -1);
-    // console.log(key)
-    // save key into database associated with use
-
-    setUploadImg(url);
-    setNewAddedItem((prev) => ({ ...prev, image: url }));
-    setIsLoading(false);
-  }, [newAddedItem.image, setUploadImg, setNewAddedItem, setIsLoading]);
-
   const [date, setDate] = useState(new Date());
 
   const steps = [
@@ -185,13 +140,11 @@ export default function CreateModal({
   // Define the JSX for the 'Continue (without submitting)' button in the modal
   const continueModalButton = (
     <Button
-      isDisabled={
-        (activeStep === 0 && newAddedItem.name === "") ||
+      isDisabled={(activeStep === 0 && newAddedItem.name === "") ||
         newAddedItem.description === "" ||
         (activeStep === 1 && newAddedItem.type === "") ||
         (activeStep === 2 && newAddedItem.itemdate === "") ||
-        (activeStep === 3 && uploadImg === "")
-      }
+        (activeStep === 3 && uploadImg === "")}
       variant={"solid"}
       colorScheme="blue"
       size="lg"
@@ -204,13 +157,11 @@ export default function CreateModal({
   // Define the JSX for the 'Continue (and submit)' button in the modal
   const submitModalButton = (
     <Button
-      isDisabled={
-        uploadImg === upload ||
+      isDisabled={uploadImg === upload ||
         newAddedItem.image === "" ||
         newAddedItem.type === "" ||
         newAddedItem.name === "" ||
-        newAddedItem.description === ""
-      }
+        newAddedItem.description === ""}
       variant={"solid"}
       type="submit"
       colorScheme="green"
@@ -221,7 +172,7 @@ export default function CreateModal({
         setIsCreate(false);
       }}
     >
-      Continue
+      Submit
     </Button>
   );
 
@@ -234,7 +185,7 @@ export default function CreateModal({
         itemdate: e.toISOString().split("T")[0],
       }));
     },
-    [setNewAddedItem]
+    [setNewAddedItem],
   );
 
   // Define the callback function to change the item name
@@ -244,7 +195,7 @@ export default function CreateModal({
         ...prev,
         name: e.target.value,
       })),
-    [setNewAddedItem]
+    [setNewAddedItem],
   );
 
   // Define the callback function to change the item description
@@ -254,31 +205,27 @@ export default function CreateModal({
         ...prev,
         description: e.target.value,
       })),
-    [setNewAddedItem]
+    [setNewAddedItem],
   );
 
   // Define the callback function to change the item image
   const handleItemImageChange = useCallback(
     (e) => {
       // image size limit of 2 MB
+      setIsLoading(true);
       if (e.target.files[0].size <= 10000000) {
         setNewAddedItem((prev) => ({
           ...prev,
           image: e.target.files[0],
         }));
+        setUploadImg(URL.createObjectURL(e.target.files[0]));
+        setIsLoading(false);
       } else {
         alert("Image exceeds size limit of 10 MB");
       }
     },
-    [setNewAddedItem]
+    [setNewAddedItem],
   );
-
-  useEffect(() => {
-    if (newAddedItem.image && typeof newAddedItem.image !== "string") {
-      setIsLoading(true);
-      uploadFile();
-    }
-  }, [newAddedItem.image, uploadFile]);
 
   return (
     <>
@@ -344,260 +291,46 @@ export default function CreateModal({
               >
                 {/* first step */}
                 {activeStep === 0 && (
-                  <Flex width={{ md: "50%", base: "90%" }}>
-                    <FormControl>
-                      <FormLabel fontSize="2xl">🔑 Item Name:</FormLabel>
-
-                      <Input
-                        variant="outline"
-                        placeholder="Ex: Airpods Pro, ..."
-                        size="lg"
-                        mb={5}
-                        border="2px solid gray"
-                        value={newAddedItem.name}
-                        onChange={handleItemNameChange}
-                      />
-                      <FormLabel fontSize="2xl">
-                        📝Description of Item:
-                      </FormLabel>
-
-                      <Textarea
-                        variant="outline"
-                        placeholder="Ex: Lost in ICS 31 Lec, ..."
-                        size="lg"
-                        border="2px solid gray"
-                        value={newAddedItem.description}
-                        onChange={handleItemDescriptionChange}
-                        rows="5"
-                      />
-                    </FormControl>
-                  </Flex>
+                  <MissingItemInput
+                    newAddedItem={newAddedItem}
+                    handleItemNameChange={handleItemNameChange}
+                    handleItemDescriptionChange={handleItemDescriptionChange}
+                  />
                 )}
-                {/* first step */}
-
                 {/* second step */}
                 {activeStep === 1 && (
-                  <Flex
-                    flexDir={"column"}
-                    w="100%"
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                  >
-                    <FormControl>
-                      <FormLabel
-                        ml={5}
-                        fontSize="2xl"
-                        mb={8}
-                        textAlign={"center"}
-                      >
-                        ❓ Select Item Type:
-                      </FormLabel>
-                    </FormControl>
-
-                    <TypeSelector
-                      setNewAddedItem={setNewAddedItem}
-                      newAddedItem={newAddedItem}
-                    />
-                    <FormControl>
-                      <Flex flexDir={"column"}>
-                        <FormLabel
-                          htmlFor="lost-item"
-                          ml={5}
-                          fontSize="2xl"
-                          my={8}
-                          textAlign={"center"}
-                        >
-                          🤔 Lost or Found Item?
-                        </FormLabel>
-
-                        <Flex
-                          alignItems={"center"}
-                          textAlign={"center"}
-                          justify={"center"}
-                          mb={"5%"}
-                        >
-                          <LostFoundSwitch
-                            setNewAddedItem={setNewAddedItem}
-                            newAddedItem={newAddedItem}
-                          />
-                        </Flex>
-                      </Flex>
-                    </FormControl>
-                  </Flex>
+                  <ItemTypeInput
+                    newAddedItem={newAddedItem}
+                    setNewAddedItem={setNewAddedItem}
+                  />
                 )}
-
-                {/* second step */}
-
                 {/* third step */}
                 {activeStep === 2 && (
-                  <FormControl>
-                    <FormLabel
-                      px="10%"
-                      fontSize="xl"
-                      textAlign={"center"}
-                      mb={"5%"}
-                    >
-                      {newAddedItem.islost ? "📅 Lost Date:" : "📅 Found Date:"}
-                    </FormLabel>
-
-                    <Flex
-                      w="100%"
-                      alignItems={"center"}
-                      justifyContent={"center"}
-                      px={{ md: "10%", base: "3%" }}
-                    >
-                      <Calendar
-                        className={"react-calendar"}
-                        calendarType="US"
-                        onChange={handleItemDateChange}
-                        value={date}
-                      />
-                    </Flex>
-                  </FormControl>
+                  <DateInput
+                    isLost={newAddedItem.islost}
+                    date={date}
+                    handleItemDateChange={handleItemDateChange}
+                  />
                 )}
-                {/* third step */}
 
                 {/* fourth step */}
                 {activeStep === 3 && (
-                  <FormControl>
-                    <Flex
-                      gap={5}
-                      alignItems="center"
-                      flexDirection="column"
-                      justifyContent="center"
-                    >
-                      <Flex justifyContent="center" alignItems="center" gap={3}>
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          width="38%"
-                          sx={{
-                            "::file-selector-button": {
-                              height: 10,
-                              padding: 0,
-                              mr: 4,
-                              background: "none",
-                              border: "none",
-                              fontWeight: "bold",
-                            },
-                          }}
-                          onChange={handleItemImageChange}
-                        />
-
-                        {/* <Button onClick={uploadFile}>Confirm</Button> */}
-                      </Flex>
-
-                      {isLoading ? loadingAnimation : uploadedImage}
-                    </Flex>
-                  </FormControl>
+                  <ImageInput
+                    handleItemDateChange={handleItemDateChange}
+                    handleItemImageChange={handleItemImageChange}
+                    isLoading={isLoading}
+                    loadingAnimation={loadingAnimation}
+                    uploadedImage={uploadedImage}
+                  />
                 )}
-                {/* fourth step */}
 
                 {/* fifth step */}
                 {activeStep === 4 && (
-                  <Flex gap={"5%"} flexDir={{ md: "row", base: "column" }}>
-                    <Flex
-                      flexDir={"column"}
-                      flex={1}
-                      justifyContent={"center"}
-                      alignItems={"center"}
-                    >
-                      <Text as="b" fontSize={25}>
-                        Confirm & Submit
-                      </Text>
-                      <Image
-                        sizeBox="100%"
-                        src={uploadImg === "" ? upload : uploadImg}
-                        width={{ md: "25vw", base: "20vh" }}
-                        maxHeight={{ md: "25vw", base: "20vh" }}
-                        borderRadius="15%"
-                        objectFit={"cover"}
-                      />
-                    </Flex>
-
-                    <Flex
-                      flex={1}
-                      backgroundColor={
-                        colorMode === "light" ? "#f9f9f9" : "#2c2c2c"
-                      }
-                      flexDir={"column"}
-                      borderRadius={"10%"}
-                      padding={"1vw"}
-                      maxW={{ md: "70%", base: "80vw" }}
-                      mb={3}
-                      alignItems={{ base: "center", md: "start" }}
-                    >
-                      <Text
-                        ml="1%"
-                        textAlign={"center"}
-                        as="b"
-                        fontSize={"2xl"}
-                        mb={5}
-                      >
-                        Item Information:
-                      </Text>
-
-                      <Flex
-                        mb="5%"
-                        ml="1%"
-                        padding={2}
-                        gap={3}
-                        flexDir={{ base: "column", md: "row" }}
-                        justifyContent={"center"}
-                        alignItems={"center"}
-                      >
-                        <MdDriveFileRenameOutline size={"1.3em"} />
-                        <Text w={"100%"} ml="2%" fontSize={15}>
-                          {newAddedItem.name}
-                        </Text>
-                      </Flex>
-
-                      <Flex
-                        mb="5%"
-                        padding={2}
-                        gap={3}
-                        flexDir={{ base: "column", md: "row" }}
-                        justifyContent={"center"}
-                        alignItems={"center"}
-                      >
-                        <MdOutlineDescription size={"1.3em"} />
-                        <Text ml="2%" fontSize={15} w={"100%"}>
-                          {newAddedItem.description}
-                        </Text>
-                      </Flex>
-
-                      <Flex
-                        mb="5%"
-                        padding={2}
-                        gap={3}
-                        flexDir={{ base: "column", md: "row" }}
-                        justifyContent={"center"}
-                        alignItems={"center"}
-                      >
-                        <FaMagnifyingGlass size={"1.3em"} />
-                        <Text ml="2%" fontSize={15} w={"100%"}>
-                          {newAddedItem.islost ? "LOST" : "FOUND"}
-                          {", "}
-                          {newAddedItem.type.toUpperCase()}
-                        </Text>
-                      </Flex>
-
-                      <Flex
-                        mb="5%"
-                        padding={2}
-                        gap={3}
-                        flexDir={{ base: "column", md: "row" }}
-                        justifyContent={"center"}
-                        alignItems={"center"}
-                      >
-                        <SlCalender size={"1.3em"} />
-                        <Text ml="2%" fontSize={15} w={"100%"}>
-                          {newAddedItem.itemdate}
-                        </Text>
-                      </Flex>
-                    </Flex>
-                  </Flex>
+                  <CheckInfo
+                    newAddedItem={newAddedItem}
+                    upload={upload}
+                    uploadImg={uploadImg}
+                  />
                 )}
                 {/* fifth step */}
               </Flex>
