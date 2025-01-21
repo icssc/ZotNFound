@@ -65,7 +65,7 @@ itemsRouter.post("/", async (req, res) => {
      });
 
      const uniqueEmails = Array.from(emailSet);
-     console.log(uniqueEmails);
+    //  console.log(uniqueEmails);
 
     res.json(item.rows[0]); // send the response immediately after adding the item
     let contentString = "";
