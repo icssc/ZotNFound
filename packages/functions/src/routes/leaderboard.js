@@ -4,7 +4,6 @@ import client from "../server/db.js";
 const leaderboardRouter = express.Router();
 // const middleware = require("../middleware/index.js");
 
-// add a user to leaderboard
 leaderboardRouter.post("/", async (req, res) => {
   try {
     const { email, points } = req.body; // Get email and points from request body
@@ -13,6 +12,17 @@ leaderboardRouter.post("/", async (req, res) => {
       return res.status(400).send("Email and points are required");
     }
 
+    // Check if the email already exists in the database
+    const existingUser = await client.query(
+      `SELECT * FROM ${leaderboardTable} WHERE email = $1`,
+      [email]
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res.status(400).send("Email already exists in the leaderboard");
+    }
+
+    // Insert the new email and points into the leaderboard
     await client.query(
       `INSERT INTO ${leaderboardTable} (email, points) VALUES ($1, $2)`,
       [email, points]

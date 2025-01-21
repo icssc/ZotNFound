@@ -26,12 +26,29 @@ itemsRouter.post("/", async (req, res) => {
       ishelped,
     } = req.body;
 
-    if (!isPositionWithinBounds(location[0], location[1])) {
-      res.json("ITEM OUT OF BOUNDS (UCI ONLY)");
+    // Validate location
+    if (!location || !Array.isArray(location) || location.length !== 2) {
+      return res.status(400).json({
+        error: "Invalid location. Please provide a valid latitude and longitude.",
+      });
     }
 
-    const item = await client.query(
-      `INSERT INTO ${itemsTable} (name, description, type, islost, location, date, itemdate, email, image, isresolved, ishelped) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+    const [latitude, longitude] = location;
+
+    // Check if the location values are numbers and within bounds
+    if (
+      typeof latitude !== "number" ||
+      typeof longitude !== "number" ||
+      !isPositionWithinBounds(latitude, longitude)
+    ) {
+      return res.status(400).json({
+        error: "ITEM OUT OF BOUNDS (UCI ONLY)",
+      });
+    }
+
+    // Add item to the database
+    await client.query(
+      `INSERT INTO ${itemsTable} (name, description, type, islost, location, date, itemdate, email, image, isresolved, ishelped) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
       [
         name,
         description,
@@ -47,47 +64,15 @@ itemsRouter.post("/", async (req, res) => {
       ]
     );
 
-    // query to get users
-    const subscribedUsers = await client.query(
-      `SELECT DISTINCT email FROM ${leaderboardTable} WHERE email!=$1 AND subscription=True`,
-      [email]
-    );
-
-    res.json(item.rows[0]); // send the response immediately after adding the item
-    let contentString = "";
-
-    // COMMENT OUT FOR TESTING PURPOSES
-    if (process.env.NODE_ENV === "production") {
-      function sendDelayedEmail(index) {
-        if (index >= subscribedUsers.rows.length) return;
-
-        let email = subscribedUsers.rows[index].email;
-        contentString += `A new item, ${name}, is added to ZotnFound!`;
-
-        const dynamicContent = {
-          content: contentString,
-          image: image,
-          url: `https://zotnfound.com/${item.rows[0].id}`,
-        };
-
-        // const customizedTemplate = template
-        //   .replace("{{content}}", dynamicContent.content)
-        //   .replace("{{image}}", dynamicContent.image)
-        //   .replace("{{url}}", dynamicContent.url);
-
-        // sendEmail(email, "A nearby item was added.", customizedTemplate);
-
-        contentString = "";
-        console.log("sent " + email);
-        setTimeout(() => sendDelayedEmail(index + 1), 500); // recursive call to iterate through all user emails
-      }
-
-      sendDelayedEmail(0);
-    }
+    // Send a success response
+    res.status(200).json({ message: "Item was added successfully." });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
 
 itemsRouter.get("/", async (req, res) => {
   try {

@@ -14,7 +14,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Fuse from "fuse.js";
 
-import { flyImg, iconsMap, othersDrag } from "./MapIcons";
+import { othersDragBlack, othersDragWhite, flyImg, iconsMap } from "./MapIcons";
 import {
   Circle,
   MapContainer,
@@ -360,24 +360,23 @@ export default function Map({
     });
 
     return position.lat !== centerPosition[0] &&
-        position.lng !== centerPosition[1]
-      ? (
-        <Marker
-          className="marker"
-          draggable={true}
-          eventHandlers={eventHandlers}
-          position={position}
-          ref={markerRef}
-          icon={othersDrag}
-        >
-          <Popup minWidth={90} closeButton={false}>
-            <span className="popup" onClick={() => toggleDraggable()}>
-              Click to Confirm Location 🤔
-            </span>
-          </Popup>
-        </Marker>
-      )
-      : null;
+      position.lng !== centerPosition[1] ? (
+      <Marker
+        className="marker"
+        draggable={true}
+        eventHandlers={eventHandlers}
+        position={position}
+        ref={markerRef}
+        icon={colorMode == "dark" ? othersDragWhite : othersDragBlack}
+        
+      >
+        <Popup minWidth={90} closeButton={false}>
+          <span className="popup" onClick={() => toggleDraggable()}>
+            Click to Confirm Location 🤔
+          </span>
+        </Popup>
+      </Marker>
+    ) : null;
   };
 
   const createCluster = useMemo(() => {
