@@ -17,3 +17,8 @@
     z-index: 0;
   }
 }
+
+.custom-cluster-icon {
+  background: none;
+  border: none;
+}

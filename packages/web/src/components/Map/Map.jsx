@@ -1,10 +1,10 @@
 import {
-  useState,
-  useRef,
-  useMemo,
+  useCallback,
   useContext,
   useEffect,
-  useCallback,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
 // import { useMapEvents } from "react-leaflet/hooks";
 // import mapuser from "../../assets/logos/mapuser.svg";
@@ -14,33 +14,34 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Fuse from "fuse.js";
 
-import { othersDrag, flyImg, iconsMap } from "./MapIcons";
+import { othersDragBlack, othersDragWhite, flyImg, iconsMap } from "./MapIcons";
 import {
+  Circle,
   MapContainer,
-  TileLayer,
   Marker,
   Popup,
-  useMap,
   Rectangle,
-  Circle,
+  TileLayer,
+  useMap,
   useMapEvents,
 } from "react-leaflet";
-import { useDisclosure, useColorMode } from "@chakra-ui/react";
+import { useColorMode, useDisclosure } from "@chakra-ui/react";
 import InfoModal from "../InfoModal/InfoModal";
 
 import DataContext from "../../context/DataContext";
 import { UserAuth } from "../../context/AuthContext";
 
 import axios from "axios";
+import imageCompression from "browser-image-compression";
 
 import { filterItem } from "../../utils/Utils.js";
-import MarkerClusterGroup from 'react-leaflet-cluster'
+import MarkerClusterGroup from "react-leaflet-cluster";
+import { createClusterCustomIcon } from "./MapIcons";
 
 /**
  * Map is uses react-leaflet's API to communicate user actions to map entities and information
  *
  * @component
- *
  *
  * @prop {number[]} focusLocation - coordinates to move map view to and zoom in on
  * @prop {string} search - search bar query
@@ -50,8 +51,6 @@ import MarkerClusterGroup from 'react-leaflet-cluster'
  * @prop {object} newAddedItem - updates as user adds new item information on {@link CreateModal}
  * @prop {number} centerPosition - center of map coordinates
  * @prop {object} findFilter - search filters
- *
- *
  *
  * @returns {JSX.Element} Leaflet Map component
  */
@@ -83,6 +82,7 @@ export default function Map({
   // State: itemData - currently selected item
   // ! (doesn't erase when clicked off of previously selected item)
   const [itemData, setItemData] = useState({});
+
   // State: showDonut - if red ring around selected marker shows
   const [showDonut, setShowDonut] = useState(false);
 
@@ -130,7 +130,7 @@ export default function Map({
 
   const filterItemCallback = useCallback(
     (item) => filterItem(item, findFilter, user),
-    [findFilter, user]
+    [findFilter, user],
   );
 
   const markersData = results.length > 0 ? results : data;
@@ -146,12 +146,11 @@ export default function Map({
             setFocusLocation(item.location);
           },
         }}
-        icon={
-          item.isresolved
-            ? iconsMap["resolved"][item.islost]
-            : (iconsMap[item.type] || iconsMap["others"])[item.islost]
-        }
-      ></Marker>
+        icon={item.isresolved
+          ? iconsMap["resolved"][item.islost]
+          : (iconsMap[item.type] || iconsMap["others"])[item.islost]}
+      >
+      </Marker>
     ));
   }, [markersData, filterItemCallback, onOpen, setItemData, setFocusLocation]);
 
@@ -162,9 +161,11 @@ export default function Map({
       map.flyTo(location, 18);
     }
 
-    return location ? (
-      <Marker position={location} icon={flyImg}></Marker> // ? there is no fly image??
-    ) : null;
+    return location
+      ? (
+        <Marker position={location} icon={flyImg}></Marker> // ? there is no fly image??
+      )
+      : null;
   }
 
   const markerRef = useRef(null);
@@ -178,19 +179,56 @@ export default function Map({
         }
       },
     }),
-    [setPosition]
+    [setPosition],
   );
   async function handleSubmit() {
     const date = new Date();
-
     if (!token) {
       return;
     }
+    let imageUrl = "";
+
+    if (newAddedItem.image) {
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+        fileType: "image/jpeg",
+        initialQuality: 0.8,
+        preserveExif: false, // optional, use preserve Exif metadata for JPEG image e.g., Camera model, Focal length, etc (default: false)
+      };
+      try {
+        const compressedFile = await imageCompression(
+          newAddedItem.image,
+          options,
+        );
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/upload/image`,
+          {
+            body: compressedFile,
+            method: "POST",
+            headers: {
+              "Content-Type": "image/jpeg",
+            },
+          },
+        );
+        if (!response.ok) {
+          throw new Error("Failed to upload file");
+        }
+        const data = await response.json();
+        imageUrl = data.url;
+      } catch (err) {
+        // if url failed than image upload failed
+        console.error("Error uploading image:", err);
+        return;
+      }
+    }
+
     axios
       .post(
         `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items`,
         {
-          image: newAddedItem.image,
+          image: imageUrl,
           type: newAddedItem.type,
           islost: newAddedItem.islost,
           name: newAddedItem.name,
@@ -204,13 +242,13 @@ export default function Map({
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // verify auth
+            Authorization: `Bearer ${token}`,
           },
-        }
+        },
       )
       .then((item) => {
         const newItem = {
-          image: newAddedItem.image,
+          image: imageUrl,
           type: newAddedItem.type,
           islost: newAddedItem.islost,
           name: newAddedItem.name,
@@ -226,6 +264,7 @@ export default function Map({
         setData((prev) => [...prev, newItem]);
         setPosition(centerPosition);
         setFocusLocation(newItem.location);
+        // Reset state for new item form
         setNewAddedItem({
           image: "",
           type: "",
@@ -241,7 +280,6 @@ export default function Map({
 
         // Update the leaderboard
         const pointsToAdd = newAddedItem.islost ? 1 : 3;
-
         axios.put(
           `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`,
           {
@@ -252,7 +290,7 @@ export default function Map({
             headers: {
               Authorization: `Bearer ${token}`, // verify auth
             },
-          }
+          },
         );
 
         setLeaderboard((prev) =>
@@ -267,8 +305,15 @@ export default function Map({
 
     setLoading(true);
   }
-
   const toggleDraggable = () => {
+    if (position.lat == null || position.lng == null) {
+      alert(
+        "Latitude and longitude cannot be null. Please pick a valid location.",
+      );
+      setPosition({ lat: centerPosition[0], lng: centerPosition[1] }); // Reset position to center
+      return;
+    }
+
     if (!bounds.contains(position)) {
       alert("ITEM OUT OF BOUNDS (UCI ONLY)");
       return;
@@ -289,7 +334,7 @@ export default function Map({
           map.fitBounds(bounds);
         },
       }),
-      [map]
+      [map],
     );
 
     return (
@@ -303,10 +348,9 @@ export default function Map({
     );
   }
 
-  const mapUrl =
-    colorMode === "dark"
-      ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL
-      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const mapUrl = colorMode === "dark"
+    ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL
+    : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
   const NewItemMarker = () => {
     useMapEvents({
@@ -323,7 +367,8 @@ export default function Map({
         eventHandlers={eventHandlers}
         position={position}
         ref={markerRef}
-        icon={othersDrag}
+        icon={colorMode == "dark" ? othersDragWhite : othersDragBlack}
+        
       >
         <Popup minWidth={90} closeButton={false}>
           <span className="popup" onClick={() => toggleDraggable()}>
@@ -333,6 +378,16 @@ export default function Map({
       </Marker>
     ) : null;
   };
+
+  const createCluster = useMemo(() => {
+    // console.log("Current colorMode:", colorMode); // Debug log
+    return {
+      chunkedLoading: true,
+      iconCreateFunction: (cluster) => {
+        return createClusterCustomIcon(cluster, colorMode);
+      },
+    };
+  }, [colorMode]); // Make sure colorMode is in dependency array
 
   return (
     <div>
@@ -355,7 +410,10 @@ export default function Map({
           <MapFocusLocation location={focusLocation} search={search} />
         )}
         {!isEdit && (
-          <MarkerClusterGroup chunkedLoading>
+          <MarkerClusterGroup
+            key={colorMode} // Force re-render when colorMode changes
+            {...createCluster}
+          >
             {allMarkers}
           </MarkerClusterGroup>
         )}

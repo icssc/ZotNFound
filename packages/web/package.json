@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@vitejs/plugin-react": "^4.2.1",
     "axios": "^1.4.0",
+    "browser-image-compression": "^2.0.2",
     "dotenv": "^16.1.4",
     "firebase": "^9.23.0",
     "firebase-auth": "^0.1.2",
