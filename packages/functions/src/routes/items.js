@@ -1,13 +1,14 @@
 import express from "express";
 
 import client from "../server/db.js";
+import sendEmail from "../util/sendEmail";
 // const middleware = require("../middleware/index.js");
 const itemsRouter = express.Router();
 
 // const templatePath = path.resolve(__dirname, "../emailTemplate/index.html");
 // const template = fs.readFileSync(templatePath, "utf-8");
 import isPositionWithinBounds from "../util/inbound.js";
-import { leaderboardTable, itemsTable } from "../config/db-config.js";
+import { leaderboardTable, itemsTable, searchesTable } from "../config/db-config.js";
 
 //Add a item
 itemsRouter.post("/", async (req, res) => {
@@ -47,11 +48,24 @@ itemsRouter.post("/", async (req, res) => {
       ]
     );
 
-    // query to get users
-    const subscribedUsers = await client.query(
-      `SELECT DISTINCT email FROM ${leaderboardTable} WHERE email!=$1 AND subscription=True`,
-      [email]
+    // query to get user emails subscribed to relevant keywords
+    const subscribers = await client.query(
+      `SELECT emails
+      FROM ${searchesTable}
+      WHERE keyword IN ($1, $2, $3);`,
+      [name, description, type]
     );
+
+     // add emails to set to remove duplicates
+     const emailSet = new Set();
+     subscribers.rows.forEach(row => {
+       row.emails.forEach(email => {
+         uniqueEmails.add(email);
+       });
+     });
+
+     const uniqueEmails = Array.from(emailSet);
+     console.log(uniqueEmails);
 
     res.json(item.rows[0]); // send the response immediately after adding the item
     let contentString = "";
@@ -59,9 +73,9 @@ itemsRouter.post("/", async (req, res) => {
     // COMMENT OUT FOR TESTING PURPOSES
     if (process.env.NODE_ENV === "production") {
       function sendDelayedEmail(index) {
-        if (index >= subscribedUsers.rows.length) return;
+        if (index >= uniqueEmails.length) return;
 
-        let email = subscribedUsers.rows[index].email;
+        let email = uniqueEmails[index].email;
         contentString += `A new item, ${name}, is added to ZotnFound!`;
 
         const dynamicContent = {
