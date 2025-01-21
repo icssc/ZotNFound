@@ -1,13 +1,14 @@
 import express from "express";
 
 import client from "../server/db.js";
+import sendEmail from "../util/sendEmail";
 // const middleware = require("../middleware/index.js");
 const itemsRouter = express.Router();
 
 // const templatePath = path.resolve(__dirname, "../emailTemplate/index.html");
 // const template = fs.readFileSync(templatePath, "utf-8");
 import isPositionWithinBounds from "../util/inbound.js";
-import { leaderboardTable, itemsTable } from "../config/db-config.js";
+import { leaderboardTable, itemsTable, searchesTable } from "../config/db-config.js";
 
 //Add a item
 itemsRouter.post("/", async (req, res) => {
@@ -64,6 +65,56 @@ itemsRouter.post("/", async (req, res) => {
       ]
     );
 
+    // // query to get user emails subscribed to relevant keywords
+    // const subscribers = await client.query(
+    //   `SELECT emails
+    //   FROM ${searchesTable}
+    //   WHERE keyword IN ($1, $2, $3);`,
+    //   [name, description, type]
+    // );
+
+    //  // add emails to set to remove duplicates
+    //  const emailSet = new Set();
+    //  subscribers.rows.forEach(row => {
+    //    row.emails.forEach(email => {
+    //      uniqueEmails.add(email);
+    //    });
+    //  });
+
+    //  const uniqueEmails = Array.from(emailSet);
+    //  console.log(uniqueEmails);
+
+    // res.json(item.rows[0]); // send the response immediately after adding the item
+    // let contentString = "";
+
+    // // COMMENT OUT FOR TESTING PURPOSES
+    // if (process.env.NODE_ENV === "production") {
+    //   function sendDelayedEmail(index) {
+    //     if (index >= uniqueEmails.length) return;
+
+    //     let email = uniqueEmails[index].email;
+    //     contentString += `A new item, ${name}, is added to ZotnFound!`;
+
+    //     const dynamicContent = {
+    //       content: contentString,
+    //       image: image,
+    //       url: `https://zotnfound.com/${item.rows[0].id}`,
+    //     };
+
+    //     // const customizedTemplate = template
+    //     //   .replace("{{content}}", dynamicContent.content)
+    //     //   .replace("{{image}}", dynamicContent.image)
+    //     //   .replace("{{url}}", dynamicContent.url);
+
+    //     // sendEmail(email, "A nearby item was added.", customizedTemplate);
+
+    //     contentString = "";
+    //     console.log("sent " + email);
+    //     setTimeout(() => sendDelayedEmail(index + 1), 500); // recursive call to iterate through all user emails
+    //   }
+
+    //   sendDelayedEmail(0);
+    // }
     // Send a success response
     res.status(200).json({ message: "Item was added successfully." });
   } catch (error) {
