@@ -218,7 +218,6 @@ export default function CreateModal({
           ...prev,
           image: e.target.files[0],
         }));
-        console.log(uploadImg);
         setUploadImg(URL.createObjectURL(e.target.files[0]));
         setIsLoading(false);
       } else {
