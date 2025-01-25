@@ -1,7 +1,7 @@
 import { useContext, useCallback, useState, useEffect, useRef } from "react";
 import "./ResultsBar.css";
 import ResultCard from "../ResultCard/ResultCard";
-import { Box, Flex, Text, Button } from "@chakra-ui/react";
+import { Box, Flex, Text, Button, useToast } from "@chakra-ui/react";
 import DataContext from "../../context/DataContext";
 import { UserAuth } from "../../context/AuthContext";
 import Fuse from "fuse.js";
@@ -111,6 +111,22 @@ export default function ResultsBar({
   const handleUserInteraction = () => {
     setIsAutoScrolling(false);
   };
+
+  const toast = useToast();
+  const [hasToastShown, setHasToastShown] = useState(false);
+  useEffect(() => {
+    if (findFilter.isYourPosts && allResults.length === 0 && !hasToastShown) {
+      setHasToastShown(true);
+      toast({
+        title: 'Sorry, you have no posts.',
+        description: "Click the blue plus icon on the map to create one now!",
+        status: 'success',
+        position: 'top',
+        duration: 5000, // 5 seconds
+        isClosable: true,
+      })
+    }
+  }, [findFilter.isYourPosts, allResults, hasToastShown]);
 
   return (
     <Box
