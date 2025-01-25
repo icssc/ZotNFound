@@ -2,6 +2,7 @@ import { useState, useContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
+  ButtonGroup,
   Heading,
   Text,
   Modal,
@@ -12,6 +13,14 @@ import {
   Tag,
   useDisclosure,
   useColorMode,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverBody,
+  PopoverHeader,
+  PopoverFooter,
 } from "@chakra-ui/react";
 import { formatDate } from "../../utils/DateUtils";
 import { UserAuth } from "../../context/AuthContext";
@@ -189,8 +198,8 @@ export default function InfoModal({
                   {currentEmail === props.email
                     ? ownerTag
                     : props.islost
-                    ? lostTag
-                    : foundTag}
+                      ? lostTag
+                      : foundTag}
                   <Text color={"gray.500"}>Posted: {formattedDate}</Text>
                 </Flex>
               </Flex>
@@ -230,14 +239,38 @@ export default function InfoModal({
                 )}
 
                 {currentEmail === props.email && (
-                  <Button
-                    colorScheme="red"
-                    size={"lg"}
-                    gap={2}
-                    onClick={handleDelete}
-                  >
-                    <CheckIcon /> Delete
-                  </Button>
+                  <Popover>
+                    <PopoverTrigger>
+                      <Button
+                        colorScheme="red"
+                        size={"lg"}
+                        gap={2}
+                      > <CheckIcon /> Delete
+                      </Button>
+                    </PopoverTrigger>
+
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverHeader fontWeight='semibold'>Confirm Action</PopoverHeader>
+                      <PopoverBody>
+                        Are you sure you want to delete this item? This action cannot be undone
+                      </PopoverBody>
+                      <PopoverFooter display='flex' justifyContent='flex-end'>
+                        <ButtonGroup size='sm'>
+                          <Button 
+                          variant='outline'
+                          onClick={onClose}
+                          >Cancel</Button>
+                          <Button 
+                          colorScheme='red'
+                          onClick={handleDelete}
+                          > Confirm
+                          </Button>
+                        </ButtonGroup>
+                      </PopoverFooter>
+                    </PopoverContent>
+                  </Popover>
                 )}
                 <Button
                   colorScheme="blue"
