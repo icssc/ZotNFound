@@ -42,22 +42,32 @@ function Dropzone({ handleItemImageChange }) {
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    justifyContent: "center"
+                    justifyContent: "center",
                 }}
             >
-                <Heading size="sm" style={{ marginTop: "1rem", color: "#CBD5E0" }}>
+                <Heading
+                    size="sm"
+                    style={{ marginTop: "1rem", color: "#CBD5E0" }}
+                >
                     Upload a file
                 </Heading>
-                <Text style={{ marginTop: "0.25rem", fontSize: "0.875rem", color: "#718096" }}>
+                <Text
+                    style={{
+                        marginTop: "0.25rem",
+                        fontSize: "0.875rem",
+                        color: "#718096",
+                    }}
+                >
                     Drop your file here or click to select a file
                 </Text>
-                <input  
+                <input
                     type="file"
+                    accept="image/*"
                     style={{
                         position: "absolute",
                         inset: 0,
                         cursor: "pointer",
-                        opacity: 0
+                        opacity: 0,
                     }}
                     onChange={handleItemImageChange}
                 />
