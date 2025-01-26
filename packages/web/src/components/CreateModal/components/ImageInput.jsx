@@ -13,9 +13,13 @@ const ImageInput = (
                 justifyContent="center"
             >
                 <Flex justifyContent="center" alignItems="center" gap={3}>
-                    <Dropzone handleItemImageChange={handleItemImageChange} />
+                    {uploadedImage ? uploadedImage : (
+                        <Dropzone
+                            handleItemImageChange={handleItemImageChange}
+                            uploadedImage={uploadedImage}
+                        />
+                    )}
                 </Flex>
-                {isLoading ? loadingAnimation : uploadedImage}
             </Flex>
         </FormControl>
     );
@@ -25,39 +29,33 @@ export default ImageInput;
 
 function Dropzone({ handleItemImageChange }) {
     return (
-        <Box style={{ maxWidth: "md", width: "100%" }}>
+        <Box maxW={{ base: "100%", md: "md" }} w="100%">
             <Box
-                style={{
-                    position: "relative",
-                    height: "12rem",
-                    cursor: "pointer",
-                    borderWidth: "2px",
-                    borderStyle: "dashed",
-                    borderColor: "#CBD5E0",
-                    borderRadius: "0.5rem",
-                    backgroundColor: "#111",
-                    color: "white",
-                    padding: "1.5rem",
-                    textAlign: "center",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
+                position="relative"
+                h={{ base: "10rem", md: "12rem" }}
+                cursor="pointer"
+                borderWidth="2px"
+                borderStyle="dashed"
+                borderColor="gray.300"
+                borderRadius="lg"
+                bg="gray.500"
+                color="gray.900"
+                p={{ base: "3", md: "6" }}
+                textAlign="center"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                transition="all 0.2s"
+                _hover={{
+                    bg: "gray.100",
+                    borderColor: "gray.400",
                 }}
             >
-                <Heading
-                    size="sm"
-                    style={{ marginTop: "1rem", color: "#CBD5E0" }}
-                >
+                <Heading size="sm" mt="4" color="gray.600">
                     Upload a file
                 </Heading>
-                <Text
-                    style={{
-                        marginTop: "0.25rem",
-                        fontSize: "0.875rem",
-                        color: "#718096",
-                    }}
-                >
+                <Text mt="1" fontSize="sm" color="gray.700">
                     Drop your file here or click to select a file
                 </Text>
                 <input

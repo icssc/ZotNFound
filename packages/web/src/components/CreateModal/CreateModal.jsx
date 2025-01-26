@@ -83,12 +83,34 @@ export default function CreateModal({
   );
 
   // Define the JSX for the uploaded image
-  const uploadedImage = (
-    <Image
-      width={{ md: "40%", base: "80%" }}
-      src={uploadImg ? uploadImg : img_placeholder}
-    />
-  );
+  const uploadedImage = uploadImg == ""
+    ? null
+    : (
+      <Flex direction="column" align="center" position="relative">
+        <Image
+          width={{ md: "40%", base: "80%" }}
+          src={uploadImg ? uploadImg : img_placeholder}
+        />
+        {uploadImg && (
+          <Button
+            size="sm"
+            colorScheme="red"
+            position="absolute"
+            top={2}
+            right={2}
+            onClick={() => {
+              setUploadImg("");
+              setNewAddedItem((prev) => ({
+                ...prev,
+                image: "",
+              }));
+            }}
+          >
+            ✕
+          </Button>
+        )}
+      </Flex>
+    );
 
   // Define the callback function to increment the active step count
   const handleStepIncrement = useCallback(() => {
@@ -316,7 +338,6 @@ export default function CreateModal({
                 {/* fourth step */}
                 {activeStep === 3 && (
                   <ImageInput
-                    handleItemDateChange={handleItemDateChange}
                     handleItemImageChange={handleItemImageChange}
                     isLoading={isLoading}
                     loadingAnimation={loadingAnimation}
