@@ -90,6 +90,7 @@ const ResultCard = React.memo(
                 </Flex>
               )}
               <Image
+                maxHeight="250px"
                 border="1px"
                 borderColor="gray.300"
                 rounded={"lg"}
