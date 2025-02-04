@@ -51,6 +51,7 @@ import unsubscribe from "../../assets/logos/unsubscribe.svg";
 import userlogo from "../../assets/logos/userlogo.svg";
 import yourposts from "../../assets/logos/yourposts.svg";
 import cookie from "../../assets/images/cookie.svg";
+import bookmark from "../../assets/logos/bookmark-white.svg"; 
 
 import Map from "../Map/Map";
 import "./Home.css";
@@ -58,11 +59,14 @@ import Filter from "../Filter/Filter";
 import ResultsBar from "../ResultsBar/ResultsBar";
 import CreateModal from "../CreateModal/CreateModal";
 import LoginModal from "../LoginModal/LoginModal";
+import BookmarkModal from "./BookmarkModal"; 
 import Leaderboard from "./Leaderboard";
 import ZotNFoundLogoText from "./ZotNFoundLogoText";
 import DateRangeFilter from "./DateRangeFilter";
 import ListItemButton from "./ListItemButton";
 import FeedbackButtonMobile from "./FeedbackButtonMobile";
+import SaveSearchButton from "./SaveSearchButton";
+
 
 import { MdAssignment } from "react-icons/md";
 import { motion } from "framer-motion";
@@ -80,6 +84,15 @@ export default function Home() {
   const btnRef = useRef();
 
   const toast = useToast();
+
+  // BOOKMARK MODAL
+  const {
+    isOpen: isBookmarkModalOpen,
+    onOpen: onBookmarkModalOpen,
+    onClose: onBookmarkModalClose,
+  } = useDisclosure();
+
+  
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -352,11 +365,13 @@ export default function Home() {
           <HStack
             w={{ base: "100%", md: "30%" }}
             display={{ base: "none", md: "block" }}
+            position="relative"
           >
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
+              style={{position: "relative"}}
             >
               {/* size={{ base: "md", md: "lg" }} */}
               <InputGroup>
@@ -371,9 +386,25 @@ export default function Home() {
                   value={search}
                   placeholder="Search Items ..."
                   isDisabled={!loading}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {setSearch(e.target.value);}}
                 />
               </InputGroup>
+              {search.trim() !== "" && (
+                <Box
+                position="absolute"
+                top="100%"
+                left={0}
+                width="100%"
+                mt="2"
+                borderRadius="md"
+                bg={colorMode === "dark" ? "#45435b" : "#ac9dd1"} 
+                color={colorMode === "dark" ? "white" : "black"}
+                zIndex="9999"
+                boxShadow="md"
+              >
+                <SaveSearchButton />
+              </Box>
+              )}
             </motion.div>
           </HStack>
 
@@ -388,6 +419,13 @@ export default function Home() {
               mr={7}
               gap={{ base: 3, md: 5 }}
             >
+              {/* Bookmark Icon */}
+              <Button
+                colorScheme="gray"
+                onClick={onBookmarkModalOpen}
+              >
+                <Image src={bookmark} h="15px" w="15px" />
+              </Button>
               <Button onClick={toggleColorMode}>
                 {colorMode === "light" ? <SunIcon /> : <MoonIcon />}
               </Button>
@@ -834,6 +872,10 @@ export default function Home() {
           </Flex>
         )}
         <LoginModal />
+        <BookmarkModal 
+          isOpen={isBookmarkModalOpen} 
+          onClose={onBookmarkModalClose} 
+        />
         <Leaderboard
           onOpen={onLeaderboardOpen}
           isOpen={isLeaderboardOpen}
@@ -842,6 +884,7 @@ export default function Home() {
           leaderboard={leaderboard}
           user={user}
         />
+
       </Box>
     </DataContext.Provider>
   );
