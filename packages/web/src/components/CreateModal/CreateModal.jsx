@@ -83,12 +83,12 @@ export default function CreateModal({
   );
 
   // Define the JSX for the uploaded image
-  const uploadedImage = uploadImg == ""
-    ? null
-    : (
+  const uploadedImage =
+    uploadImg == "" ? null : (
       <Flex direction="column" align="center" position="relative">
         <Image
-          width={{ md: "40%", base: "80%" }}
+          // width={{ md: "lg", base: "80%" }}
+          height={{ md: "md", base: "70%" }}
           src={uploadImg ? uploadImg : img_placeholder}
         />
         {uploadImg && (
@@ -96,6 +96,8 @@ export default function CreateModal({
             size="sm"
             colorScheme="red"
             position="absolute"
+            borderColor={"white"}
+            borderWidth={2}
             top={2}
             right={2}
             onClick={() => {
@@ -162,11 +164,13 @@ export default function CreateModal({
   // Define the JSX for the 'Continue (without submitting)' button in the modal
   const continueModalButton = (
     <Button
-      isDisabled={(activeStep === 0 && newAddedItem.name === "") ||
+      isDisabled={
+        (activeStep === 0 && newAddedItem.name === "") ||
         newAddedItem.description === "" ||
         (activeStep === 1 && newAddedItem.type === "") ||
         (activeStep === 2 && newAddedItem.itemdate === "") ||
-        (activeStep === 3 && uploadImg === "")}
+        (activeStep === 3 && uploadImg === "")
+      }
       variant={"solid"}
       colorScheme="blue"
       size="lg"
@@ -179,11 +183,13 @@ export default function CreateModal({
   // Define the JSX for the 'Continue (and submit)' button in the modal
   const submitModalButton = (
     <Button
-      isDisabled={uploadImg === upload ||
+      isDisabled={
+        uploadImg === upload ||
         newAddedItem.image === "" ||
         newAddedItem.type === "" ||
         newAddedItem.name === "" ||
-        newAddedItem.description === ""}
+        newAddedItem.description === ""
+      }
       variant={"solid"}
       type="submit"
       colorScheme="green"
@@ -207,7 +213,7 @@ export default function CreateModal({
         itemdate: e.toISOString().split("T")[0],
       }));
     },
-    [setNewAddedItem],
+    [setNewAddedItem]
   );
 
   // Define the callback function to change the item name
@@ -217,7 +223,7 @@ export default function CreateModal({
         ...prev,
         name: e.target.value,
       })),
-    [setNewAddedItem],
+    [setNewAddedItem]
   );
 
   // Define the callback function to change the item description
@@ -227,7 +233,7 @@ export default function CreateModal({
         ...prev,
         description: e.target.value,
       })),
-    [setNewAddedItem],
+    [setNewAddedItem]
   );
 
   // Define the callback function to change the item image
@@ -246,7 +252,7 @@ export default function CreateModal({
         alert("Image exceeds size limit of 10 MB");
       }
     },
-    [setNewAddedItem],
+    [setNewAddedItem]
   );
 
   return (
