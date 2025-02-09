@@ -20,6 +20,7 @@ import ImageContainer from "../ImageContainer/ImageContainer";
 import FeedbackModal from "../FeedbackModal/FeedbackModal";
 import { LinkIcon, CheckIcon, EmailIcon } from "@chakra-ui/icons";
 import { getItemEmail, deleteItem } from "../../utils/ApiUtils";
+import DeleteConfirmationPopover from "./DeleteConfirmationPopover";
 // import axios from "axios";
 
 export default function InfoModal({
@@ -230,14 +231,10 @@ export default function InfoModal({
                 )}
 
                 {currentEmail === props.email && (
-                  <Button
-                    colorScheme="red"
-                    size={"lg"}
-                    gap={2}
-                    onClick={handleDelete}
-                  >
-                    <CheckIcon /> Delete
-                  </Button>
+                  <DeleteConfirmationPopover
+                    onDelete={handleDelete}
+                    onClose={onClose}
+                  />
                 )}
                 <Button
                   colorScheme="blue"
