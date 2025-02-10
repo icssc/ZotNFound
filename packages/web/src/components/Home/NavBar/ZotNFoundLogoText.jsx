@@ -10,8 +10,8 @@ import {
 } from "@chakra-ui/react";
 
 import { useState } from "react";
-import logo from "../../assets/images/small_logo.png";
-import instagram from "../../assets/logos/instagram.svg";
+import logo from "../../../assets/images/small_logo.png";
+import instagram from "../../../assets/logos/instagram.svg";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function ZotNFoundLogoText() {
@@ -60,13 +60,13 @@ export default function ZotNFoundLogoText() {
           >
             @ZotNFound
             <Image
+              ml={2}
               src={instagram}
               maxWidth="10%"
               maxHeight="10%"
               // Invert the color in dark mode (apparently Chakra UI doesn't actually affect stroke and such so manually invert svg)
               filter={useColorMode().colorMode === "dark" ? "invert(100%)" : ""}
-            >
-            </Image>
+            ></Image>
           </MenuItem>
           <MenuItem
             alignItems={"center"}

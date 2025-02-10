@@ -130,14 +130,14 @@ export default function Map({
 
   const filterItemCallback = useCallback(
     (item) => filterItem(item, findFilter, user),
-    [findFilter, user],
+    [findFilter, user]
   );
 
   const markersData = results.length > 0 ? results : data;
   const allMarkers = useMemo(() => {
     return markersData.filter(filterItemCallback).map((item) => (
       <Marker
-        key={item.key}
+        key={item.id}
         position={item.location}
         eventHandlers={{
           click: () => {
@@ -146,11 +146,12 @@ export default function Map({
             setFocusLocation(item.location);
           },
         }}
-        icon={item.isresolved
-          ? iconsMap["resolved"][item.islost]
-          : (iconsMap[item.type] || iconsMap["others"])[item.islost]}
-      >
-      </Marker>
+        icon={
+          item.isresolved
+            ? iconsMap["resolved"][item.islost]
+            : (iconsMap[item.type] || iconsMap["others"])[item.islost]
+        }
+      ></Marker>
     ));
   }, [markersData, filterItemCallback, onOpen, setItemData, setFocusLocation]);
 
@@ -161,11 +162,9 @@ export default function Map({
       map.flyTo(location, 18);
     }
 
-    return location
-      ? (
-        <Marker position={location} icon={flyImg}></Marker> // ? there is no fly image??
-      )
-      : null;
+    return location ? (
+      <Marker position={location} icon={flyImg}></Marker> // ? there is no fly image??
+    ) : null;
   }
 
   const markerRef = useRef(null);
@@ -179,7 +178,7 @@ export default function Map({
         }
       },
     }),
-    [setPosition],
+    [setPosition]
   );
   async function handleSubmit() {
     const date = new Date();
@@ -200,7 +199,7 @@ export default function Map({
       try {
         const compressedFile = await imageCompression(
           newAddedItem.image,
-          options,
+          options
         );
         const response = await fetch(
           `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/upload/image`,
@@ -210,7 +209,7 @@ export default function Map({
             headers: {
               "Content-Type": "image/jpeg",
             },
-          },
+          }
         );
         if (!response.ok) {
           throw new Error("Failed to upload file");
@@ -244,7 +243,7 @@ export default function Map({
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       )
       .then((item) => {
         const newItem = {
@@ -290,7 +289,7 @@ export default function Map({
             headers: {
               Authorization: `Bearer ${token}`, // verify auth
             },
-          },
+          }
         );
 
         setLeaderboard((prev) =>
@@ -308,7 +307,7 @@ export default function Map({
   const toggleDraggable = () => {
     if (position.lat == null || position.lng == null) {
       alert(
-        "Latitude and longitude cannot be null. Please pick a valid location.",
+        "Latitude and longitude cannot be null. Please pick a valid location."
       );
       setPosition({ lat: centerPosition[0], lng: centerPosition[1] }); // Reset position to center
       return;
@@ -334,7 +333,7 @@ export default function Map({
           map.fitBounds(bounds);
         },
       }),
-      [map],
+      [map]
     );
 
     return (
@@ -348,9 +347,10 @@ export default function Map({
     );
   }
 
-  const mapUrl = colorMode === "dark"
-    ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL
-    : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const mapUrl =
+    colorMode === "dark"
+      ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL
+      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
   const NewItemMarker = () => {
     const map = useMap();
@@ -359,7 +359,6 @@ export default function Map({
         markerRef.current.openPopup();
       }
     }, [map]);
-
 
     useMapEvents({
       click(event) {
@@ -382,7 +381,7 @@ export default function Map({
             Click to Confirm Location 🤔
           </span>
         </Popup>
-      </Marker >
+      </Marker>
     ) : null;
   };
 

@@ -8,7 +8,7 @@ import {
   Text,
   Image,
 } from "@chakra-ui/react";
-import goldmedal from "../../assets/images/gold-medal.png";
+import goldmedal from "../../../assets/images/gold-medal.png";
 
 export default function Leaderboard({
   isOpen,
