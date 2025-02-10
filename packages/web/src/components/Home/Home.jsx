@@ -46,10 +46,15 @@ import {
 import upload from "../../assets/images/download.png";
 
 import logout from "../../assets/logos/logout.svg";
+import logout_white from "../../assets/logos/logout_white.svg";
 import subscribe from "../../assets/logos/subscribe.svg";
+import subscribe_white from "../../assets/logos/subscribe_white.svg";
 import unsubscribe from "../../assets/logos/unsubscribe.svg";
+import unsubscribe_white from "../../assets/logos/unsubscribe_white.svg";
 import userlogo from "../../assets/logos/userlogo.svg";
+import userlogo_white from "../../assets/logos/userlogo_white.svg";
 import yourposts from "../../assets/logos/yourposts.svg";
+import yourposts_white from "../../assets/logos/yourposts_white.svg";
 import cookie from "../../assets/images/cookie.svg";
 
 import Map from "../Map/Map";
@@ -451,7 +456,7 @@ export default function Home() {
                       <MenuItem>
                         <Image
                           boxSize="1.2rem"
-                          src={userlogo}
+                          src={colorMode === "dark" ? userlogo_white : userlogo}
                           alt="user email"
                           mr="12px"
                         />
@@ -468,7 +473,7 @@ export default function Home() {
                       >
                         <Image
                           boxSize="1.2rem"
-                          src={yourposts}
+                          src={colorMode === "dark" ? yourposts_white : yourposts}
                           alt="logoutbutton"
                           mr="12px"
                         />
@@ -480,7 +485,7 @@ export default function Home() {
                           <>
                             <Image
                               boxSize="1.2rem"
-                              src={unsubscribe}
+                              src={colorMode === "dark" ? unsubscribe_white : logout}
                               alt="Unsubscribe from newsletter button"
                               mr="12px"
                             />
@@ -490,7 +495,7 @@ export default function Home() {
                           <>
                             <Image
                               boxSize="1.2rem"
-                              src={subscribe}
+                              src={colorMode === "dark" ? subscribe_white : subscribe}
                               alt="Subscribe from newsletter button"
                               mr="12px"
                             />
@@ -502,7 +507,7 @@ export default function Home() {
                       <MenuItem onClick={handleLogout}>
                         <Image
                           boxSize="1.2rem"
-                          src={logout}
+                          src={colorMode === "dark" ? logout_white : logout}
                           alt="logoutbutton"
                           mr="12px"
                         />
