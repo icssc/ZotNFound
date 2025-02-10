@@ -1,16 +1,31 @@
 import { useState } from "react";
-import { Box, HStack, Text, Image, useColorMode } from "@chakra-ui/react";
+import {
+  Box,
+  HStack,
+  Text,
+  Image,
+  useColorMode,
+  useToast,
+} from "@chakra-ui/react";
 import bookmarkWhite from "../../../assets/logos/bookmark-white.svg";
 import bookmarkBlack from "../../../assets/logos/bookmark-black.svg";
 import bookmarkEmptyBlack from "../../../assets/logos/bookmark-empty-black.svg";
 import bookmarkEmptyWhite from "../../../assets/logos/bookmark-empty-white.svg";
 
 export default function SaveSearchButton() {
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isBookmarked] = useState(false);
   const { colorMode } = useColorMode();
+  const toast = useToast();
 
   const handleBookmarkClick = () => {
-    setIsBookmarked(!isBookmarked);
+    toast({
+      title: "Coming Soon!",
+      description:
+        "The save search feature will be available in a future update.",
+      status: "info",
+      duration: 3000,
+      isClosable: true,
+    });
   };
 
   return (

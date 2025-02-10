@@ -1,27 +1,28 @@
-import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import React, { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import "./Home.css";
 
-import { UserAuth } from "../../context/AuthContext";
-import DataContext from "../../context/DataContext";
-
-import { Spinner, useColorMode, useToast } from "@chakra-ui/react";
-
-import { Flex, useDisclosure, Box } from "@chakra-ui/react";
+import {
+  Spinner,
+  useColorMode,
+  useToast,
+  Flex,
+  useDisclosure,
+  Box,
+} from "@chakra-ui/react";
 
 import upload from "../../assets/images/download.png";
-
-import "./Home.css";
 
 import LoginModal from "../LoginModal/LoginModal";
 import BookmarkModal from "./BookmarkModal";
 import Leaderboard from "./NavBar/Leaderboard";
-
-import { motion } from "framer-motion";
-
 import MobileSearchBar from "./SearchBar/MobileSearchBar";
 import Navbar from "./NavBar/Navbar";
 import ToolBar from "./ToolBar/ToolBar";
 import MapSection from "./MapSection";
+import { UserAuth } from "../../context/AuthContext";
+import DataContext from "../../context/DataContext";
 
 export default function Home() {
   const [search, setSearch] = useState("");
