@@ -353,6 +353,14 @@ export default function Map({
     : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
   const NewItemMarker = () => {
+    const map = useMap();
+    useEffect(() => {
+      if (markerRef.current) {
+        markerRef.current.openPopup();
+      }
+    }, [map]);
+
+
     useMapEvents({
       click(event) {
         setPosition(event.latlng);
@@ -366,16 +374,15 @@ export default function Map({
         draggable={true}
         eventHandlers={eventHandlers}
         position={position}
-        ref={markerRef}
         icon={colorMode == "dark" ? othersDragWhite : othersDragBlack}
-        
+        ref={markerRef}
       >
-        <Popup minWidth={90} closeButton={false}>
+        <Popup minWidth={90} closeButton={false} position={position}>
           <span className="popup" onClick={() => toggleDraggable()}>
             Click to Confirm Location 🤔
           </span>
         </Popup>
-      </Marker>
+      </Marker >
     ) : null;
   };
 
