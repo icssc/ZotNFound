@@ -6,72 +6,18 @@ import DataContext from "../../context/DataContext";
 
 import { Spinner, useToast } from "@chakra-ui/react";
 
-import {
-  Input,
-  InputGroup,
-  InputLeftAddon,
-  Button,
-  ButtonGroup,
-  Flex,
-  HStack,
-  Text,
-  Image,
-  useDisclosure,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Box,
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  useColorMode,
-  InputLeftElement,
-} from "@chakra-ui/react";
-import {
-  SettingsIcon,
-  StarIcon,
-  Search2Icon,
-  MoonIcon,
-  SunIcon,
-  CloseIcon,
-} from "@chakra-ui/icons";
+import { Flex, useDisclosure, Box, useColorMode } from "@chakra-ui/react";
+
 import upload from "../../assets/images/download.png";
 
-import logout from "../../assets/logos/logout.svg";
-import subscribe from "../../assets/logos/subscribe.svg";
-import unsubscribe from "../../assets/logos/unsubscribe.svg";
-import userlogo from "../../assets/logos/userlogo.svg";
-import yourposts from "../../assets/logos/yourposts.svg";
-import cookie from "../../assets/images/cookie.svg";
-import bookmarkWhite from "../../assets/logos/bookmark-white.svg";
-import bookmarkBlack from "../../assets/logos/bookmark-black.svg";
-
-import Map from "../Map/Map";
 import "./Home.css";
-import Filter from "../Filter/Filter";
-import ResultsBar from "../ResultsBar/ResultsBar";
-import CreateModal from "../CreateModal/CreateModal";
+
 import LoginModal from "../LoginModal/LoginModal";
 import BookmarkModal from "./BookmarkModal";
 import Leaderboard from "./Leaderboard";
-import ZotNFoundLogoText from "./ZotNFoundLogoText";
-import DateRangeFilter from "./DateRangeFilter";
-import ListItemButton from "./ListItemButton";
-import FeedbackButtonMobile from "./FeedbackButtonMobile";
-import SaveSearchButton from "./SearchBar/SaveSearchButton";
 
-import { MdAssignment } from "react-icons/md";
 import { motion } from "framer-motion";
-import SearchBar from "./SearchBar/SearchBar";
-import ProfilePicDropdown from "./ProfilePicDropdown";
+
 import MobileSearchBar from "./SearchBar/MobileSearchBar";
 import Header from "./Header";
 import FilterBar from "./FilterBar/FilterBar";

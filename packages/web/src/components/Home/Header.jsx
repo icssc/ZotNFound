@@ -122,6 +122,7 @@ const Header = ({
                 subscribeToggle={subscribeToggle}
                 setFindFilter={setFindFilter}
                 onOpen={onOpen}
+                colorMode={colorMode}
               />
             </>
           ) : (
