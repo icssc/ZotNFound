@@ -1,13 +1,12 @@
 import React from "react";
-import { Flex, Box } from "@chakra-ui/react";
-import Map from "../../Map/Map";
-import ListItemButton from "../ListItemButton";
-import FeedbackButtonMobile from "../FeedbackButtonMobile";
-import ResultsBar from "../../ResultsBar/ResultsBar";
-import CreateModal from "../../CreateModal/CreateModal";
+import { Flex, Box, useColorMode } from "@chakra-ui/react";
+import Map from "../Map/Map";
+import ListItemButton from "./ListItemButton";
+import FeedbackButtonMobile from "./NavBar/FeedbackButtonMobile";
+import ResultsBar from "../ResultsBar/ResultsBar";
+import CreateModal from "../CreateModal/CreateModal";
 
 const MapSection = ({
-  colorMode,
   isEdit,
   handleListItemButtonClick,
   handleCancelItemButtonClick,
@@ -29,6 +28,7 @@ const MapSection = ({
   upload,
   setLeaderboard,
 }) => {
+  const { colorMode } = useColorMode();
   return (
     <>
       <Flex

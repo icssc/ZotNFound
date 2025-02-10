@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { useState, useContext } from "react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import DataContext from "../../context/DataContext";
+import DataContext from "../../../context/DataContext";
 
 import {
   retrieveItemsAllTime,
@@ -16,7 +16,7 @@ import {
   retrieveItemsWithinTwoWeeks,
   retrieveItemsWithinWeek,
   retrieveItemsWithinYear,
-} from "../../utils/HomeUtils";
+} from "../../../utils/HomeUtils";
 
 export default function DateRangeFilter() {
   const { colorMode } = useColorMode();

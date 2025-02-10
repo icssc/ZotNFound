@@ -6,16 +6,16 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
+  useColorMode,
 } from "@chakra-ui/react";
 import { SettingsIcon, StarIcon } from "@chakra-ui/icons";
-import DateRangeFilter from "../DateRangeFilter";
+import DateRangeFilter from "./DateRangeFilter.jsx";
 import MobileResultsDrawer from "./MobileResultsDrawer.jsx";
 import Filter from "../../Filter/Filter.jsx";
 
-const FilterBar = ({
+const ToolBar = ({
   isEdit,
   isOpenCreateModal,
-  colorMode,
   onOpen,
   setFindFilter,
   findFilter,
@@ -31,6 +31,8 @@ const FilterBar = ({
   setFocusLocation,
   setLeaderboard,
 }) => {
+  const { colorMode } = useColorMode();
+
   return (
     <Flex
       width={{ base: "100vw", md: "75vw" }}
@@ -57,7 +59,7 @@ const FilterBar = ({
           </Alert>
         </Flex>
       ) : (
-        <Flex gap="4">
+        <Flex gap="5">
           <ButtonGroup
             variant="outline"
             colorScheme="#74a2fa"
@@ -79,6 +81,7 @@ const FilterBar = ({
             <DateRangeFilter />
           </ButtonGroup>
 
+          {/* FILTER BAR (TRIGGERED BY FILTER BUTTON ABOVE) */}
           <Filter
             setFindFilter={setFindFilter}
             findFilter={findFilter}
@@ -87,6 +90,7 @@ const FilterBar = ({
             onClose={onClose}
           />
 
+          {/* MOBILE - ITEMS PAGE BUTTON */}
           <Button
             display={{ md: "none" }}
             background={"#74a2fa"}
@@ -124,4 +128,4 @@ const FilterBar = ({
   );
 };
 
-export default FilterBar;
+export default ToolBar;

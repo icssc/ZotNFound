@@ -1,18 +1,16 @@
 import React from "react";
-import { Flex, Button, Image, Text } from "@chakra-ui/react";
+import { Flex, Button, Image, Text, useColorMode } from "@chakra-ui/react";
 import { SunIcon, MoonIcon } from "@chakra-ui/icons";
 import { motion } from "framer-motion";
 import ZotNFoundLogoText from "./ZotNFoundLogoText";
-import SearchBar from "./SearchBar/SearchBar";
+import SearchBar from "../SearchBar/SearchBar";
 import ProfilePicDropdown from "./ProfilePicDropdown";
-import bookmarkWhite from "../../assets/logos/bookmark-white.svg";
-import cookie from "../../assets/images/cookie.svg";
+import bookmarkWhite from "../../../assets/logos/bookmark-white.svg";
+import cookie from "../../../assets/images/cookie.svg";
 
 import { MdAssignment } from "react-icons/md";
 
-const Header = ({
-  colorMode,
-  toggleColorMode,
+const Navbar = ({
   search,
   setSearch,
   loading,
@@ -27,6 +25,8 @@ const Header = ({
   onLoginModalOpen,
   onLeaderboardOpen,
 }) => {
+  const { colorMode, toggleColorMode } = useColorMode();
+
   return (
     <Flex
       justifyContent="space-between"
@@ -144,4 +144,4 @@ const Header = ({
   );
 };
 
-export default Header;
+export default Navbar;

@@ -4,9 +4,9 @@ import axios from "axios";
 import { UserAuth } from "../../context/AuthContext";
 import DataContext from "../../context/DataContext";
 
-import { Spinner, useToast } from "@chakra-ui/react";
+import { Spinner, useColorMode, useToast } from "@chakra-ui/react";
 
-import { Flex, useDisclosure, Box, useColorMode } from "@chakra-ui/react";
+import { Flex, useDisclosure, Box } from "@chakra-ui/react";
 
 import upload from "../../assets/images/download.png";
 
@@ -14,28 +14,26 @@ import "./Home.css";
 
 import LoginModal from "../LoginModal/LoginModal";
 import BookmarkModal from "./BookmarkModal";
-import Leaderboard from "./Leaderboard";
+import Leaderboard from "./NavBar/Leaderboard";
 
 import { motion } from "framer-motion";
 
 import MobileSearchBar from "./SearchBar/MobileSearchBar";
-import Header from "./Header";
-import FilterBar from "./FilterBar/FilterBar";
-import MapSection from "./MapSection/MapSection";
+import Navbar from "./NavBar/Navbar";
+import ToolBar from "./ToolBar/ToolBar";
+import MapSection from "./MapSection";
 
 export default function Home() {
-  const { colorMode, toggleColorMode } = useColorMode();
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const { user, logOut } = UserAuth();
   const [token, setToken] = useState("");
-
   const [subscription, setSubscription] = useState(false);
 
   const btnRef = useRef();
-
   const toast = useToast();
+  const { colorMode } = useColorMode();
 
   // BOOKMARK MODAL
   const {
@@ -297,9 +295,7 @@ export default function Home() {
         h={"100dvh"}
         background={colorMode === "dark" ? "#1A1E22" : ""}
       >
-        <Header
-          colorMode={colorMode}
-          toggleColorMode={toggleColorMode}
+        <Navbar
           search={search}
           setSearch={setSearch}
           loading={loading}
@@ -331,10 +327,9 @@ export default function Home() {
             marginTop={{ base: "1vh", md: "2%" }}
             px={{ base: 0, md: "2%" }}
           >
-            <FilterBar
+            <ToolBar
               isEdit={isEdit}
               isOpenCreateModal={isOpenCreateModal}
-              colorMode={colorMode}
               onOpen={onOpen}
               setFindFilter={setFindFilter}
               findFilter={findFilter}
@@ -352,7 +347,6 @@ export default function Home() {
             />
 
             <MapSection
-              colorMode={colorMode}
               isEdit={isEdit}
               handleListItemButtonClick={handleListItemButtonClick}
               handleCancelItemButtonClick={handleCancelItemButtonClick}
