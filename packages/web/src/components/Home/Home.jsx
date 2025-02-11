@@ -348,6 +348,9 @@ export default function Home() {
             />
 
             <MapSection
+              isOpenCreateModal={isOpenCreateModal}
+              onOpenCreateModal={onOpenCreateModal}
+              onCloseCreateModal={onCloseCreateModal}
               isEdit={isEdit}
               handleListItemButtonClick={handleListItemButtonClick}
               handleCancelItemButtonClick={handleCancelItemButtonClick}
