@@ -6,7 +6,7 @@ import DataContext from "../../context/DataContext";
 import { UserAuth } from "../../context/AuthContext";
 import Fuse from "fuse.js";
 
-import { filterItem } from '../../utils/Utils.js';
+import { filterItem } from "../../utils/Utils.js";
 
 export default function ResultsBar({
   search,
@@ -97,8 +97,14 @@ export default function ResultsBar({
   useEffect(() => {
     let scrollInterval;
     if (isAutoScrolling && resultsBarRef.current) {
+      // Reset scroll position when data changes
+      resultsBarRef.current.scrollTop = 0;
+
       scrollInterval = setInterval(() => {
-        if (resultsBarRef.current.scrollTop + resultsBarRef.current.clientHeight < resultsBarRef.current.scrollHeight) {
+        if (
+          resultsBarRef.current.scrollTop + resultsBarRef.current.clientHeight <
+          resultsBarRef.current.scrollHeight
+        ) {
           resultsBarRef.current.scrollTop += 1;
         } else {
           resultsBarRef.current.scrollTop = 0;
@@ -106,7 +112,7 @@ export default function ResultsBar({
       }, 50);
     }
     return () => clearInterval(scrollInterval);
-  }, [isAutoScrolling]);
+  }, [isAutoScrolling, data]);
 
   const handleUserInteraction = () => {
     setIsAutoScrolling(false);
@@ -118,13 +124,13 @@ export default function ResultsBar({
     if (findFilter.isYourPosts && allResults.length === 0 && !hasToastShown) {
       setHasToastShown(true);
       toast({
-        title: 'Sorry, you have no posts.',
+        title: "Sorry, you have no posts.",
         description: "Click the blue plus icon on the map to create one now!",
-        status: 'success',
-        position: 'top',
+        status: "success",
+        position: "top",
         duration: 5000, // 5 seconds
         isClosable: true,
-      })
+      });
     }
   }, [findFilter.isYourPosts, allResults, hasToastShown]);
 

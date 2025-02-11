@@ -7,6 +7,9 @@ import ResultsBar from "../ResultsBar/ResultsBar";
 import CreateModal from "../CreateModal/CreateModal";
 
 const MapSection = ({
+  isOpenCreateModal,
+  onOpenCreateModal,
+  onCloseCreateModal,
   isEdit,
   handleListItemButtonClick,
   handleCancelItemButtonClick,
@@ -96,6 +99,9 @@ const MapSection = ({
         width="100vw"
       >
         <CreateModal
+          isOpen={isOpenCreateModal}
+          onOpen={onOpenCreateModal}
+          onClose={onCloseCreateModal}
           setIsCreate={setIsCreate}
           isCreate={isCreate}
           isEdit={isEdit}

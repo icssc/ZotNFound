@@ -138,7 +138,9 @@ const ResultCard = React.memo(
             props={props}
             onClose={infoModalDisclosure.onClose}
             isOpen={
-              id === props.id.toString() ? true : infoModalDisclosure.isOpen
+              id && props.id
+                ? id === props.id.toString()
+                : infoModalDisclosure.isOpen
             }
             setData={setData}
             setLeaderboard={setLeaderboard}
