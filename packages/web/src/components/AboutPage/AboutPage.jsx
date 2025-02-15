@@ -80,7 +80,7 @@ export default function AboutPage() {
             <Text fontSize="3xl" fontWeight="bold" mr={2}>
               ZotnFound
             </Text>
-            <Image w="50px" h="50px" src={small_logo} />
+            <Image w="50px" h="50px" src={small_logo} alt="logo" />
           </Flex>
         </Flex>
 

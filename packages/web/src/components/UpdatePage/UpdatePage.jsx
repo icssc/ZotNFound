@@ -136,6 +136,7 @@ export default function UpdatePage() {
                             <Image
                               src={item.content}
                               maxW="200px"
+                              alt="update image"
                               borderRadius="md"
                               cursor="pointer"
                               onClick={() => openImageModal(item.content)}
@@ -161,7 +162,7 @@ export default function UpdatePage() {
         <ModalContent>
           <ModalCloseButton />
           <ModalBody p={0}>
-            <Image src={selectedImage} w="100%" />
+            <Image src={selectedImage} w="100%" alt="selected image"/>
           </ModalBody>
         </ModalContent>
       </Modal>

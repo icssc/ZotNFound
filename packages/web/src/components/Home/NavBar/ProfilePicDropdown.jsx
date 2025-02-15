@@ -37,6 +37,7 @@ export default function ProfilePicDropdown({
           w={{ base: "27px", md: "60px" }}
           borderRadius="100%"
           cursor={"pointer"}
+          alt="profile picture"
         />
       </MenuButton>
 

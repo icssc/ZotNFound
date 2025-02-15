@@ -30,6 +30,7 @@ export default function ZotNFoundLogoText() {
       <Image
         width={{ base: "35px", md: "75px" }}
         src={logo}
+        alt="ZotNFound Logo"
         mb="5%"
         mt="3%"
         ml="10%"
@@ -63,6 +64,7 @@ export default function ZotNFoundLogoText() {
               ml={2}
               src={instagram}
               maxWidth="10%"
+              alt="Instagram Logo"
               maxHeight="10%"
               // Invert the color in dark mode (apparently Chakra UI doesn't actually affect stroke and such so manually invert svg)
               filter={useColorMode().colorMode === "dark" ? "invert(100%)" : ""}
