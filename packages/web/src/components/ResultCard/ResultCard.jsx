@@ -40,7 +40,7 @@ const ResultCard = React.memo(
         gap={1}
         onClick={onResultsBarClose}
       >
-        <Image src={colorMode === "dark" ? locate_dark : locate} />
+        <Image src={colorMode === "dark" ? locate_dark : locate} alt="lost" />
         Lost
       </Button>
     );
@@ -55,7 +55,7 @@ const ResultCard = React.memo(
         gap={1}
         onClick={onResultsBarClose}
       >
-        <Image src={colorMode === "dark" ? locate_dark : locate} />
+        <Image src={colorMode === "dark" ? locate_dark : locate} alt="found" />
         Found
       </Button>
     );
@@ -96,6 +96,7 @@ const ResultCard = React.memo(
                 rounded={"lg"}
                 src={props.image}
                 loading="lazy"
+                alt="uploaded image"
               />
             </Flex>
             <Stack mt="6" spacing="3">

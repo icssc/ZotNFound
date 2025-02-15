@@ -25,6 +25,7 @@ const CheckInfo = ({ uploadImg, upload, newAddedItem }) => {
                     maxHeight={{ md: "25vw", base: "20vh" }}
                     borderRadius="15%"
                     objectFit={"cover"}
+                    alt="uploaded image"
                 />
             </Flex>
 

@@ -1,6 +1,6 @@
 import React from "react";
-import { Flex, Button, Image, Text, useColorMode } from "@chakra-ui/react";
-import { SunIcon, MoonIcon } from "@chakra-ui/icons";
+import { Button, Flex, Image, Text, useColorMode } from "@chakra-ui/react";
+import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { motion } from "framer-motion";
 import ZotNFoundLogoText from "./ZotNFoundLogoText";
 import SearchBar from "../SearchBar/SearchBar";
@@ -74,6 +74,7 @@ const Navbar = ({
               src={colorMode === "light" ? bookmarkWhite : bookmarkWhite}
               h="15px"
               w="15px"
+              alt="bookmark"
             />
           </Button>
 
@@ -90,54 +91,62 @@ const Navbar = ({
           </Button>
 
           {/* USER SECTION */}
-          {user ? (
-            <>
-              {/* Points Display */}
-              <Flex
-                alignItems="center"
-                gap={{ base: 1, md: 1.5 }}
-                justifyContent="center"
-                background="#74a2fa"
-                padding={{ base: "5px", md: 1.5 }}
-                borderRadius="xl"
-                _hover={{ background: "#365fad" }}
-                _active={{ background: "#365fad" }}
-                cursor="pointer"
-                onClick={onLeaderboardOpen}
-              >
-                <Image
-                  src={cookie}
-                  h={{ base: "15px", md: "20px" }}
-                  w={{ base: "15px", md: "25px" }}
-                />
-                <Text as="b" fontSize={{ base: "sm", md: "lg" }} color="white">
-                  {leaderboard.find((u) => u.email === user.email)?.points ?? 0}
-                </Text>
-              </Flex>
+          {user
+            ? (
+              <>
+                {/* Points Display */}
+                <Flex
+                  alignItems="center"
+                  gap={{ base: 1, md: 1.5 }}
+                  justifyContent="center"
+                  background="#74a2fa"
+                  padding={{ base: "5px", md: 1.5 }}
+                  borderRadius="xl"
+                  _hover={{ background: "#365fad" }}
+                  _active={{ background: "#365fad" }}
+                  cursor="pointer"
+                  onClick={onLeaderboardOpen}
+                >
+                  <Image
+                    src={cookie}
+                    h={{ base: "15px", md: "20px" }}
+                    w={{ base: "15px", md: "25px" }}
+                    alt="cookie"
+                  />
+                  <Text
+                    as="b"
+                    fontSize={{ base: "sm", md: "lg" }}
+                    color="white"
+                  >
+                    {leaderboard.find((u) => u.email === user.email)?.points ??
+                      0}
+                  </Text>
+                </Flex>
 
-              <ProfilePicDropdown
-                user={user}
-                subscription={subscription}
-                handleLogout={handleLogout}
-                subscribeToggle={subscribeToggle}
-                setFindFilter={setFindFilter}
-                onOpen={onOpen}
-                colorMode={colorMode}
-              />
-            </>
-          ) : (
-            <Button
-              h={{ base: "6vh", md: "7vh" }}
-              w={{ base: "30vw", md: "8vw" }}
-              borderRadius={20}
-              fontSize="xl"
-              variant="outline"
-              colorScheme="black"
-              onClick={onLoginModalOpen}
-            >
-              Sign in
-            </Button>
-          )}
+                <ProfilePicDropdown
+                  user={user}
+                  subscription={subscription}
+                  handleLogout={handleLogout}
+                  subscribeToggle={subscribeToggle}
+                  setFindFilter={setFindFilter}
+                  onOpen={onOpen}
+                  colorMode={colorMode}
+                />
+              </>
+            )
+            : (
+              <Button
+                h={{ base: "6vh", md: "7vh" }}
+                w={{ base: "30vw", md: "8vw" }}
+                borderRadius={20}
+                fontSize="xl"
+                variant="outline"
+                colorScheme="black"
+                onClick={onLoginModalOpen}
+              >
+                Sign in
+              </Button>
+            )}
         </Flex>
       </motion.div>
     </Flex>

@@ -90,6 +90,7 @@ export default function CreateModal({
           // width={{ md: "lg", base: "80%" }}
           height={{ md: "md", base: "70%" }}
           src={uploadImg ? uploadImg : img_placeholder}
+          alt="uploaded image"
         />
         {uploadImg && (
           <Button
