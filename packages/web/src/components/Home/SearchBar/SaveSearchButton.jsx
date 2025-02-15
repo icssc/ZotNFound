@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   Box,
   HStack,
@@ -7,26 +7,54 @@ import {
   useColorMode,
   useToast,
 } from "@chakra-ui/react";
+
 import bookmarkWhite from "../../../assets/logos/bookmark-white.svg";
 import bookmarkBlack from "../../../assets/logos/bookmark-black.svg";
 import bookmarkEmptyBlack from "../../../assets/logos/bookmark-empty-black.svg";
 import bookmarkEmptyWhite from "../../../assets/logos/bookmark-empty-white.svg";
 
-export default function SaveSearchButton() {
+import { UserAuth } from "../../../context/AuthContext";
+import DataContext from "../../../context/DataContext";
+
+import axios from "axios";
+
+export default function SaveSearchButton({keyword}) {
   const [isBookmarked] = useState(false);
   const { colorMode } = useColorMode();
   const toast = useToast();
+  const { user } = UserAuth();
+  const { onLoginModalOpen } = useContext(DataContext);
 
   const handleBookmarkClick = () => {
+    let success = true;
+    if (!user) {
+      onLoginModalOpen();
+    }
+    axios.post(
+      `${
+        import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
+      }/searches`,
+      {
+        email: user.email,
+        keyword: keyword,
+      },
+    )
+    .catch((err) => {
+      success = false; 
+      console.log(err);
+    });
+
     toast({
-      title: "Coming Soon!",
+      title: success ? "Search saved!" : "Error!",
       description:
-        "The save search feature will be available in a future update.",
-      status: "info",
+        success ? 
+        "Your search term was saved and your email was subscribed to notifications for this search." : 
+        "Sorry, an error occurred while saving your search term. Please try again.",
+      status: success ? "info" : "error",
       duration: 3000,
       isClosable: true,
     });
-  };
+  }
 
   return (
     <Box
