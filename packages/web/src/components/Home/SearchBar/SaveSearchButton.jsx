@@ -16,41 +16,30 @@ import bookmarkEmptyWhite from "../../../assets/logos/bookmark-empty-white.svg";
 import { UserAuth } from "../../../context/AuthContext";
 import DataContext from "../../../context/DataContext";
 
-import axios from "axios";
-
 export default function SaveSearchButton({keyword}) {
   const [isBookmarked] = useState(false);
   const { colorMode } = useColorMode();
   const toast = useToast();
-  const { user } = UserAuth();
+  const { user, addKeyword } = UserAuth();
   const { onLoginModalOpen } = useContext(DataContext);
 
-  const handleBookmarkClick = () => {
-    let success = true;
+  const handleBookmarkClick = async () => {
     if (!user) {
-      onLoginModalOpen();
+      onLoginModalOpen(); // prompt user to log in in order to save search
+      return;
     }
-    axios.post(
-      `${
-        import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
-      }/searches`,
-      {
-        email: user.email,
-        keyword: keyword,
-      },
-    )
-    .catch((err) => {
-      success = false; 
-      console.log(err);
-    });
-
+    const response = await addKeyword(keyword);
+    const { success, description } = response;
     toast({
-      title: success ? "Search saved!" : "Error!",
+      title: success ? (description === "added" ? "Subscribed!" : "Already subscribed!") : "Error!",
       description:
         success ? 
-        "Your search term was saved and your email was subscribed to notifications for this search." : 
+        (description === "added" ?
+          "Your email was subscribed to notifications for this search." : 
+          "You are already subscribed to notifications for this search."
+        ) :
         "Sorry, an error occurred while saving your search term. Please try again.",
-      status: success ? "info" : "error",
+      status: success ? (description === "added" ? "success" : "info") : "error",
       duration: 3000,
       isClosable: true,
     });
