@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+import { AddIcon, CheckIcon } from "@chakra-ui/icons";
 import {
   Drawer,
   DrawerBody,
@@ -7,6 +9,8 @@ import {
   Flex,
   Text,
   Image,
+  Button,
+  Divider,
 } from "@chakra-ui/react";
 import goldmedal from "../../../assets/images/gold-medal.png";
 
@@ -18,6 +22,7 @@ export default function Leaderboard({
   leaderboard,
   user,
 }) {
+  const [showCookieInfo, setShowCookieInfo] = useState(false);
   let point =
     user && leaderboard
       ? leaderboard.find((u) => u.email === user.email)
@@ -26,14 +31,17 @@ export default function Leaderboard({
   if (point) {
     point = point.points;
   }
+
   return (
     <>
       <Drawer
         isOpen={isOpen}
         placement="top"
-        onClose={onClose}
-        finalFocusRef={btnRef}
-      >
+        onClose={() => {
+          onClose();
+          setShowCookieInfo(false);
+        }}
+        finalFocusRef={btnRef}>
         <DrawerOverlay />
         <DrawerContent height={"60vh"}>
           <DrawerCloseButton />
@@ -53,19 +61,18 @@ export default function Leaderboard({
                   background={"brown"}
                   p={3}
                   borderRadius={"xl"}
-                  boxShadow={"lg"}
-                >
+                  boxShadow={"lg"}>
                   You have {point} cookies 🍪
                 </Text>
               </Flex>
             )}
-            {leaderboard && (
+
+            {leaderboard && showCookieInfo == false ? (
               <Flex
                 justifyContent={"center"}
                 alignItems={"center"}
                 flexDir={"column"}
-                gap={5}
-              >
+                gap={5}>
                 <Flex
                   w={{ base: "100%", md: "500px" }}
                   padding={5}
@@ -75,8 +82,7 @@ export default function Leaderboard({
                   alignItems={"center"}
                   justifyContent={"space-between"}
                   borderRadius={"xl"}
-                  boxShadow={"7px 7px 14px #a8a8a8"}
-                >
+                  boxShadow={"7px 7px 14px #a8a8a8"}>
                   <Flex alignItems={"center"} gap={{ base: 2, md: 5 }}>
                     <Text as={"b"} fontSize={"4xl"}>
                       1
@@ -107,8 +113,7 @@ export default function Leaderboard({
                   alignItems={"center"}
                   justifyContent={"space-between"}
                   borderRadius={"xl"}
-                  boxShadow={"7px 7px 14px #a8a8a8"}
-                >
+                  boxShadow={"7px 7px 14px #a8a8a8"}>
                   <Flex alignItems={"center"} gap={{ base: 2, md: 5 }}>
                     <Text as={"b"} fontSize={"4xl"}>
                       2
@@ -132,8 +137,7 @@ export default function Leaderboard({
                   alignItems={"center"}
                   justifyContent={"space-between"}
                   borderRadius={"xl"}
-                  boxShadow={"7px 7px 14px #a8a8a8"}
-                >
+                  boxShadow={"7px 7px 14px #a8a8a8"}>
                   <Flex alignItems={"center"} gap={{ base: 2, md: 5 }}>
                     <Text as={"b"} fontSize={"4xl"}>
                       3
@@ -149,6 +153,167 @@ export default function Leaderboard({
                     </Text>
                   </Flex>
                 </Flex>
+                <Button
+                  ref={btnRef}
+                  colorScheme="blue"
+                  onClick={() => setShowCookieInfo(true)}>
+                  Learn How It Works 🍪
+                </Button>
+              </Flex>
+            ) : (
+              <Flex
+                justifyContent={"center"}
+                alignItems={"center"}
+                flexDir={"column"}
+                gap={3}>
+                <Text as={"b"} fontSize={"4xl"} textDecoration={"underline"}>
+                  How to Earn Cookies
+                </Text>
+                <Text as={"b"} fontSize={"xl"}>
+                  Cookies are a way to track contributions and engagement with
+                  ZotNFound!
+                </Text>
+                <Flex
+                  justifyContent={"center"}
+                  gap={10}
+                  alignItems={"center"}
+                  flexDir={"row"}>
+                  {/* Cookies for posting an Item */}
+                  <Flex
+                    bg={"white"}
+                    boxShadow={"7px 7px 14px grey"}
+                    borderRadius={"xl"}
+                    p={5}
+                    gap={2}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                    flexDir={"column"}>
+                    <Flex
+                      w={"50px"}
+                      h={"50px"}
+                      background={"#74a2fa"}
+                      borderRadius={"50%"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                      color={"white"}>
+                      <AddIcon />
+                    </Flex>
+                    <Text as={"b"} fontSize={"xl"} color={"black"}>
+                      Post a lost item
+                    </Text>
+                    <Text fontSize={"lg"} color={"black"}>
+                      +1🍪
+                    </Text>
+                  </Flex>
+
+                  {/* Cookies for finding an Item */}
+                  <Flex
+                    bg={"white"}
+                    boxShadow={"7px 7px 14px grey"}
+                    borderRadius={"xl"}
+                    p={5}
+                    gap={2}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                    flexDir={"column"}>
+                    <Flex
+                      w={"125px"}
+                      h={"50px"}
+                      bg="navy"
+                      color="white"
+                      borderRadius={"full"}
+                      justifyContent="space-between">
+                      <Flex
+                        width={"40%"}
+                        bg={"white"}
+                        border={"2px black solid"}
+                        borderRadius={"full"}></Flex>
+                      <Flex justifyContent={"center"} py={5} w={"60%"}>
+                        <Text fontSize="1xl">FOUND👐</Text>
+                      </Flex>
+                    </Flex>
+                    <Text as={"b"} fontSize={"xl"} color={"black"}>
+                      Find an Item
+                    </Text>
+                    <Text fontSize={"lg"} color={"black"}>
+                      +3🍪
+                    </Text>
+                  </Flex>
+
+                  {/* Cookies for resolving a found Item */}
+                  <Flex
+                    bg={"white"}
+                    boxShadow={"7px 7px 14px grey"}
+                    borderRadius={"xl"}
+                    p={5}
+                    gap={2}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                    flexDir={"column"}>
+                    <Flex
+                      bg={"#86efac"}
+                      w={125}
+                      h={50}
+                      gap={2}
+                      borderRadius={"15"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                      color={"black"}
+                      fontSize={"2xl"}>
+                      <CheckIcon /> Resolve
+                    </Flex>
+                    <Text as={"b"} fontSize={"xl"} color={"black"}>
+                      Resolving a <span style={{ color: "blue" }}>FOUND</span>{" "}
+                      Item
+                    </Text>
+                    <Text fontSize={"lg"} color={"black"}>
+                      +5🍪
+                    </Text>
+                  </Flex>
+
+                  {/* Cookies for resolving a lost Item */}
+                  <Flex
+                    bg={"white"}
+                    boxShadow={"7px 7px 14px grey"}
+                    borderRadius={"xl"}
+                    p={5}
+                    gap={2}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                    flexDir={"column"}>
+                    <Flex
+                      bg={"#86efac"}
+                      w={125}
+                      h={50}
+                      gap={2}
+                      borderRadius={"15"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                      color={"black"}
+                      fontSize={"2xl"}>
+                      <CheckIcon /> Resolve
+                    </Flex>
+                    <Text as={"b"} fontSize={"xl"} color={"black"}>
+                      Resolving a <span style={{ color: "red" }}>LOST</span>{" "}
+                      Item
+                    </Text>
+                    <Text fontSize={"lg"} color={"black"}>
+                      +2🍪
+                    </Text>
+                  </Flex>
+                </Flex>
+                <Flex justifyContent={"center"} alignItems={"center"} gap={5}>
+                  <Text as={"b"} fontSize={"xl"}>
+                    The more cookies you have, the higher you rank! 🏆
+                  </Text>
+                </Flex>
+
+                <Button
+                  ref={btnRef}
+                  colorScheme="blue"
+                  onClick={() => setShowCookieInfo(false)}>
+                  🡰 Back to Leaderboard
+                </Button>
               </Flex>
             )}
           </DrawerBody>
