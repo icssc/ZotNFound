@@ -69,6 +69,7 @@ const Navbar = ({
           </Button>
 
           {/* Bookmark Icon */}
+          {user && 
           <Button bg="green.500" onClick={onBookmarkModalOpen}>
             <Image
               src={colorMode === "light" ? bookmarkWhite : bookmarkWhite}
@@ -76,6 +77,7 @@ const Navbar = ({
               w="15px"
             />
           </Button>
+          }
 
           {/* FEEDBACK */}
           <Button
