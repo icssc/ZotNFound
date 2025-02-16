@@ -90,10 +90,10 @@ export const AuthContextProvider = ({ children }) => {
         `${
           import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
         }/searches`,
-        {
+        { data: {
           email: user.email,
           keyword: deletedKw,
-        },
+        }},
       )
       if (response.status === 200) {
         setKeywords((prevKeywords) => prevKeywords.filter((keyword) => keyword !== deletedKw));
