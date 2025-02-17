@@ -3,7 +3,7 @@ import { Button, Text, Flex, Stack, Icon, Image, Box} from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper/modules";
+import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
@@ -91,7 +91,7 @@ export default function AboutPage() {
             transition={{ duration: 0.5 }}
           >
             <Text fontSize="5xl" fontWeight="bold" textAlign="center" my={8}>
-              We are <Text as="span" color={accentColor}>ZotnFound</Text>
+              We Are <Text as="span" color={accentColor}>ZotnFound</Text>
             </Text>
           </motion.div>
 
@@ -159,22 +159,24 @@ const StatCard = ({ label, value, color }) => (
 const FeatureSection = () => (
   <Box my={16} width="100%">
     <Text fontSize="3xl" fontWeight="bold" textAlign="center" mb={8}>
-      Explore how ZotnFound works
+      Explore How ZotnFound Works
     </Text>
     <Swiper
       spaceBetween={30}
-      slidesPerView={1}
-      modules={[Navigation, Pagination]}
-      navigation
-      pagination={{ clickable: true }}
-      breakpoints={{
-        640: {
-          slidesPerView: 2,
-        },
-        1024: {
-          slidesPerView: 3,
-        },
+      slidesPerView={1.5}
+      centeredSlides={true}
+      loop={true}
+      loopAdditionalSlides={2}
+      watchSlidesProgress={true}
+      grabCursor={true}
+      modules={[Autoplay, Pagination]}
+      autoplay={{ 
+        delay: 3000, 
+        disableOnInteraction: false,
+        pauseOnMouseEnter: false,
       }}
+      pagination={{ clickable: true }}
+      speed={1000}
       style={{ paddingBottom: "40px" }}
     >
       <SwiperSlide>
