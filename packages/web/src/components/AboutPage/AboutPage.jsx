@@ -175,6 +175,7 @@ const FeatureSection = () => (
           slidesPerView: 3,
         },
       }}
+      style={{ paddingBottom: "40px" }}
     >
       <SwiperSlide>
         <FeatureCard
