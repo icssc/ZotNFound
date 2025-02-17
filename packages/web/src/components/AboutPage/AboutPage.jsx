@@ -180,29 +180,29 @@ const FeatureSection = () => (
       <SwiperSlide>
         <FeatureCard
           image={about1}
-          title="Get Started - It's Simple & Easy"
-          description="Log in with your UCI email and start listing lost & found items!"
+          title="Getting Started"
+          description="Lost or found something? Log in with your UCI email, join the ZotNFound community, and help lost items find their way back home."
         />
       </SwiperSlide>
       <SwiperSlide>
         <FeatureCard
           image={about2}
-          title="Navigate Around the Map"
-          description="Effortlessly navigate UCI's interactive map to efficiently search for lost and found items."
+          title="Navigating UCI Stress Free"
+          description="Searching for your lost items is made easy with our interactive map. Search by name, use real time markers, or filter by categories so you can find what's yours."
         />
       </SwiperSlide>
       <SwiperSlide>
         <FeatureCard
           image={about3}
-          title="Search for Lost & Found Items"
-          description="Utilize the easy to use filter and search bar to look up specific items."
+          title="Your Things Are Just a Search Away"
+          description="No more endless backtracking. Simply search and filter what you've misplaced and we'll show you where it is."
         />
       </SwiperSlide>
       <SwiperSlide>
         <FeatureCard
           image={about4}
-          title="Upload Your Items - Join the Community!"
-          description="Show off the different items that you may have found or lost."
+          title="Posting and Helping Out"
+          description="Someone's out there looking for what you've found! Upload a picture and enter information about it so you can make their day."
         />
       </SwiperSlide>
     </Swiper>
