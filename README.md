@@ -2,7 +2,7 @@
 # ZotNFound
 A web application developed by the ICSSC at the University of California, Irvine, designed to help UCI students, faculty, and staff report and recover lost items on campus. The app enables users to easily submit details of lost or found items, search existing reports, and connect with others to reunite belongings with their rightful owners. Its goal is to provide a user-friendly platform to streamline the lost-and-found process at UCI.
 
-![Logo](packages\web\src\assets\images\banner.png)
+![Logo](./packages/web/src/assets/images/banner.png)
 
 
 ## Tech Stack
