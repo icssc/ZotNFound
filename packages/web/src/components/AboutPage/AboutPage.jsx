@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Button, Text, Flex, Stack, Icon, Image, Box} from "@chakra-ui/react";
+import { Button, Text, Flex, Stack, Icon, Image, Box } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -48,12 +48,7 @@ export default function AboutPage() {
   }, []);
 
   return (
-    <Box
-      bg={bgColor}
-      color={textColor}
-      minHeight="100vh"
-      overflowY="auto"
-    >
+    <Box bg={bgColor} color={textColor} minHeight="100vh" overflowY="auto">
       <Flex
         direction="column"
         align="center"
@@ -91,17 +86,14 @@ export default function AboutPage() {
             transition={{ duration: 0.5 }}
           >
             <Text fontSize="5xl" fontWeight="bold" textAlign="center" my={8}>
-              We are <Text as="span" color={accentColor}>ZotnFound</Text>
+              We are{" "}
+              <Text as="span" color={accentColor}>
+                ZotnFound
+              </Text>
             </Text>
           </motion.div>
 
-          <Flex
-            justify="center"
-            align="center"
-            wrap="wrap"
-            gap={8}
-            my={12}
-          >
+          <Flex justify="center" align="center" wrap="wrap" gap={8} my={12}>
             <StatCard
               label="Lost Items"
               value={data.filter((item) => item.islost).length}
@@ -240,7 +232,13 @@ const AboutSection = () => (
         Origin of ZotnFound
       </Text>
       <Text>
-        Many people are constantly losing their belongings, whether that be their phones, keys, or water bottles. This is especially true for UCI students on the UCI subreddit, where there are countless posts being created about lost and found items. Due to this problem, we decided to take matters into our own hands and created an Instagram account to help lost items return back to their original owners. We have so far helped over 10 people and gained over 300+ followers.
+        Many people are constantly losing their belongings, whether that be
+        their phones, keys, or water bottles. This is especially true for UCI
+        students on the UCI subreddit, where there are countless posts being
+        created about lost and found items. Due to this problem, we decided to
+        take matters into our own hands and created an Instagram account to help
+        lost items return back to their original owners. We have so far helped
+        over 10 people and gained over 300+ followers.
       </Text>
     </Box>
     <Image

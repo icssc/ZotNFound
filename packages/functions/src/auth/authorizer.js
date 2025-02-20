@@ -1,43 +1,7 @@
 import admin from "../config/firebase-config.js";
 
-export const handler = async (event) => {
-  console.log("Authorizer Event:", {
-    headers: event.headers,
-    authHeader: event.headers?.Authorization || event.headers?.authorization,
-  });
-
-  try {
-    // Get the JWT token from the Authorization header
-    const authHeader =
-      event.headers?.Authorization || event.headers?.authorization;
-
-    if (!authHeader) {
-      return generatePolicy("user", "Deny", event.methodArn);
-    }
-
-    // Extract the token (remove 'Bearer ' prefix if present)
-    const token = authHeader.startsWith("Bearer ")
-      ? authHeader.slice(7)
-      : authHeader;
-
-    // Verify the Firebase token
-    const decodedToken = await admin.auth().verifyIdToken(token);
-
-    if (!decodedToken) {
-      return generatePolicy("user", "Deny", event.methodArn);
-    }
-
-    // If verification successful, generate an Allow policy
-    return generatePolicy(decodedToken.uid, "Allow", event.methodArn);
-  } catch (error) {
-    console.error("Authorization error:", error);
-    return generatePolicy("user", "Deny", event.methodArn);
-  }
-};
-
-// Helper function to generate the IAM policy
 const generatePolicy = (principalId, effect, resource) => {
-  const authResponse = {
+  return {
     principalId: principalId,
     policyDocument: {
       Version: "2012-10-17",
@@ -49,7 +13,52 @@ const generatePolicy = (principalId, effect, resource) => {
         },
       ],
     },
+    context: {
+      // Optional context to pass through
+      stringKey: "value",
+    },
   };
+};
 
-  return authResponse;
+export const handler = async (event) => {
+  console.log("Full Event:", JSON.stringify(event, null, 2));
+  console.log("HTTP Method:", event.requestContext?.httpMethod);
+  console.log("Resource:", event.methodArn);
+  console.log("Headers:", JSON.stringify(event.headers, null, 2));
+
+  // Always allow OPTIONS
+  if (event.httpMethod === "OPTIONS") {
+    console.log("Allowing OPTIONS request");
+    return generatePolicy("user", "Allow", event.methodArn);
+  }
+
+  try {
+    const authHeader =
+      event.headers?.Authorization || event.headers?.authorization;
+    console.log("Auth Header:", authHeader);
+
+    if (!authHeader) {
+      console.log("No auth header found - denying request");
+      return generatePolicy("user", "Deny", event.methodArn);
+    }
+
+    const token = authHeader.startsWith("Bearer ")
+      ? authHeader.slice(7)
+      : authHeader;
+    console.log("Token found, attempting verification");
+
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    console.log("Token verified:", decodedToken.uid);
+
+    if (!decodedToken) {
+      console.log("Token verification failed");
+      return generatePolicy("user", "Deny", event.methodArn);
+    }
+
+    // Return Allow policy with the user's ID
+    return generatePolicy(decodedToken.uid, "Allow", event.methodArn);
+  } catch (error) {
+    console.error("Authorization error:", error);
+    return generatePolicy("user", "Deny", event.methodArn);
+  }
 };

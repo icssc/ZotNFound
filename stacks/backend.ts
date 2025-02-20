@@ -19,6 +19,18 @@ export function BackendStack({ stack }: StackContext) {
   });
 
   const api = new Api(stack, "api", {
+    cors: {
+      allowHeaders: [
+        "*", // This allows all headers for now to debug
+      ],
+      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowOrigins: [
+        "http://localhost:3000",
+        "https://dev.zotnfound.com",
+        "https://zotnfound.com",
+      ],
+      allowCredentials: false,
+    },
     authorizers: {
       Authorizer: {
         type: "lambda",
@@ -33,10 +45,11 @@ export function BackendStack({ stack }: StackContext) {
             },
           },
         }),
+        // resultsCacheTtl: "30 seconds",
+        identitySource: [],
       },
     },
     defaults: {
-      authorizer: "Authorizer",
       function: {
         bind: [bus, bucket],
         environment: {
@@ -58,9 +71,18 @@ export function BackendStack({ stack }: StackContext) {
           FIREBASE_SERVICE_ACCOUNT: process.env.FIREBASE_SERVICE_ACCOUNT,
         },
       },
+      authorizer: "Authorizer",
+      authorizationType: "CUSTOM",
     },
     routes: {
-      $default: "packages/functions/src/server.handler",
+      "OPTIONS /{proxy+}": {
+        authorizer: "none",
+        function: "packages/functions/src/server.handler",
+      },
+      $default: {
+        authorizer: "Authorizer",
+        function: "packages/functions/src/server.handler",
+      },
     },
   });
 
