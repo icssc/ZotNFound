@@ -8,10 +8,16 @@ import {
   Divider,
   Badge,
   useColorModeValue,
+  IconButton,
+  Tooltip,
 } from "@chakra-ui/react";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import ReactMarkdown from "react-markdown";
+import { useNavigate } from "react-router-dom";
 
 const ChangelogPage = () => {
+  const navigate = useNavigate();
+
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("en-US", {
@@ -138,6 +144,22 @@ The ZotNFound Team`,
     <Box bg={useColorModeValue("gray.50", "gray.900")} minH="100vh" py={12}>
       <Container maxW="container.lg">
         <VStack spacing={8} align="stretch">
+          <Tooltip label="Back to Home" placement="right">
+            <IconButton
+              icon={<ArrowBackIcon />}
+              onClick={() => navigate("/")}
+              position="fixed"
+              top={4}
+              left={4}
+              aria-label="Back to home"
+              size="lg"
+              rounded="full"
+              colorScheme="blue"
+              opacity={0.8}
+              _hover={{ opacity: 1 }}
+            />
+          </Tooltip>
+
           <Box textAlign="left" mb={8}>
             <Heading
               as="h1"
