@@ -1,13 +1,26 @@
 import axios from "axios";
+import { getAuthToken } from "./Utils";
 
 export const getItems = async () => {
-  return axios
-    .get(`${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items/`)
-    .catch((err) => console.log(err));
+  try {
+    const token = await getAuthToken();
+    return axios.get(
+      `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items/`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  } catch (err) {
+    console.error("Error fetching items:", err);
+    throw err;
+  }
 };
 
 // Get email associated with item id
-export const getItemEmail = (props, token) => {
+export const getItemEmail = async (props) => {
+  const token = await getAuthToken();
   return axios
     .get(
       `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items/${
@@ -15,29 +28,38 @@ export const getItemEmail = (props, token) => {
       }/email`,
       {
         headers: {
-          Authorization: `Bearer ${token}`, // verify auth
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    .catch((err) => console.error(err));
+};
+
+export const getLeaderboardCount = async () => {
+  const token = await getAuthToken();
+
+  return axios
+    .get(
+      `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/count`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
       }
     )
     .catch((err) => console.log(err));
 };
 
-export const getLeaderboardCount = async () => {
+export const deleteItem = async (props) => {
+  const token = await getAuthToken();
   return axios
-    .get(`${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/count`)
-    .catch((err) => console.log(err));
-};
-
-export const deleteItem = (props, token) => {
-  axios
     .delete(
       `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items/${props.id}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`, // verify auth
+          Authorization: `Bearer ${token}`,
         },
       }
     )
-    .then(() => console.log("Success"))
-    .catch((err) => console.log(err));
+    .catch((err) => console.error(err));
 };

@@ -11,4 +11,13 @@ const filterItem = (item, findFilter, user) => {
   );
 };
 
-export { filterItem };
+import { getAuth } from "firebase/auth";
+
+// Helper function to get the current user's token
+const getAuthToken = async () => {
+  const auth = getAuth();
+  const token = await auth.currentUser?.getIdToken(true);
+  return token;
+};
+
+export { filterItem, getAuthToken };

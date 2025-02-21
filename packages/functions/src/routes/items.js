@@ -1,17 +1,22 @@
 import express from "express";
 
 import client from "../server/db.js";
-import sendEmail from "../util/sendEmail";
+import sendEmail from "../util/sendEmail.js";
 // const middleware = require("../middleware/index.js");
 const itemsRouter = express.Router();
 
 // const templatePath = path.resolve(__dirname, "../emailTemplate/index.html");
 // const template = fs.readFileSync(templatePath, "utf-8");
 import isPositionWithinBounds from "../util/inbound.js";
-import { leaderboardTable, itemsTable, searchesTable } from "../config/db-config.js";
+import {
+  leaderboardTable,
+  itemsTable,
+  searchesTable,
+} from "../config/db-config.js";
 
 //Add a item
 itemsRouter.post("/", async (req, res) => {
+  console.log(req, res);
   try {
     const {
       name,
@@ -30,7 +35,8 @@ itemsRouter.post("/", async (req, res) => {
     // Validate location
     if (!location || !Array.isArray(location) || location.length !== 2) {
       return res.status(400).json({
-        error: "Invalid location. Please provide a valid latitude and longitude.",
+        error:
+          "Invalid location. Please provide a valid latitude and longitude.",
       });
     }
 
@@ -119,11 +125,9 @@ itemsRouter.post("/", async (req, res) => {
     res.status(200).json({ message: "Item was added successfully." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Internal server error", reason: error });
   }
 });
-
-
 
 itemsRouter.get("/", async (req, res) => {
   try {
