@@ -7,6 +7,7 @@ import {
   AlertIcon,
   AlertTitle,
   useColorMode,
+  IconButton,
 } from "@chakra-ui/react";
 import { SettingsIcon, StarIcon } from "@chakra-ui/icons";
 import DateRangeFilter from "./DateRangeFilter.jsx";
@@ -67,6 +68,7 @@ const ToolBar = ({
             spacing={3}
           >
             <Button
+              className="filter-button"
               backgroundColor={colorMode === "light" ? "white" : "#2F363C"}
               onClick={onOpen}
               size="lg"

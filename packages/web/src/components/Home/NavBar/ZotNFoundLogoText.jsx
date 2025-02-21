@@ -11,6 +11,7 @@ import {
   useColorMode,
   Box,
   Divider,
+  Text,
 } from "@chakra-ui/react";
 
 import { useState } from "react";
@@ -85,20 +86,6 @@ export default function ZotNFoundLogoText() {
 
         <Link
           as={RouterLink}
-          to="/update"
-          display="flex"
-          alignItems="center"
-          gap={2}
-          color={colorMode === "dark" ? "gray.300" : "gray.600"}
-          _hover={{ color: "blue.500" }}
-          fontSize="md"
-        >
-          <BiNews />
-          News
-        </Link>
-
-        <Link
-          as={RouterLink}
           to="/about"
           display="flex"
           alignItems="center"
@@ -158,9 +145,6 @@ export default function ZotNFoundLogoText() {
               icon={<RiNewspaperLine />}
             >
               Updates
-            </MenuItem>
-            <MenuItem as={RouterLink} to="/update" icon={<BiNews />}>
-              News
             </MenuItem>
             <MenuItem
               as={RouterLink}

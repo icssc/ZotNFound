@@ -82,3 +82,18 @@ body {
   color: #4299e1;
   font-weight: 600;
 }
+
+/* Tutorial highlight animation */
+.tutorial-highlight {
+  position: relative;
+  z-index: 10000 !important;
+  outline: 3px solid #e53e3e;
+  outline-offset: 4px;
+  pointer-events: none;
+}
+
+/* Make sure highlighted elements are visible */
+.tutorial-highlight {
+  isolation: isolate;
+  position: relative;
+}
