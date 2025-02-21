@@ -79,6 +79,14 @@ export function BackendStack({ stack }: StackContext) {
         authorizer: "none",
         function: "packages/functions/src/server.handler",
       },
+      "GET /items/{proxy+}": {
+        authorizer: "none",
+        function: "packages/functions/src/server.handler",
+      },
+      "GET /leaderboard/{proxy+}": {
+        authorizer: "none",
+        function: "packages/functions/src/server.handler",
+      },
       $default: {
         authorizer: "Authorizer",
         function: "packages/functions/src/server.handler",

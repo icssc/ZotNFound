@@ -204,11 +204,11 @@ export default function Home() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const token = await getAuthToken();
-        if (!token) return;
+        // const token = await getAuthToken();
+        // if (!token) return;
         const config = {
           headers: {
-            Authorization: `Bearer ${token}`,
+            // Authorization: `Bearer ${token}`,
             "User-Email": user?.email,
           },
         };
