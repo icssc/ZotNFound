@@ -68,7 +68,7 @@ export const AuthContextProvider = ({ children }) => {
           keyword: keyword,
         },
       );
-      if (response.data != 'email already subscribed to keyword') {
+      if (response.status == 201) {
         setKeywords((prevKeywords) => [...prevKeywords, keyword]);
         return {success: true, description: "added"};
       }
