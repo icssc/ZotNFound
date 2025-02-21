@@ -44,18 +44,15 @@ export const AuthContextProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const getSearchKeywords = () => {
-      axios.get(
-        `${
-          import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
-        }/searches/${user.email}`
-      )
-      .then((response) => {
+    const getSearchKeywords = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/searches/${user.email}`
+        );
         setKeywords(response.data);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error(err);
-      })
+      }
     }
     if (user) {
       getSearchKeywords();
@@ -65,14 +62,12 @@ export const AuthContextProvider = ({ children }) => {
   const addKeyword = async (keyword) => {
     try {
       const response = await axios.post(
-        `${
-          import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
-        }/searches`,
+        `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/searches`,
         {
           email: user.email,
           keyword: keyword,
         },
-      )
+      );
       if (response.data != 'email already subscribed to keyword') {
         setKeywords((prevKeywords) => [...prevKeywords, keyword]);
         return {success: true, description: "added"};
@@ -87,14 +82,12 @@ export const AuthContextProvider = ({ children }) => {
   const removeKeyword = async (deletedKw) => {
     try {
       const response = await axios.delete(
-        `${
-          import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
-        }/searches`,
+        `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/searches`,
         { data: {
           email: user.email,
           keyword: deletedKw,
         }},
-      )
+      );
       if (response.status === 200) {
         setKeywords((prevKeywords) => prevKeywords.filter((keyword) => keyword !== deletedKw));
       }
