@@ -397,6 +397,8 @@ export default function Home() {
         <BookmarkModal
           isOpen={isBookmarkModalOpen}
           onClose={onBookmarkModalClose}
+          setSearch={setSearch}
+          colorMode={colorMode}
         />
         <Leaderboard
           onOpen={onLeaderboardOpen}

@@ -25,7 +25,7 @@ searchRouter.post("/", async (req, res) => {
           WHERE keyword = $2 
           RETURNING *`, 
           [email, keyword]);
-        res.json(item.rows[0]);
+        res.status(201).json(item.rows[0]);
         console.log("updated subscribers of", keyword);
       }
       else {

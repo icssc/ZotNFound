@@ -52,7 +52,7 @@ export default function SearchBar({ search, setSearch, loading, colorMode }) {
             zIndex="9999"
             boxShadow="md"
           >
-            <SaveSearchButton />
+            <SaveSearchButton keyword={search} />
           </Box>
         )}
       </motion.div>
