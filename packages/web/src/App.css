@@ -37,7 +37,9 @@
   }
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   overflow-y: auto;
 }
@@ -45,4 +47,53 @@ html, body, #root {
 body {
   margin: 0;
   padding: 0;
+}
+
+.markdown-content h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.markdown-content ul {
+  list-style-type: none;
+  padding-left: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5rem;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.markdown-content li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #4299e1;
+}
+
+.markdown-content strong {
+  color: #4299e1;
+  font-weight: 600;
+}
+
+/* Tutorial highlight animation */
+.tutorial-highlight {
+  position: relative;
+  z-index: 10000 !important;
+  outline: 3px solid #e53e3e;
+  outline-offset: 4px;
+  pointer-events: none;
+}
+
+/* Make sure highlighted elements are visible */
+.tutorial-highlight {
+  isolation: isolate;
+  position: relative;
 }

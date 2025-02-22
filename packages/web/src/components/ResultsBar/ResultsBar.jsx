@@ -136,10 +136,11 @@ export default function ResultsBar({
 
   return (
     <Box
+      data-testid="results-panel"
       paddingX="5px"
       width={{ base: "90vw", md: "21vw" }}
-      height="80dvh"
-      overflowY="scroll"
+      height={{ base: "100%", md: "83vh" }}
+      overflowY="auto"
       overflowX="hidden"
       ref={resultsBarRef}
       onMouseEnter={handleUserInteraction}
