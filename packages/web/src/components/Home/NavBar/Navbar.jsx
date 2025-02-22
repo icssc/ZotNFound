@@ -96,7 +96,7 @@ const Navbar = ({
               </Button>
 
               {/* Bookmark Icon */}
-              <Button
+              {user && <Button
                 bg="green.500"
                 onClick={onBookmarkModalOpen}
                 aria-label="Bookmarks"
@@ -107,7 +107,7 @@ const Navbar = ({
                   w="15px"
                   alt="bookmark"
                 />
-              </Button>
+              </Button>}
 
               {/* FEEDBACK */}
               <Button

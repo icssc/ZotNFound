@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   Box,
   HStack,
@@ -7,26 +7,43 @@ import {
   useColorMode,
   useToast,
 } from "@chakra-ui/react";
+
 import bookmarkWhite from "../../../assets/logos/bookmark-white.svg";
 import bookmarkBlack from "../../../assets/logos/bookmark-black.svg";
 import bookmarkEmptyBlack from "../../../assets/logos/bookmark-empty-black.svg";
 import bookmarkEmptyWhite from "../../../assets/logos/bookmark-empty-white.svg";
 
-export default function SaveSearchButton() {
+import { UserAuth } from "../../../context/AuthContext";
+import DataContext from "../../../context/DataContext";
+
+export default function SaveSearchButton({keyword}) {
   const [isBookmarked] = useState(false);
   const { colorMode } = useColorMode();
   const toast = useToast();
+  const { user, addKeyword } = UserAuth();
+  const { onLoginModalOpen } = useContext(DataContext);
 
-  const handleBookmarkClick = () => {
+  const handleBookmarkClick = async () => {
+    if (!user) {
+      onLoginModalOpen(); // prompt user to log in in order to save search
+      return;
+    }
+    const response = await addKeyword(keyword);
+    const { success, description } = response;
     toast({
-      title: "Coming Soon!",
+      title: success ? (description === "added" ? "Subscribed!" : "Already subscribed!") : "Error!",
       description:
-        "The save search feature will be available in a future update.",
-      status: "info",
+        success ? 
+        (description === "added" ?
+          "Your email was subscribed to notifications for this search." : 
+          "You are already subscribed to notifications for this search."
+        ) :
+        "Sorry, an error occurred while saving your search term. Please try again.",
+      status: success ? (description === "added" ? "success" : "info") : "error",
       duration: 3000,
       isClosable: true,
     });
-  };
+  }
 
   return (
     <Box
