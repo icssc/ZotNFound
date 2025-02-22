@@ -12,22 +12,29 @@ A web application developed by the ICSSC at the University of California, Irvine
 **Backend:** Node, Express, Firebase
 
 
+## SST (Serverless Stack)
+
+SST is a framework designed for building serverless applications, allowing full-stack developers to build applications without managing servers and infrastructure directly while taking advantage of AWS services.
+
 ## AWS Configuration
 
-Step 1: Install the AWS CLI ([Download Link](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)) for your OS
+### Step 1:  Install the AWS CLI
+Install the AWS CLI ([Download Link](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)) for your OS
 
-Step 2: To confirm that you have the CLI ready, go to your terminal or powershell and run 
+### Step 2: Confirm Installation
+To confirm that you have the CLI ready, go to your terminal or powershell and run 
 ```bash
   aws --version
 ```
 
-Step 3:
-
+Step 3: Configure AWS CLI
+Run the following command to configure the AWS CLI:
 ```bash
   aws configure
 ```
 
-Step 4: Input the respective information:
+### Step 4: Input the Required Information:
+When prompted, enter the following details:
 ```bash
 AWS Access Key ID [None]: [paste your AWS Access Key]
 AWS Secret Key ID [None]: [paste your AWS Secret Key]
@@ -37,38 +44,44 @@ Default output format [None]: [just hit enter]
     
 
 ## Run Locally
+To run the ZotNFound app locally, follow these steps:
 
-Clone the project
+### Step 1: Clone the Repository
+Clone the repository to your local machine:
 
 ```bash
   git clone https://github.com/icssc/ZotNFound.git
 ```
 
-Go to the project directory
+### Step 2: Navigate to the Project Directory
+Change into the project directory:
 
 ```bash
   cd zotnfound
 ```
 
-Install dependencies
+### Step 3: Install Backend Dependencies
+Install the backend dependencies using pnpm:
 
 ```bash
   pnpm install
 ```
 
-Start backend 
+### Step 4: Start the Backend
+Start the backend server with:
 
 ```bash
-  cd ./packages/functions
   pnpm run dev
-
 ```
     
-
-Start frontend 
+### Step 5: Start the Frontend
+Navigate to the frontend directory and start the frontend server:
 
 ```bash
   cd ./packages/web
   pnpm run dev
 ```
-View the local website at http://localhost:3000
+
+### Step 6: Access the Local Website
+Once both the backend and frontend servers are running, you can view the application at:
+http://localhost:3000
