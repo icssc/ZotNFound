@@ -12,7 +12,6 @@ import {
   Button,
   Divider,
 } from "@chakra-ui/react";
-import goldmedal from "../../../assets/images/gold-medal.png";
 
 export default function Leaderboard({
   isOpen,
@@ -30,7 +29,22 @@ export default function Leaderboard({
 
   if (point) {
     point = point.points;
+  } else {
+    point = 0;
   }
+
+  const getRankDisplay = (index) => {
+    switch (index) {
+      case 0:
+        return "🥇";
+      case 1:
+        return "🥈";
+      case 2:
+        return "🥉";
+      default:
+        return index + 1;
+    }
+  };
 
   return (
     <>
@@ -68,7 +82,6 @@ export default function Leaderboard({
                 </Text>
               </Flex>
             )}
-
             {leaderboard && showCookieInfo == false ? (
               <Flex
                 justifyContent={"center"}
@@ -76,101 +89,6 @@ export default function Leaderboard({
                 flexDir={"column"}
                 gap={5}
               >
-                <Flex
-                  w={{ base: "100%", md: "500px" }}
-                  padding={5}
-                  px={{ base: 3, md: 5 }}
-                  background={
-                    "linear-gradient(135deg, #5c5be5 0%, #4545dd 100%)"
-                  }
-                  color={"white"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
-                  borderRadius={"xl"}
-                  boxShadow={"0px 8px 20px rgba(92, 91, 229, 0.3)"}
-                  _hover={{ transform: "translateY(-2px)" }}
-                  transition="transform 0.2s ease"
-                >
-                  <Flex alignItems={"center"} gap={{ base: 2, md: 5 }}>
-                    <Text as={"b"} fontSize={"4xl"}>
-                      1
-                    </Text>
-                    <Text as={"b"} fontSize={{ base: "sm", md: "lg" }}>
-                      {leaderboard[0]?.email}
-                    </Text>
-                  </Flex>
-
-                  <Flex alignItems={"center"}>
-                    <Text as={"b"} fontSize={{ base: "3xl", md: "4xl" }}>
-                      {leaderboard[0]?.points}
-                    </Text>
-                    <Image
-                      className="gold-medal"
-                      src={goldmedal}
-                      alt="gold medal"
-                      w={"5vh"}
-                      h={"5vh"}
-                    />
-                  </Flex>
-                </Flex>
-                <Flex
-                  w={{ base: "100%", md: "500px" }}
-                  p={{ base: 3, md: 5 }}
-                  background={
-                    "linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)"
-                  }
-                  color={"black"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
-                  borderRadius={"xl"}
-                  boxShadow={"0px 8px 15px rgba(0, 0, 0, 0.1)"}
-                  _hover={{ transform: "translateY(-2px)" }}
-                  transition="transform 0.2s ease"
-                >
-                  <Flex alignItems={"center"} gap={{ base: 2, md: 5 }}>
-                    <Text as={"b"} fontSize={"4xl"}>
-                      2
-                    </Text>
-                    <Text as={"b"} fontSize={{ base: "sm", md: "lg" }}>
-                      {leaderboard[1]?.email}
-                    </Text>
-                  </Flex>
-
-                  <Flex>
-                    <Text as={"b"} fontSize={{ base: "3xl", md: "4xl" }}>
-                      {leaderboard[1]?.points} 🍪
-                    </Text>
-                  </Flex>
-                </Flex>
-                <Flex
-                  w={{ base: "100%", md: "500px" }}
-                  p={{ base: 3, md: 5 }}
-                  background={
-                    "linear-gradient(135deg,rgb(252, 234, 132) 0%,rgb(244, 214, 121) 100%)"
-                  }
-                  color={"black"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
-                  borderRadius={"xl"}
-                  boxShadow={"0px 8px 15px rgba(255, 193, 7, 0.2)"}
-                  _hover={{ transform: "translateY(-2px)" }}
-                  transition="transform 0.2s ease"
-                >
-                  <Flex alignItems={"center"} gap={{ base: 2, md: 5 }}>
-                    <Text as={"b"} fontSize={"4xl"}>
-                      3
-                    </Text>
-                    <Text as={"b"} fontSize={{ base: "sm", md: "lg" }}>
-                      {leaderboard[2]?.email}
-                    </Text>
-                  </Flex>
-
-                  <Flex>
-                    <Text as={"b"} fontSize={{ base: "3xl", md: "4xl" }}>
-                      {leaderboard[2]?.points} 🍪
-                    </Text>
-                  </Flex>
-                </Flex>
                 <Button
                   ref={btnRef}
                   colorScheme="blue"
@@ -186,6 +104,36 @@ export default function Leaderboard({
                 >
                   Learn How It Works 🍪
                 </Button>
+                {leaderboard.map((ranking, index) => (
+                  <Flex
+                  w={{ base: "100%", md: "500px" }}
+                  padding={5}
+                  px={{ base: 3, md: 5 }}
+                  background={
+                    "linear-gradient(135deg, #5c5be5 0%, #4545dd 100%)"
+                  }
+                  color={"white"}
+                  alignItems={"center"}
+                  justifyContent={"space-between"}
+                  borderRadius={"xl"}
+                  boxShadow={"0px 8px 20px rgba(92, 91, 229, 0.3)"}
+                  _hover={{ transform: "translateY(-2px)" }}
+                  transition="transform 0.2s ease"
+                  key={index}
+                >
+                  <Flex alignItems={"center"} gap={{ base: 2, md: 5 }}>
+                    <Text as={"b"} fontSize={"4xl"}>{getRankDisplay(index)}</Text>
+                    <Text as={"b"} fontSize={{ base: "sm", md: "lg" }}>
+                      {ranking.email}
+                    </Text>
+                  </Flex>
+                  <Flex alignItems={"center"}>
+                    <Text as={"b"} fontSize={{ base: "3xl", md: "4xl" }}>
+                      {ranking.points} 🍪
+                    </Text>
+                  </Flex>
+                </Flex>
+                ))}
               </Flex>
             ) : (
               <Flex

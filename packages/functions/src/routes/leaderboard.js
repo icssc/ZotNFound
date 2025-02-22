@@ -39,9 +39,8 @@ leaderboardRouter.post("/", async (req, res) => {
 leaderboardRouter.get("/", async (req, res) => {
   try {
     const lbData = await client.query(
-      `SELECT * FROM ${leaderboardTable} ORDER BY points DESC LIMIT 3`
+      `SELECT * FROM ${leaderboardTable} ORDER BY points DESC`
     );
-
     res.json(lbData.rows);
   } catch (error) {
     console.log(error);
