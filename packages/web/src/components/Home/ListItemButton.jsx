@@ -20,20 +20,22 @@ export default function ListItemButton({
         fontSize="xl"
       >
         {switchState ? (
-          <IconButton
-            height={75}
-            width={75}
-            isRound={true}
-            backgroundColor="#74a2fa"
-            color={"white"}
-            _hover={{
-              background: "#365fad",
-            }}
-            aria-label="Add Item"
-            fontSize="30px"
-            icon={<AddIcon />}
-            onClick={addCallback}
-          />
+          <div className="create-post-wrapper">
+            <IconButton
+              height={75}
+              width={75}
+              isRound={true}
+              backgroundColor="#74a2fa"
+              color={"white"}
+              _hover={{
+                background: "#365fad",
+              }}
+              aria-label="Add Item"
+              fontSize="30px"
+              icon={<AddIcon />}
+              onClick={addCallback}
+            />
+          </div>
         ) : (
           <IconButton
             height={75}
@@ -44,6 +46,7 @@ export default function ListItemButton({
             fontSize="30px"
             icon={<CloseIcon />}
             onClick={cancelCallback}
+            className="list-item-button"
           />
         )}
       </Tooltip>

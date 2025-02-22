@@ -23,6 +23,7 @@ import ToolBar from "./ToolBar/ToolBar";
 import MapSection from "./MapSection";
 import { UserAuth } from "../../context/AuthContext";
 import DataContext from "../../context/DataContext";
+import Tutorial from "../Tutorial/Tutorial";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -111,6 +112,8 @@ export default function Home() {
     onOpen: onLoginModalOpen,
     onClose: onLoginModalClose,
   } = useDisclosure();
+
+  const [showTutorial, setShowTutorial] = useState(false);
 
   const subscribeToggle = async (e) => {
     e.preventDefault();
@@ -279,6 +282,18 @@ export default function Home() {
     }
   }, [user]);
 
+  useEffect(() => {
+    // Check if this is the user's first visit
+    const tutorialComplete = localStorage.getItem("tutorialComplete");
+    if (!tutorialComplete) {
+      setShowTutorial(true);
+    }
+  }, []);
+
+  const handleTutorialOpen = () => {
+    setShowTutorial(true);
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -310,6 +325,7 @@ export default function Home() {
           onOpen={onOpen}
           onLoginModalOpen={onLoginModalOpen}
           onLeaderboardOpen={onLeaderboardOpen}
+          onTutorialOpen={handleTutorialOpen}
         />
 
         <MobileSearchBar
@@ -407,6 +423,10 @@ export default function Home() {
           btnRef={btnRef}
           leaderboard={leaderboard}
           user={user}
+        />
+        <Tutorial
+          isOpen={showTutorial}
+          onClose={() => setShowTutorial(false)}
         />
       </Box>
     </DataContext.Provider>

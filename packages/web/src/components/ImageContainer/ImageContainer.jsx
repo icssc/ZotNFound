@@ -33,6 +33,7 @@ export default function ImageContainer({ image, isresolved }) {
         objectFit={"scale-down"}
         src={image}
         borderRadius={"lg"}
+        alt="uploaded image"
       />
     </Flex>
   );

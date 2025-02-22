@@ -70,6 +70,7 @@ export default function SaveSearchButton({keyword}) {
               : bookmarkEmptyBlack
           }
           h="15px"
+          alt="bookmark"
           w="15px"
         />
         <Text userSelect="none">

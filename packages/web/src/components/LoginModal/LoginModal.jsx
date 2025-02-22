@@ -98,7 +98,7 @@ export default function LoginModal() {
               flexDir="column"
               gap={8}
             >
-              <Image src={small_logo} width="15vh" />
+              <Image src={small_logo} width="15vh" alt="logo"/>
               {isAttempt ? (signInErrorAlert) : (welcomeMessage)}
               <Button
                 onClick={handleSignInGoogle}
@@ -107,7 +107,7 @@ export default function LoginModal() {
                 size="lg"
               >
                 <Flex gap={2} alignItems="center">
-                  <Image width="20px" height="20px" src={google_logo} />
+                  <Image width="20px" height="20px" src={google_logo} alt="google logo" />
                   Sign in with UCI
                 </Flex>
               </Button>
