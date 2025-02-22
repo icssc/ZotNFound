@@ -49,8 +49,22 @@ const MobileResultsDrawer = ({
             </Flex>
           )}
         </DrawerHeader>
-        <DrawerBody overflow="hidden">
-          <Flex width="100%" flexDir="column">
+        <DrawerBody
+          overflow="auto"
+          css={{
+            "&::-webkit-scrollbar": {
+              width: "4px",
+            },
+            "&::-webkit-scrollbar-track": {
+              width: "6px",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              background: colorMode === "dark" ? "#525960" : "#c1c1c1",
+              borderRadius: "24px",
+            },
+          }}
+        >
+          <Flex width="100%" flexDir="column" minH="100%">
             <Flex>
               <InputGroup
                 mb="1%"

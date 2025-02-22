@@ -12,7 +12,12 @@ import {
   MenuItem,
   IconButton,
 } from "@chakra-ui/react";
-import { MoonIcon, SunIcon, QuestionIcon } from "@chakra-ui/icons";
+import {
+  MoonIcon,
+  SunIcon,
+  QuestionIcon,
+  QuestionOutlineIcon,
+} from "@chakra-ui/icons";
 import { motion } from "framer-motion";
 import ZotNFoundLogoText from "./ZotNFoundLogoText";
 import SearchBar from "../SearchBar/SearchBar";
@@ -20,7 +25,6 @@ import ProfilePicDropdown from "./ProfilePicDropdown";
 import bookmarkWhite from "../../../assets/logos/bookmark-white.svg";
 import cookie from "../../../assets/images/cookie.svg";
 import { MdAssignment } from "react-icons/md";
-import { HamburgerIcon } from "@chakra-ui/icons";
 
 const Navbar = ({
   search,
@@ -181,9 +185,10 @@ const Navbar = ({
             <MenuButton
               as={IconButton}
               aria-label="Options"
-              icon={<HamburgerIcon />}
-              variant="ghost"
+              icon={<QuestionOutlineIcon />}
+              variant="outline"
               ml={2}
+              display={{ base: "none", md: "block" }}
             />
             <MenuList>
               <MenuItem icon={<QuestionIcon />} onClick={onTutorialOpen}>
