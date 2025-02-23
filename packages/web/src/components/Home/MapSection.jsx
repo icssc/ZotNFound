@@ -47,7 +47,6 @@ const MapSection = ({
           colorScheme="blue"
           height={75}
           width={75}
-          isRound={true}
           backgroundColor="#74a2fa"
           color="white"
           borderRadius="50%"
