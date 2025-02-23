@@ -121,14 +121,14 @@ leaderboardRouter.put("/", async (req, res) => {
 });
 
 // delete user from leaderboard
-leaderboardRouter.delete("/:id", async (req, res) => {
+leaderboardRouter.delete("/:email", async (req, res) => {
   try {
-    const { id } = req.params; // Extract id from request body
-    if (!id) {
+    const { email } = req.params; // Extract id from request body
+    if (!email) {
       return res.status(400).send("id is required");
     }
 
-    await client.query(`DELETE FROM ${leaderboardTable} WHERE id=$1`, [id]);
+    await client.query(`DELETE FROM ${leaderboardTable} WHERE email=$1`, [email]);
 
     res.status(200).send("User deleted from leaderboard");
   } catch (err) {
