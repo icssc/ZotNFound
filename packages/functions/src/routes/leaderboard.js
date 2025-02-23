@@ -123,9 +123,9 @@ leaderboardRouter.put("/", async (req, res) => {
 // delete user from leaderboard
 leaderboardRouter.delete("/:email", async (req, res) => {
   try {
-    const { email } = req.params; // Extract id from request body
+    const { email } = req.params; // Extract email from request body
     if (!email) {
-      return res.status(400).send("id is required");
+      return res.status(400).send("email is required");
     }
 
     await client.query(`DELETE FROM ${leaderboardTable} WHERE email=$1`, [email]);
