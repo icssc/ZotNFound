@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import "./Home.css";
 
+import { getAuthToken } from "../../utils/Utils";
+
 import {
   Spinner,
   useColorMode,
@@ -119,9 +121,7 @@ export default function Home() {
     e.preventDefault();
     try {
       await axios.patch(
-        `${
-          import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
-        }/leaderboard/changeSubscription`,
+        `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/changeSubscription`,
         {
           email: user.email,
           subscription: !subscription,
@@ -204,22 +204,29 @@ export default function Home() {
   //get data
   useEffect(() => {
     const getData = async () => {
-      // Define the headers object
-      const config = {
-        headers: {
-          // Include any other headers you need
-          "User-Email": user?.email, // Custom header with the user's email
-        },
-      };
+      try {
+        // const token = await getAuthToken();
+        // if (!token) return;
+        const config = {
+          headers: {
+            // Authorization: `Bearer ${token}`,
+            "User-Email": user?.email,
+          },
+        };
 
-      // Request to get items with additional headers
-      axios
-        .get(`${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items/`, config)
-        .then((obj) => {
-          setData(obj.data.map((item) => ({ ...item, id: item.id })));
-        })
-        .catch((err) => console.log(err));
-
+        const response = await axios.get(
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items/`,
+          config
+        );
+        setData(response.data.map((item) => ({ ...item, id: item.id })));
+      } catch (err) {
+        console.error(
+          "API Error:",
+          err.response?.status,
+          err.response?.data,
+          err
+        );
+      }
       setLoading(true);
     };
     getData();
@@ -229,12 +236,25 @@ export default function Home() {
   useEffect(() => {
     const getLeaderboard = async () => {
       try {
+        const token = await getAuthToken();
+        if (!token) return;
+        const config = {
+          headers: {
+            // Authorization: `Bearer ${token}`,
+            "User-Email": user?.email,
+          },
+        };
+        // Get email associated with item id
+
         const { data: leaderboardData } = await axios.get(
-          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
+          config
         );
+
         setLeaderboard(
           leaderboardData.map((item) => ({ ...item, id: item.id }))
         );
+
         // Check if the current user's email exists in the leaderboard
         const userEmailExists = leaderboardData.some(
           (entry) => entry.email === user?.email
@@ -248,15 +268,12 @@ export default function Home() {
               email: user.email,
               points: 5, // You can modify this as per your requirements
             },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`, // verify auth
-              },
-            }
+            config
           );
           // Fetch the leaderboard again after insertion
           const { data: updatedLeaderboardData } = await axios.get(
-            `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`
+            `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`,
+            config
           );
           setLeaderboard(
             updatedLeaderboardData.map((item) => ({ ...item, id: item.id }))
