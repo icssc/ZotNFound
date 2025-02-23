@@ -23,6 +23,7 @@
     "googleapis": "^135.0.0",
     "nodemailer": "^6.9.13",
     "pg": "^8.11.5",
+    "resend": "^4.1.2",
     "serverless-http": "^3.2.0"
   }
 }
