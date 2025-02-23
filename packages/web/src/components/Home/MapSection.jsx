@@ -1,10 +1,11 @@
 import React from "react";
-import { Flex, Box, useColorMode } from "@chakra-ui/react";
+import { Flex, Box, useColorMode, Button } from "@chakra-ui/react";
 import Map from "../Map/Map";
 import ListItemButton from "./ListItemButton";
 import FeedbackButtonMobile from "./NavBar/FeedbackButtonMobile";
 import ResultsBar from "../ResultsBar/ResultsBar";
 import CreateModal from "../CreateModal/CreateModal";
+import { AddIcon } from "@chakra-ui/icons";
 
 const MapSection = ({
   isOpenCreateModal,
@@ -38,14 +39,28 @@ const MapSection = ({
         position="absolute"
         background={colorMode === "dark" ? "#1A1E22" : ""}
       >
-        <ListItemButton
-          switchState={!isEdit}
-          addCallback={handleListItemButtonClick}
-          cancelCallback={handleCancelItemButtonClick}
+        <Button
+          className="create-post-wrapper"
           position="absolute"
-          right={10}
-          bottom={10}
-        />
+          bottom={4}
+          right={4}
+          colorScheme="blue"
+          height={75}
+          width={75}
+          isRound={true}
+          backgroundColor="#74a2fa"
+          color="white"
+          borderRadius="50%"
+          padding={0}
+          _hover={{
+            background: "#365fad",
+          }}
+          fontSize="30px"
+          onClick={handleListItemButtonClick}
+          zIndex={1000}
+        >
+          <AddIcon boxSize={8} />
+        </Button>
         <Flex
           zIndex={1000}
           variant="solid"
