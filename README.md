@@ -4,6 +4,8 @@ A web application developed by the ICSSC at the University of California, Irvine
 
 ![Logo](./packages/web/src/assets/images/banner.png)
 
+## ICSSC
+ZotNFound is a project under the [ICSSC Projects Committee](https://github.com/icssc), which provides funding, marketing, and technical support for a variety of UCI-focused applications. As part of ICSSC's commitment to open-source development, these projects are freely available for collaboration, allowing students and developers to contribute, learn, and enhance the UCI community.
 
 ## Tech Stack
 
@@ -14,7 +16,7 @@ A web application developed by the ICSSC at the University of California, Irvine
 
 ## SST (Serverless Stack)
 
-SST is a framework designed for building serverless applications, allowing full-stack developers to build applications without managing servers and infrastructure directly while taking advantage of AWS services.
+SST is a framework designed for building serverless applications, allowing full-stack developers to build applications without managing servers and infrastructure directly while taking advantage of AWS services. ([Link to docs](https://v2.sst.dev/))
 
 ## AWS Configuration
 
