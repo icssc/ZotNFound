@@ -37,6 +37,7 @@ export const handler = async (event) => {
       event.headers?.Authorization || event.headers?.authorization;
     console.log("Auth Header:", authHeader);
 
+    // reduntant check
     if (!authHeader) {
       console.log("No auth header found - denying request");
       return generatePolicy("user", "Deny", event.methodArn);

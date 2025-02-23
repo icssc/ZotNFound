@@ -46,7 +46,7 @@ export function BackendStack({ stack }: StackContext) {
           },
         }),
         // resultsCacheTtl: "30 seconds",
-        identitySource: [],
+        identitySource: ["$request.header.Authorization"],
       },
     },
     defaults: {

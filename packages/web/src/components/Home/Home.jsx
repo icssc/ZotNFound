@@ -121,9 +121,7 @@ export default function Home() {
     e.preventDefault();
     try {
       await axios.patch(
-        `${
-          import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
-        }/leaderboard/changeSubscription`,
+        `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/changeSubscription`,
         {
           email: user.email,
           subscription: !subscription,
@@ -242,27 +240,21 @@ export default function Home() {
         if (!token) return;
         const config = {
           headers: {
-            Authorization: `Bearer ${token}`,
+            // Authorization: `Bearer ${token}`,
             "User-Email": user?.email,
           },
         };
-        // // Get email associated with item id
+        // Get email associated with item id
 
-        // console.log("test");
-        // const token = await getAuthToken();
-        // console.log(
-        //   "Making API request with auth header:",
-        //   token ? "Token present" : "No token"
-        // );
         const { data: leaderboardData } = await axios.get(
-          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`,
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
           config
         );
 
-        // console.log("data: ", data);
         setLeaderboard(
           leaderboardData.map((item) => ({ ...item, id: item.id }))
         );
+
         // Check if the current user's email exists in the leaderboard
         const userEmailExists = leaderboardData.some(
           (entry) => entry.email === user?.email
