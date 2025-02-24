@@ -211,11 +211,11 @@ export default function Map({
             },
           }
         );
-        if (!response.ok) {
+
+        if (response.status !== 200) {
           throw new Error("Failed to upload file");
         }
-        const data = await response.json();
-        imageUrl = data.url;
+        const imageUrl = response.data.url;
       } catch (err) {
         // if url failed than image upload failed
         console.error("Error uploading image:", err);
