@@ -69,6 +69,7 @@ export function BackendStack({ stack }: StackContext) {
 
           // for lambda authorizers
           FIREBASE_SERVICE_ACCOUNT: process.env.FIREBASE_SERVICE_ACCOUNT,
+          RESEND_API_KEY: process.env.RESEND_API_KEY,
         },
       },
       authorizer: "Authorizer",
