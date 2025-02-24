@@ -215,7 +215,7 @@ export default function Map({
         if (response.status !== 200) {
           throw new Error("Failed to upload file");
         }
-        const imageUrl = response.data.url;
+        imageUrl = response.data.url;
       } catch (err) {
         // if url failed than image upload failed
         console.error("Error uploading image:", err);
