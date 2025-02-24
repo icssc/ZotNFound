@@ -25,5 +25,8 @@
     "pg": "^8.11.5",
     "resend": "^4.1.2",
     "serverless-http": "^3.2.0"
-  }
+  },
+  "externals": [
+    "farmhash"
+  ]
 }

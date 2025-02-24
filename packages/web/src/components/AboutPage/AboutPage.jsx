@@ -1,5 +1,14 @@
 import { React, useState, useEffect } from "react";
-import { Button, Text, Flex, Stack, Icon, Image, Box} from "@chakra-ui/react";
+import {
+  Button,
+  Text,
+  Flex,
+  Stack,
+  Icon,
+  Image,
+  Box,
+  Skeleton,
+} from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -28,6 +37,7 @@ export default function AboutPage() {
   const bgColor = useColorModeValue("gray.50", "gray.900");
   const textColor = useColorModeValue("gray.800", "gray.100");
   const accentColor = useColorModeValue("blue.500", "blue.300");
+  const [isLoading, setIsLoading] = useState(true);
 
   window.onresize = () => {
     setScreenWidth(window.screen.width);
@@ -38,22 +48,27 @@ export default function AboutPage() {
   };
 
   useEffect(() => {
-    getItems().then((itemsData) => {
-      setData(itemsData.data);
-    });
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const [itemsResponse, leaderboardResponse] = await Promise.all([
+          getItems(),
+          getLeaderboardCount(),
+        ]);
+        setData(itemsResponse.data);
+        setLeaderboardCount(leaderboardResponse.data + 500);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    getLeaderboardCount().then((leaderboardData) => {
-      setLeaderboardCount(leaderboardData.data + 500);
-    });
+    fetchData();
   }, []);
 
   return (
-    <Box
-      bg={bgColor}
-      color={textColor}
-      minHeight="100vh"
-      overflowY="auto"
-    >
+    <Box bg={bgColor} color={textColor} minHeight="100vh" overflowY="auto">
       <Flex
         direction="column"
         align="center"
@@ -91,37 +106,45 @@ export default function AboutPage() {
             transition={{ duration: 0.5 }}
           >
             <Text fontSize="5xl" fontWeight="bold" textAlign="center" my={8}>
-              We are <Text as="span" color={accentColor}>ZotnFound</Text>
+              We are{" "}
+              <Text as="span" color={accentColor}>
+                ZotnFound
+              </Text>
             </Text>
           </motion.div>
 
-          <Flex
-            justify="center"
-            align="center"
-            wrap="wrap"
-            gap={8}
-            my={12}
-          >
-            <StatCard
-              label="Lost Items"
-              value={data.filter((item) => item.islost).length}
-              color="red.400"
-            />
-            <StatCard
-              label="Found Items"
-              value={data.filter((item) => !item.islost).length}
-              color="green.400"
-            />
-            <StatCard
-              label="Successful Returns"
-              value={data.filter((item) => item.isresolved).length}
-              color="yellow.400"
-            />
-            <StatCard
-              label="Active Users"
-              value={leaderboardCount}
-              color="purple.400"
-            />
+          <Flex justify="center" align="center" wrap="wrap" gap={8} my={12}>
+            {isLoading ? (
+              <>
+                <StatCardSkeleton />
+                <StatCardSkeleton />
+                <StatCardSkeleton />
+                <StatCardSkeleton />
+              </>
+            ) : (
+              <>
+                <StatCard
+                  label="Lost Items"
+                  value={data.filter((item) => item.islost).length}
+                  color="red.400"
+                />
+                <StatCard
+                  label="Found Items"
+                  value={data.filter((item) => !item.islost).length}
+                  color="green.400"
+                />
+                <StatCard
+                  label="Successful Returns"
+                  value={data.filter((item) => item.isresolved).length}
+                  color="yellow.400"
+                />
+                <StatCard
+                  label="Active Users"
+                  value={leaderboardCount}
+                  color="purple.400"
+                />
+              </>
+            )}
           </Flex>
 
           <FeatureSection />
@@ -154,6 +177,21 @@ const StatCard = ({ label, value, color }) => (
       </Text>
     </Flex>
   </motion.div>
+);
+
+const StatCardSkeleton = () => (
+  <Flex
+    direction="column"
+    align="center"
+    bg={useColorModeValue("white", "gray.800")}
+    p={6}
+    borderRadius="lg"
+    boxShadow="lg"
+    width="200px"
+  >
+    <Skeleton height="2.5rem" width="80px" mb={2} />
+    <Skeleton height="1.5rem" width="120px" />
+  </Flex>
 );
 
 const FeatureSection = () => (
@@ -240,7 +278,13 @@ const AboutSection = () => (
         Origin of ZotnFound
       </Text>
       <Text>
-        Many people are constantly losing their belongings, whether that be their phones, keys, or water bottles. This is especially true for UCI students on the UCI subreddit, where there are countless posts being created about lost and found items. Due to this problem, we decided to take matters into our own hands and created an Instagram account to help lost items return back to their original owners. We have so far helped over 10 people and gained over 300+ followers.
+        Many people are constantly losing their belongings, whether that be
+        their phones, keys, or water bottles. This is especially true for UCI
+        students on the UCI subreddit, where there are countless posts being
+        created about lost and found items. Due to this problem, we decided to
+        take matters into our own hands and created an Instagram account to help
+        lost items return back to their original owners. We have so far helped
+        over 10 people and gained over 300+ followers.
       </Text>
     </Box>
     <Image
