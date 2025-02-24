@@ -17,8 +17,7 @@ CREATE TABLE items (
 );
 
 CREATE TABLE leaderboard(
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(255),
+    email VARCHAR(255) PRIMARY KEY,
     points INTEGER,
     subscription BOOLEAN
 );
