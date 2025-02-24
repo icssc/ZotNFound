@@ -201,13 +201,13 @@ export default function Map({
           newAddedItem.image,
           options
         );
-        const response = await fetch(
+        const response = await axios.post(
           `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/upload/image`,
+          compressedFile,
           {
-            body: compressedFile,
-            method: "POST",
             headers: {
               "Content-Type": "image/jpeg",
+              Authorization: `Bearer ${token}`,
             },
           }
         );
