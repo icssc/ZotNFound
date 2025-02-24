@@ -74,14 +74,15 @@ export const AuthContextProvider = ({ children }) => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-      },
-      email: user.email,
-      keyword: keyword,
+      }
     }
-
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/searches`,
+        {
+          email: user.email,
+          keyword: keyword,
+        },
         config
       );
       if (response.status == 201) {
@@ -98,11 +99,13 @@ export const AuthContextProvider = ({ children }) => {
   const removeKeyword = async (deletedKw) => {
     const token = await getAuthToken();
     const config = {
+      data: {
+        email: user.email,
+        keyword: deletedKw
+      },
       headers: {
         Authorization: `Bearer ${token}`,
-      },
-      email: user.email,
-      keyword: deletedKw,
+      }
     }
     try {
       const response = await axios.delete(
