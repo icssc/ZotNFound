@@ -88,6 +88,14 @@ export function BackendStack({ stack }: StackContext) {
         authorizer: "none",
         function: "packages/functions/src/server.handler",
       },
+      "GET /searches/{proxy+}": {
+        authorizer: "none",
+        function: "packages/functions/src/server.handler",
+      },
+      "POST /searches/{proxy+}": {
+        authorizer: "none",
+        function: "packages/functions/src/server.handler",
+      },
       $default: {
         authorizer: "Authorizer",
         function: "packages/functions/src/server.handler",
