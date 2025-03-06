@@ -2,23 +2,24 @@ import express from "express";
 
 import client from "../server/db.js";
 import sendEmail from "../util/sendEmail.js";
+import emailTemplate from "../emailTemplate/template.js";
 // const middleware = require("../middleware/index.js");
 const itemsRouter = express.Router();
 
-const fs = require("fs");
-const path = require("path");
+// const fs = require("fs");
+// const path = require("path");
 
-let template;
+// let template;
 
-if (process.env.NODE_ENV === "development") {
-  const templatePath = path.resolve(
-    "packages/functions/src/emailTemplate/index.html"
-  );
-  template = fs.readFileSync(templatePath, "utf-8");
-} else {
-  const templatePath = path.join(process.cwd(), "emailTemplate", "index.html");
-  template = fs.readFileSync(templatePath, "utf-8");
-}
+// if (process.env.NODE_ENV === "development") {
+//   const templatePath = path.resolve(
+//     "packages/functions/src/emailTemplate/index.html"
+//   );
+//   template = fs.readFileSync(templatePath, "utf-8");
+// } else {
+//   const templatePath = path.join(process.cwd(), "emailTemplate", "index.html");
+//   template = fs.readFileSync(templatePath, "utf-8");
+// }
 
 import isPositionWithinBounds from "../util/inbound.js";
 import {
@@ -89,7 +90,6 @@ itemsRouter.post("/", async (req, res) => {
     res.status(200).json({ message: "Item was added successfully." });
 
     // Fetch subscribers asynchronously
-
     setImmediate(async () => {
       try {
         const subscribers = await client.query(
@@ -105,7 +105,7 @@ itemsRouter.post("/", async (req, res) => {
         });
 
         console.log("emailSet", emailSet);
-        const emailArray = [...emailSet]; // Convert Set to Array
+        const emailArray = [...emailSet];
 
         let contentString = `${name}`;
 
@@ -115,7 +115,7 @@ itemsRouter.post("/", async (req, res) => {
           url: `https://zotnfound.com/${item.rows[0].id}`,
         };
 
-        const customizedTemplate = template
+        const customizedTemplate = emailTemplate
           .replace("{{content}}", dynamicContent.content)
           .replace("{{image}}", dynamicContent.image)
           .replace("{{url}}", dynamicContent.url);
