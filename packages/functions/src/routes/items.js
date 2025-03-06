@@ -5,6 +5,13 @@ import sendEmail from "../util/sendEmail.js";
 // const middleware = require("../middleware/index.js");
 const itemsRouter = express.Router();
 
+const fs = require("fs");
+const path = require("path");
+const templatePath = path.resolve(
+  "packages/functions/src/emailTemplate/index.html"
+);
+const template = fs.readFileSync(templatePath, "utf-8");
+
 // const templatePath = path.resolve(__dirname, "../emailTemplate/index.html");
 // const template = fs.readFileSync(templatePath, "utf-8");
 import isPositionWithinBounds from "../util/inbound.js";
@@ -16,7 +23,6 @@ import {
 
 //Add a item
 itemsRouter.post("/", async (req, res) => {
-  console.log(req, res);
   try {
     const {
       name,
@@ -42,7 +48,6 @@ itemsRouter.post("/", async (req, res) => {
 
     const [latitude, longitude] = location;
 
-    // Check if the location values are numbers and within bounds
     if (
       typeof latitude !== "number" ||
       typeof longitude !== "number" ||
@@ -53,9 +58,12 @@ itemsRouter.post("/", async (req, res) => {
       });
     }
 
-    // Add item to the database
-    await client.query(
-      `INSERT INTO ${itemsTable} (name, description, type, islost, location, date, itemdate, email, image, isresolved, ishelped) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+    // Insert item into the database
+    const item = await client.query(
+      `INSERT INTO ${itemsTable} 
+      (name, description, type, islost, location, date, itemdate, email, image, isresolved, ishelped) 
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      RETURNING *`,
       [
         name,
         description,
@@ -71,58 +79,46 @@ itemsRouter.post("/", async (req, res) => {
       ]
     );
 
-    // // query to get user emails subscribed to relevant keywords
-    // const subscribers = await client.query(
-    //   `SELECT emails
-    //   FROM ${searchesTable}
-    //   WHERE keyword IN ($1, $2, $3);`,
-    //   [name, description, type]
-    // );
-
-    //  // add emails to set to remove duplicates
-    //  const emailSet = new Set();
-    //  subscribers.rows.forEach(row => {
-    //    row.emails.forEach(email => {
-    //      uniqueEmails.add(email);
-    //    });
-    //  });
-
-    //  const uniqueEmails = Array.from(emailSet);
-    //  console.log(uniqueEmails);
-
-    // res.json(item.rows[0]); // send the response immediately after adding the item
-    // let contentString = "";
-
-    // // COMMENT OUT FOR TESTING PURPOSES
-    // if (process.env.NODE_ENV === "production") {
-    //   function sendDelayedEmail(index) {
-    //     if (index >= uniqueEmails.length) return;
-
-    //     let email = uniqueEmails[index].email;
-    //     contentString += `A new item, ${name}, is added to ZotnFound!`;
-
-    //     const dynamicContent = {
-    //       content: contentString,
-    //       image: image,
-    //       url: `https://zotnfound.com/${item.rows[0].id}`,
-    //     };
-
-    //     // const customizedTemplate = template
-    //     //   .replace("{{content}}", dynamicContent.content)
-    //     //   .replace("{{image}}", dynamicContent.image)
-    //     //   .replace("{{url}}", dynamicContent.url);
-
-    //     // sendEmail(email, "A nearby item was added.", customizedTemplate);
-
-    //     contentString = "";
-    //     console.log("sent " + email);
-    //     setTimeout(() => sendDelayedEmail(index + 1), 500); // recursive call to iterate through all user emails
-    //   }
-
-    //   sendDelayedEmail(0);
-    // }
-    // Send a success response
+    // ✅ Send a response **before** sending emails
     res.status(200).json({ message: "Item was added successfully." });
+
+    // Fetch subscribers asynchronously
+    setImmediate(async () => {
+      try {
+        const subscribers = await client.query(
+          `SELECT emails FROM ${searchesTable} WHERE keyword IN ($1, $2, $3);`,
+          [name, description, type]
+        );
+
+        const emailSet = new Set();
+        subscribers.rows.forEach((row) => {
+          row.emails.forEach((email) => {
+            emailSet.add(email);
+          });
+        });
+
+        console.log("emailSet", emailSet);
+        const emailArray = [...emailSet]; // Convert Set to Array
+
+        let contentString = `${name}`;
+
+        const dynamicContent = {
+          content: contentString,
+          image: image,
+          url: `https://zotnfound.com/${item.rows[0].id}`,
+        };
+
+        const customizedTemplate = template
+          .replace("{{content}}", dynamicContent.content)
+          .replace("{{image}}", dynamicContent.image)
+          .replace("{{url}}", dynamicContent.url);
+
+        console.log("sending email");
+        sendEmail(emailArray, "A nearby item was added.", customizedTemplate);
+      } catch (error) {
+        console.error("Error sending emails:", error);
+      }
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error", reason: error });
@@ -158,10 +154,10 @@ itemsRouter.get("/", async (req, res) => {
 //     url: `https://zotnfound.com/2`,
 //   };
 
-//   const customizedTemplate = template
-//     .replace("{{content}}", dynamicContent.content)
-//     .replace("{{image}}", dynamicContent.image)
-//     .replace("{{url}}", dynamicContent.url);
+// const customizedTemplate = template
+//   .replace("{{content}}", dynamicContent.content)
+//   .replace("{{image}}", dynamicContent.image)
+//   .replace("{{url}}", dynamicContent.url);
 
 //   email = [
 //     "nguyenisabillionaire@gmail.com",
