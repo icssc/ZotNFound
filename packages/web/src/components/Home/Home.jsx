@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import "./Home.css";
+import { useLocation } from "react-router-dom";
 
 import { getAuthToken } from "../../utils/Utils";
 
@@ -117,11 +118,21 @@ export default function Home() {
 
   const [showTutorial, setShowTutorial] = useState(false);
 
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes("keywords")) {
+      onBookmarkModalOpen();
+    }
+  }, [location.pathname]);
+
   const subscribeToggle = async (e) => {
     e.preventDefault();
     try {
       await axios.patch(
-        `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/changeSubscription`,
+        `${
+          import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
+        }/leaderboard/changeSubscription`,
         {
           email: user.email,
           subscription: !subscription,
