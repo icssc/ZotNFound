@@ -7,13 +7,19 @@ const itemsRouter = express.Router();
 
 const fs = require("fs");
 const path = require("path");
-const templatePath = path.resolve(
-  "packages/functions/src/emailTemplate/index.html"
-);
-const template = fs.readFileSync(templatePath, "utf-8");
 
-// const templatePath = path.resolve(__dirname, "../emailTemplate/index.html");
-// const template = fs.readFileSync(templatePath, "utf-8");
+let template;
+
+if (process.env.NODE_ENV === "development") {
+  const templatePath = path.resolve(
+    "packages/functions/src/emailTemplate/index.html"
+  );
+  template = fs.readFileSync(templatePath, "utf-8");
+} else {
+  const templatePath = path.resolve(__dirname, "../emailTemplate/index.html");
+  template = fs.readFileSync(templatePath, "utf-8");
+}
+
 import isPositionWithinBounds from "../util/inbound.js";
 import {
   leaderboardTable,
@@ -83,6 +89,7 @@ itemsRouter.post("/", async (req, res) => {
     res.status(200).json({ message: "Item was added successfully." });
 
     // Fetch subscribers asynchronously
+
     setImmediate(async () => {
       try {
         const subscribers = await client.query(
@@ -143,34 +150,6 @@ itemsRouter.get("/", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
-
-// itemsRouter.get("/testemail", async (req, res) => {
-//   contentString = `A new added item, is near your items!`;
-
-//   const dynamicContent = {
-//     content: contentString,
-//     image:
-//       "https://i.insider.com/61d5c65a5a119b00184b1e1a?width=1136&format=jpeg",
-//     url: `https://zotnfound.com/2`,
-//   };
-
-// const customizedTemplate = template
-//   .replace("{{content}}", dynamicContent.content)
-//   .replace("{{image}}", dynamicContent.image)
-//   .replace("{{url}}", dynamicContent.url);
-
-//   email = [
-//     "nguyenisabillionaire@gmail.com",
-//     "dangnwin@gmail.com",
-//     "nwinsquared@gmail.com",
-//     "stevenzhouni@gmail.com",
-//     "sophiahuynh124@gmail.com",
-//   ];
-//   await sendEmail(email, "A nearby item was added!", customizedTemplate);
-
-//   contentString = "";
-//   res.json("nice");
-// });
 
 itemsRouter.get("/week", async (req, res) => {
   try {
