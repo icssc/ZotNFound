@@ -41,6 +41,12 @@ export function BackendStack({ stack }: StackContext) {
           },
           nodejs: {
             esbuild: {
+              copyFiles: [
+                {
+                  from: "packages/functions/src/emailTemplate",
+                  to: "emailTemplate",
+                },
+              ],
               external: ["@aws-sdk/*", "farmhash"],
             },
           },

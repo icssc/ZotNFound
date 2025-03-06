@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === "development") {
   );
   template = fs.readFileSync(templatePath, "utf-8");
 } else {
-  const templatePath = path.resolve(__dirname, "emailTemplate/index.html");
+  const templatePath = path.join(process.cwd(), "emailTemplate", "index.html");
   template = fs.readFileSync(templatePath, "utf-8");
 }
 
