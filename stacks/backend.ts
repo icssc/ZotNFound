@@ -41,12 +41,6 @@ export function BackendStack({ stack }: StackContext) {
           },
           nodejs: {
             esbuild: {
-              copyFiles: [
-                {
-                  from: "packages/functions/src/emailTemplate",
-                  to: "emailTemplate",
-                },
-              ],
               external: ["@aws-sdk/*", "farmhash"],
             },
           },
@@ -57,6 +51,14 @@ export function BackendStack({ stack }: StackContext) {
     },
     defaults: {
       function: {
+        bundle: {
+          copyFiles: [
+            {
+              from: "packages/functions/src/emailTemplate", // Source path
+              to: "emailTemplate", // Destination path in the bundle
+            },
+          ],
+        },
         bind: [bus, bucket],
         environment: {
           EMAIL: process.env.EMAIL,
