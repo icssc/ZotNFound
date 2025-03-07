@@ -18,6 +18,7 @@ searchRouter.post("/", async (req, res) => {
     );
 
     if (search.rows.length == 1) {
+      console.log("search.rows", search.rows);
       // subscribe user to keyword notification if they aren't already subscribed to it
       if (!search.rows[0].emails.includes(email)) {
         const item = await client.query(
@@ -33,6 +34,7 @@ searchRouter.post("/", async (req, res) => {
         res.json("email already subscribed to keyword");
       }
     } else {
+      console.log("search HERE", search);
       // keyword doesn't exist in table yet, add new row
       const item = await client.query(
         `INSERT INTO ${searchesTable} (keyword, emails) VALUES($1, $2) RETURNING *`,

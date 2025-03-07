@@ -121,7 +121,11 @@ itemsRouter.post("/", async (req, res) => {
           .replace("{{url}}", dynamicContent.url);
 
         console.log("sending email");
-        sendEmail(emailArray, "A nearby item was added.", customizedTemplate);
+        sendEmail(
+          emailArray,
+          `New Item Matches Your Search - ${name}`,
+          customizedTemplate
+        );
       } catch (error) {
         console.error("Error sending emails:", error);
       }
