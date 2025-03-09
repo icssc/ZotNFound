@@ -156,79 +156,6 @@ const StatCard = ({ label, value, color }) => (
   </motion.div>
 );
 
-const FeatureSection = () => (
-  <Box my={16} width="100%">
-    <Text fontSize="3xl" fontWeight="bold" textAlign="center" mb={8}>
-      Explore How ZotnFound Works
-    </Text>
-    <Swiper
-      spaceBetween={30}
-      slidesPerView={1.5}
-      centeredSlides={true}
-      loop={true}
-      loopAdditionalSlides={2}
-      watchSlidesProgress={true}
-      grabCursor={true}
-      modules={[Autoplay, Pagination]}
-      autoplay={{ 
-        delay: 3000, 
-        disableOnInteraction: false,
-        pauseOnMouseEnter: false,
-      }}
-      pagination={{ clickable: true }}
-      speed={1000}
-      style={{ paddingBottom: "40px" }}
-    >
-      <SwiperSlide>
-        <FeatureCard
-          image={about1}
-          title="Getting Started"
-          description="Lost or found something? Log in with your UCI email, join the ZotNFound community, and help lost items find their way back home."
-        />
-      </SwiperSlide>
-      <SwiperSlide>
-        <FeatureCard
-          image={about2}
-          title="Navigating UCI Stress Free"
-          description="Searching for your lost items is made easy with our interactive map. Search by name, use real time markers, or filter by categories so you can find what's yours."
-        />
-      </SwiperSlide>
-      <SwiperSlide>
-        <FeatureCard
-          image={about3}
-          title="Your Things Are Just a Search Away"
-          description="No more endless backtracking. Simply search and filter what you've misplaced and we'll show you where it is."
-        />
-      </SwiperSlide>
-      <SwiperSlide>
-        <FeatureCard
-          image={about4}
-          title="Posting and Helping Out"
-          description="Someone's out there looking for what you've found! Upload a picture and enter information about it so you can make their day."
-        />
-      </SwiperSlide>
-    </Swiper>
-  </Box>
-);
-
-const FeatureCard = ({ image, title, description }) => (
-  <Flex
-    direction="column"
-    align="center"
-    bg={useColorModeValue("white", "gray.800")}
-    p={6}
-    borderRadius="lg"
-    boxShadow="lg"
-    height="100%"
-  >
-    <Image src={image} alt={title} mb={4} borderRadius="md" />
-    <Text fontSize="xl" fontWeight="bold" mb={2}>
-      {title}
-    </Text>
-    <Text textAlign="center">{description}</Text>
-  </Flex>
-);
-
 const AboutSection = () => (
   <Flex
     direction={{ base: "column", md: "row" }}
@@ -267,5 +194,90 @@ const Footer = () => (
     borderColor={useColorModeValue("gray.200", "gray.700")}
   >
     <Text>&copy; 2023 ZotnFound. All rights reserved.</Text>
+  </Flex>
+);
+
+const FeatureSection = () => (
+  <Box my={16} width="100%">
+    <Text 
+      fontSize="3xl" 
+      fontWeight="semibold" 
+      textAlign="left" 
+      mb={8}
+      pl={4}
+      color="gray.400" 
+    >
+      Explore how <Text as="span" color="white" fontWeight="bold">ZotnFound</Text> works.
+    </Text>
+
+    <Swiper
+      spaceBetween={20}
+      slidesPerView={1.5}
+      centeredSlides={true}
+      loop={true}
+      loopAdditionalSlides={2}
+      watchSlidesProgress={true}
+      grabCursor={true}
+      modules={[Autoplay, Pagination]}
+      autoplay={{ 
+        delay: 3000, 
+        disableOnInteraction: false,
+        pauseOnMouseEnter: false,
+      }}
+      pagination={{ clickable: true }}
+      speed={1000}
+      style={{ paddingBottom: "40px" }}
+    >
+      <SwiperSlide style={{ width: "80vw" }}>
+        <FeatureCard
+          image={about1}
+          title="Getting Started"
+          description="Lost or found something? Log in with your UCI email, join the ZotnFound community, and help lost items find their way back home."
+        />
+      </SwiperSlide>
+      <SwiperSlide style={{ width: "100vw" }}>
+        <FeatureCard
+          image={about2}
+          title="Navigating UCI Stress Free"
+          description="Searching for your lost items is made easy with our interactive map. Search by name, use real-time markers, or filter by categories so you can find what's yours."
+        />
+      </SwiperSlide>
+      <SwiperSlide style={{ width: "100vw" }}>
+        <FeatureCard
+          image={about3}
+          title="Your Things Are Just a Search Away"
+          description="No more endless backtracking. Simply search and filter what you've misplaced, and we'll show you where it is."
+        />
+      </SwiperSlide>
+      <SwiperSlide style={{ width: "100vw" }}>
+        <FeatureCard
+          image={about4}
+          title="Posting and Helping Out"
+          description="Someone's out there looking for what you've found! Upload a picture and enter information about it so you can make their day."
+        />
+      </SwiperSlide>
+    </Swiper>
+  </Box>
+);
+
+const FeatureCard = ({ image, title, description }) => (
+  <Flex
+    direction="column"
+    align="start"
+    bg="gray.700" 
+    p={6} 
+    borderRadius="xl" 
+    boxShadow="lg"
+    height="100%"
+    color="gray.100" 
+    width="100%"
+  >
+    <Text fontSize="xl" fontWeight="bold" mb={2} textAlign="left">
+      {title}
+    </Text>
+    <Text textAlign="left" mb={4}>
+      {description}
+    </Text>
+    <Image src={image} alt={title} mb={4} borderRadius="md" />
   </Flex>
 );
