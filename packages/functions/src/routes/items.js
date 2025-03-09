@@ -86,52 +86,47 @@ itemsRouter.post("/", async (req, res) => {
       ]
     );
 
-    // ✅ Send a response **before** sending emails
-    res.status(200).json({ message: "Item was added successfully." });
+    // Fetch subscribers before sending the response
+    const subscribers = await client.query(
+      `SELECT emails FROM ${searchesTable} WHERE keyword IN ($1, $2, $3);`,
+      [name, description, type]
+    );
 
-    // Fetch subscribers asynchronously
-    setImmediate(async () => {
-      try {
-        const subscribers = await client.query(
-          `SELECT emails FROM ${searchesTable} WHERE keyword IN ($1, $2, $3);`,
-          [name, description, type]
-        );
-
-        const emailSet = new Set();
-        subscribers.rows.forEach((row) => {
-          row.emails.forEach((email) => {
-            emailSet.add(email);
-          });
-        });
-
-        console.log("emailSet", emailSet);
-        const emailArray = [...emailSet];
-
-        let contentString = `${name}`;
-
-        const dynamicContent = {
-          content: contentString,
-          image: image,
-          url: `https://zotnfound.com/${item.rows[0].id}`,
-        };
-
-        const customizedTemplate = emailTemplate
-          .replace("{{content}}", dynamicContent.content)
-          .replace("{{image}}", dynamicContent.image)
-          .replace("{{url}}", dynamicContent.url);
-
-        console.log("sending email");
-        sendEmail(
-          emailArray,
-          `New Item Matches Your Search - ${name}`,
-          customizedTemplate
-        );
-      } catch (error) {
-        console.error("Error sending emails:", error);
-      }
+    const emailSet = new Set();
+    subscribers.rows.forEach((row) => {
+      row.emails.forEach((email) => {
+        emailSet.add(email);
+      });
     });
+
+    const emailArray = [...emailSet];
+
+    // Send emails only if there are subscribers
+    if (emailArray.length > 0) {
+      let contentString = `${name}`;
+      const dynamicContent = {
+        content: contentString,
+        image: image,
+        url: `https://zotnfound.com/${item.rows[0].id}`,
+      };
+
+      const customizedTemplate = emailTemplate
+        .replace("{{content}}", dynamicContent.content)
+        .replace("{{image}}", dynamicContent.image)
+        .replace("{{url}}", dynamicContent.url);
+
+      console.log("Sending emails to:", emailArray);
+      await sendEmail(
+        emailArray,
+        `New Item Matches Your Search - ${name}`,
+        customizedTemplate
+      );
+    }
+
+    // Send response after email process is completed
+    res.status(200).json({ message: "Item was added successfully." });
   } catch (error) {
-    console.error(error);
+    console.error("Error:", error);
     res.status(500).json({ error: "Internal server error", reason: error });
   }
 });
