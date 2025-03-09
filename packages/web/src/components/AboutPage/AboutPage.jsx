@@ -18,6 +18,7 @@ import about4 from "../../assets/images/about4.png";
 import { getItems, getLeaderboardCount } from "../../utils/ApiUtils";
 import { motion } from "framer-motion";
 import { useColorMode, useColorModeValue } from "@chakra-ui/react";
+import { Pass } from "aws-cdk-lib/aws-stepfunctions";
 
 export default function AboutPage() {
   const navigate = useNavigate();
@@ -51,8 +52,9 @@ export default function AboutPage() {
     <Box
       bg={bgColor}
       color={textColor}
-      minHeight="100vh"
-      overflowY="auto"
+      height="100vh"
+      overflowY="scroll"
+      scrollSnapType="y mandatory" 
     >
       <Flex
         direction="column"
@@ -84,49 +86,63 @@ export default function AboutPage() {
           </Flex>
         </Flex>
 
-        <Box width="100%" px={4} flex="1">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+        <Box width="100%" flex="1">
+
+          <Box
+            scrollSnapAlign="start" 
+            minHeight="100vh" 
+            display="flex" 
+            flexDirection="column" 
+            alignItems="center" 
+            justifyContent="center"
           >
-            <Text fontSize="5xl" fontWeight="bold" textAlign="center" my={8}>
-              We Are <Text as="span" color={accentColor}>ZotnFound</Text>
-            </Text>
-          </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Text fontSize="5xl" fontWeight="bold" textAlign="center" my={8}>
+                  We Are <Text as="span" color={accentColor}>ZotnFound</Text>
+                </Text>
+              </motion.div>
 
-          <Flex
-            justify="center"
-            align="center"
-            wrap="wrap"
-            gap={8}
-            my={12}
-          >
-            <StatCard
-              label="Lost Items"
-              value={data.filter((item) => item.islost).length}
-              color="red.400"
-            />
-            <StatCard
-              label="Found Items"
-              value={data.filter((item) => !item.islost).length}
-              color="green.400"
-            />
-            <StatCard
-              label="Successful Returns"
-              value={data.filter((item) => item.isresolved).length}
-              color="yellow.400"
-            />
-            <StatCard
-              label="Active Users"
-              value={leaderboardCount}
-              color="purple.400"
-            />
-          </Flex>
+              <Flex
+                justify="center"
+                align="center"
+                wrap="wrap"
+                gap={8}
+                my={12}
+              >
+                <StatCard
+                  label="Lost Items"
+                  value={data.filter((item) => item.islost).length}
+                  color="red.400"
+                />
+                <StatCard
+                  label="Found Items"
+                  value={data.filter((item) => !item.islost).length}
+                  color="green.400"
+                />
+                <StatCard
+                  label="Successful Returns"
+                  value={data.filter((item) => item.isresolved).length}
+                  color="yellow.400"
+                />
+                <StatCard
+                  label="Active Users"
+                  value={leaderboardCount}
+                  color="purple.400"
+                />
+              </Flex>
+            </Box>
 
-          <FeatureSection />
+          <Box scrollSnapAlign="start" minHeight="100vh" display="flex" alignItems="center">
+            <FeatureSection />
+          </Box>
 
-          <AboutSection />
+          <Box scrollSnapAlign="start" minHeight="100vh" display="flex" alignItems="center" ml={40}>
+            <AboutSection />
+          </Box>
         </Box>
 
         <Footer />
@@ -158,28 +174,33 @@ const StatCard = ({ label, value, color }) => (
 
 const AboutSection = () => (
   <Flex
-    direction={{ base: "column", md: "row" }}
+    direction="column"
     align="center"
-    justify="space-between"
-    wrap="wrap"
-    my={16}
-    px={8}
+    textAlign="left"
+    mt={1000}
+    mb={20}
+    my={20}
   >
-    <Box flex={1} mr={{ base: 0, md: 8 }} mb={{ base: 8, md: 0 }}>
-      <Text fontSize="3xl" fontWeight="bold" mb={4}>
-        Origin of ZotnFound
+    <Box maxWidth="900px">
+      <Text fontSize="3xl" mb={6} fontWeight="semibold" color="gray.400">
+        Origin of <Text as="span" color="white" fontWeight="bold">ZotNFound</Text>.
       </Text>
-      <Text>
-        Many people are constantly losing their belongings, whether that be their phones, keys, or water bottles. This is especially true for UCI students on the UCI subreddit, where there are countless posts being created about lost and found items. Due to this problem, we decided to take matters into our own hands and created an Instagram account to help lost items return back to their original owners. We have so far helped over 10 people and gained over 300+ followers.
+      <Text fontSize="lg" lineHeight="1.8" mt={4}> 
+        Many individuals frequently misplace their belongings, including phones, keys, and water bottles. 
+        At UCI, this issue is particularly evident on the UCI subreddit, where numerous posts are dedicated 
+        to lost and found items. Recognizing the need for a more efficient solution, we initially launched 
+        an Instagram account to help reconnect lost items with their rightful owners. 
+      </Text>
+      <Text fontSize="lg" lineHeight="1.8" mt={6}> 
+        The overwhelming response and growing community support—resulting in over 300 followers and 
+        numerous successful returns—highlighted the demand for a more scalable and structured platform. 
+        This led to the development of ZotNFound, an integrated lost-and-found system for UCI. 
+      </Text>
+      <Text fontSize="lg" lineHeight="1.8" mt={6}> 
+        Today, ZotNFound is continually being developed, making the search for lost items easier and 
+        less stressful for everyone.
       </Text>
     </Box>
-    <Image
-      src={zotnfound_ig}
-      alt="ZotnFound Instagram"
-      borderRadius="lg"
-      boxShadow="lg"
-      maxWidth="400px"
-    />
   </Flex>
 );
 
@@ -204,6 +225,7 @@ const FeatureSection = () => (
       fontWeight="semibold" 
       textAlign="left" 
       mb={8}
+      mt={35}
       pl={4}
       color="gray.400" 
     >
@@ -218,38 +240,38 @@ const FeatureSection = () => (
       loopAdditionalSlides={2}
       watchSlidesProgress={true}
       grabCursor={true}
-      modules={[Autoplay, Pagination]}
+      modules={[Autoplay]}
       autoplay={{ 
         delay: 3000, 
         disableOnInteraction: false,
         pauseOnMouseEnter: false,
       }}
-      pagination={{ clickable: true }}
+      pagination={false}
       speed={1000}
       style={{ paddingBottom: "40px" }}
     >
-      <SwiperSlide style={{ width: "80vw" }}>
+      <SwiperSlide style={{ width: "80vw", height: "525px" }}>
         <FeatureCard
           image={about1}
           title="Getting Started"
           description="Lost or found something? Log in with your UCI email, join the ZotnFound community, and help lost items find their way back home."
         />
       </SwiperSlide>
-      <SwiperSlide style={{ width: "100vw" }}>
+      <SwiperSlide style={{ width: "100vw", height: "525px" }}>
         <FeatureCard
           image={about2}
           title="Navigating UCI Stress Free"
           description="Searching for your lost items is made easy with our interactive map. Search by name, use real-time markers, or filter by categories so you can find what's yours."
         />
       </SwiperSlide>
-      <SwiperSlide style={{ width: "100vw" }}>
+      <SwiperSlide style={{ width: "100vw", height: "525px" }}>
         <FeatureCard
           image={about3}
           title="Your Things Are Just a Search Away"
           description="No more endless backtracking. Simply search and filter what you've misplaced, and we'll show you where it is."
         />
       </SwiperSlide>
-      <SwiperSlide style={{ width: "100vw" }}>
+      <SwiperSlide style={{ width: "100vw", height: "525px" }}>
         <FeatureCard
           image={about4}
           title="Posting and Helping Out"
@@ -268,7 +290,7 @@ const FeatureCard = ({ image, title, description }) => (
     p={6} 
     borderRadius="xl" 
     boxShadow="lg"
-    height="100%"
+    height="525px"
     color="gray.100" 
     width="100%"
   >
@@ -278,6 +300,11 @@ const FeatureCard = ({ image, title, description }) => (
     <Text textAlign="left" mb={4}>
       {description}
     </Text>
-    <Image src={image} alt={title} mb={4} borderRadius="md" />
+    <Image src={image} alt={title} mb={4} borderRadius="lg" />
   </Flex>
+);
+
+
+const AffiliatedSwiper = ({ image }) => (
+  Pass
 );
