@@ -3,22 +3,24 @@ import { Button, Text, Flex, Stack, Icon, Image, Box} from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import zotnfound_win from "../../assets/images/zotnfound_win.png";
-import zotnfound_ig from "../../assets/images/zotnfound_ig.png";
 import small_logo from "../../assets/images/small_logo.png";
-import login_page from "../../assets/images/login_page.jpg";
 import about1 from "../../assets/images/about1.png";
 import about2 from "../../assets/images/about2.png";
 import about3 from "../../assets/images/about3.png";
 import about4 from "../../assets/images/about4.png";
+import antAlmanacLogo from"../../assets/logos/antalmanac.svg";
+import anteaterAPILogo from"../../assets/logos/anteaterapi.svg";
+import zotMealLogo from"../../assets/logos/zotmeal.svg";
+import zotMeetLogo from"../../assets/logos/zotmeet.svg";
+import peterPortalLogo from"../../assets/logos/peterportal.svg";
+import zotisticsLogo from"../../assets/logos/zotistics.svg";
 import { getItems, getLeaderboardCount } from "../../utils/ApiUtils";
 import { motion } from "framer-motion";
 import { useColorMode, useColorModeValue } from "@chakra-ui/react";
-import { Pass } from "aws-cdk-lib/aws-stepfunctions";
 
 export default function AboutPage() {
   const navigate = useNavigate();
@@ -54,7 +56,9 @@ export default function AboutPage() {
       color={textColor}
       height="100vh"
       overflowY="scroll"
-      scrollSnapType="y mandatory" 
+      scrollSnapType="y proximity" 
+      scrollPaddingTop="0px"
+      pb={20}
     >
       <Flex
         direction="column"
@@ -90,53 +94,54 @@ export default function AboutPage() {
 
           <Box
             scrollSnapAlign="start" 
+            scrollSnapMargin="20px"
             minHeight="100vh" 
             display="flex" 
             flexDirection="column" 
             alignItems="center" 
             justifyContent="center"
           >
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Text fontSize="5xl" fontWeight="bold" textAlign="center" my={8}>
-                  We Are <Text as="span" color={accentColor}>ZotnFound</Text>
-                </Text>
-              </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Text fontSize="5xl" fontWeight="bold" textAlign="center" my={8}>
+                We Are <Text as="span" color={accentColor}>ZotnFound</Text>.
+              </Text>
+            </motion.div>
 
-              <Flex
-                justify="center"
-                align="center"
-                wrap="wrap"
-                gap={8}
-                my={12}
-              >
-                <StatCard
-                  label="Lost Items"
-                  value={data.filter((item) => item.islost).length}
-                  color="red.400"
-                />
-                <StatCard
-                  label="Found Items"
-                  value={data.filter((item) => !item.islost).length}
-                  color="green.400"
-                />
-                <StatCard
-                  label="Successful Returns"
-                  value={data.filter((item) => item.isresolved).length}
-                  color="yellow.400"
-                />
-                <StatCard
-                  label="Active Users"
-                  value={leaderboardCount}
-                  color="purple.400"
-                />
-              </Flex>
-            </Box>
+            <Flex
+              justify="center"
+              align="center"
+              wrap="wrap"
+              gap={8}
+              my={12}
+            >
+              <StatCard
+                label="Lost Items"
+                value={data.filter((item) => item.islost).length}
+                color="red.400"
+              />
+              <StatCard
+                label="Found Items"
+                value={data.filter((item) => !item.islost).length}
+                color="green.400"
+              />
+              <StatCard
+                label="Successful Returns"
+                value={data.filter((item) => item.isresolved).length}
+                color="yellow.400"
+              />
+              <StatCard
+                label="Active Users"
+                value={leaderboardCount}
+                color="purple.400"
+              />
+            </Flex>
+          </Box>
 
-          <Box scrollSnapAlign="start" minHeight="100vh" display="flex" alignItems="center">
+          <Box scrollSnapAlign="start" scrollSnapMargin="10px" minHeight="100vh" display="flex" alignItems="center">
             <FeatureSection />
           </Box>
 
@@ -177,7 +182,7 @@ const AboutSection = () => (
     direction="column"
     align="center"
     textAlign="left"
-    mt={1000}
+    mt={1500}
     mb={20}
     my={20}
   >
@@ -201,6 +206,7 @@ const AboutSection = () => (
         less stressful for everyone.
       </Text>
     </Box>
+    <AffiliatedSection />
   </Flex>
 );
 
@@ -305,6 +311,54 @@ const FeatureCard = ({ image, title, description }) => (
 );
 
 
-const AffiliatedSwiper = ({ image }) => (
-  Pass
+const affiliatedProjects = [
+  { name: "AntAlmanac", logo: antAlmanacLogo, link: "https://antalmanac.com/" },
+  { name: "Anteater API", logo: anteaterAPILogo, link: "https://docs.icssc.club/docs/developer/anteaterapi" },
+  { name: "ZotMeal", logo: zotMealLogo, link: "https://www.zotmeal.com/" },
+  { name: "ZotMeet", logo: zotMeetLogo, link: "https://zotmeet.com/" },
+  { name: "PeterPortal", logo: peterPortalLogo, link: "https://https://peterportal.org/" },
+  { name: "Zotistics", logo: zotisticsLogo, link: "https://zotistics.com/" },
+];
+
+const AffiliatedSection = () => (
+  <Box width="100%" textAlign="left" mt={125} mb={-20} py={4}>
+    <Text fontSize="2xl" fontWeight="semibold" color="gray.400">
+      Affiliated with{" "}
+      <a 
+        href="https://studentcouncil.ics.uci.edu/"  
+        target="_blank" 
+        rel="noopener noreferrer"
+        style={{ color: "white", fontWeight: "bold", textDecoration: "none" }}
+      >
+        ICSSC
+      </a>
+    </Text>
+
+    <Text fontSize="lg" color="gray.500" mb={4}>
+      Explore other projects.
+    </Text>
+
+    <Flex justify="left" gap={6} wrap="wrap">
+      {affiliatedProjects.map((project, index) => (
+        <a 
+        key={index} 
+        href={project.link} 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        <Image 
+          key={index}
+          src={project.logo} 
+          alt={project.name} 
+          borderRadius="10px"
+          border={"1.5px solid"}
+          borderColor="gray.600"
+          boxSize="55px"
+          objectFit="cover"
+          _hover={{ transform: "scale(1.1)", transition: "0.3s ease-in-out" }}
+        />
+        </a>
+      ))}
+    </Flex>
+  </Box>
 );
