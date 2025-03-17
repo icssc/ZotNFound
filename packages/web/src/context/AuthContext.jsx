@@ -70,6 +70,10 @@ export const AuthContextProvider = ({ children }) => {
   }, [user]);
 
   const addKeyword = async (keyword) => {
+    if (keywords.includes(keyword)) {
+      return { success: true, description: "existing" };
+    }
+
     const token = await getAuthToken();
     const config = {
       headers: {
@@ -85,7 +89,7 @@ export const AuthContextProvider = ({ children }) => {
         },
         config
       );
-      if (response.status == 201) {
+      if (response.status === 200 || response.status === 201) {
         setKeywords((prevKeywords) => [...prevKeywords, keyword]);
         return { success: true, description: "added" };
       }
