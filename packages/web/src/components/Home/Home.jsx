@@ -252,7 +252,6 @@ export default function Home() {
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
-            "User-Email": user?.email,
           },
         };
 
@@ -271,8 +270,7 @@ export default function Home() {
         }
         // Fetch the leaderboard again after insertion
         const { data: updatedLeaderboardData } = await axios.get(
-          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`,
-          config
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
         );
         setLeaderboard(
           updatedLeaderboardData.map((item) => ({ ...item, id: item.id }))
