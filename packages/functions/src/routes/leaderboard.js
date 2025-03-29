@@ -35,11 +35,11 @@ leaderboardRouter.post("/", async (req, res) => {
   }
 });
 
-// get all users on leaderboard (descending)
+// get top 3 users on leaderboard (descending)
 leaderboardRouter.get("/", async (req, res) => {
   try {
     const lbData = await client.query(
-      `SELECT * FROM ${leaderboardTable} ORDER BY points DESC`
+      `SELECT * FROM ${leaderboardTable} ORDER BY points DESC LIMIT 3`
     );
 
     res.json(lbData.rows);

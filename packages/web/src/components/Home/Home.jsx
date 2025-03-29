@@ -255,41 +255,24 @@ export default function Home() {
             "User-Email": user?.email,
           },
         };
-        // Get email associated with item id
 
-        const { data: leaderboardData } = await axios.get(
+        // add user to leaderboard if they don't exist already
+        await axios.post(
           `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
+          {
+            email: user.email,
+            points: 5, // You can modify this as per your requirements
+          },
           config
         );
-
+        // Fetch the leaderboard again after insertion
+        const { data: updatedLeaderboardData } = await axios.get(
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`,
+          config
+        );
         setLeaderboard(
-          leaderboardData.map((item) => ({ ...item, id: item.id }))
+          updatedLeaderboardData.map((item) => ({ ...item, id: item.id }))
         );
-
-        // Check if the current user's email exists in the leaderboard
-        const userEmailExists = leaderboardData.some(
-          (entry) => entry.email === user?.email
-        );
-        // If it does not exist, add the user to the leaderboard
-        if (!userEmailExists && user) {
-          // added user to prevent race condition (user is undefined before auth resolves)
-          await axios.post(
-            `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
-            {
-              email: user.email,
-              points: 5, // You can modify this as per your requirements
-            },
-            config
-          );
-          // Fetch the leaderboard again after insertion
-          const { data: updatedLeaderboardData } = await axios.get(
-            `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`,
-            config
-          );
-          setLeaderboard(
-            updatedLeaderboardData.map((item) => ({ ...item, id: item.id }))
-          );
-        }
       } catch (err) {
         console.log(err);
       } finally {
