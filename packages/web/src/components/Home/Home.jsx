@@ -251,20 +251,24 @@ export default function Home() {
         if (!token) return;
         const config = {
           headers: {
-            // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "User-Email": user?.email,
           },
         };
 
         // add user to leaderboard if they don't exist already
-        await axios.post(
-          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
-          {
-            email: user.email,
-            points: 5, // You can modify this as per your requirements
-          },
-          config
-        );
+        try {
+          await axios.post(
+            `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
+            {
+              email: user.email,
+              points: 5, // You can modify this as per your requirements
+            },
+            config
+          );
+        } catch (error) {
+          console.log(error.response.data);
+        }
         // Fetch the leaderboard again after insertion
         const { data: updatedLeaderboardData } = await axios.get(
           `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`,
