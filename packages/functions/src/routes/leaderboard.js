@@ -19,7 +19,7 @@ leaderboardRouter.post("/", async (req, res) => {
     );
 
     if (existingUser.rows.length > 0) {
-      return res.status(400).send("Email already exists in the leaderboard");
+      return res.status(201).send("Email already exists in the leaderboard");
     }
 
     // Insert the new email and points into the leaderboard
