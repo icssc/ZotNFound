@@ -19,7 +19,7 @@ leaderboardRouter.post("/", async (req, res) => {
     );
 
     if (existingUser.rows.length > 0) {
-      return res.status(400).send("Email already exists in the leaderboard");
+      return res.status(201).send("Email already exists in the leaderboard");
     }
 
     // Insert the new email and points into the leaderboard
@@ -35,11 +35,11 @@ leaderboardRouter.post("/", async (req, res) => {
   }
 });
 
-// get all users on leaderboard (descending)
+// get top 3 users on leaderboard (descending)
 leaderboardRouter.get("/", async (req, res) => {
   try {
     const lbData = await client.query(
-      `SELECT * FROM ${leaderboardTable} ORDER BY points DESC`
+      `SELECT * FROM ${leaderboardTable} ORDER BY points DESC LIMIT 3`
     );
 
     res.json(lbData.rows);

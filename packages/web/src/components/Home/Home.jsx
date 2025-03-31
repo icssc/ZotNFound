@@ -210,28 +210,12 @@ export default function Home() {
         if (!token) return;
         const config = {
           headers: {
-            // Authorization: `Bearer ${token}`,
-            "User-Email": user?.email,
+            Authorization: `Bearer ${token}`,
           },
         };
-        // Get email associated with item id
 
-        const { data: leaderboardData } = await axios.get(
-          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
-          config
-        );
-
-        setLeaderboard(
-          leaderboardData.map((item) => ({ ...item, id: item.id }))
-        );
-
-        // Check if the current user's email exists in the leaderboard
-        const userEmailExists = leaderboardData.some(
-          (entry) => entry.email === user?.email
-        );
-        // If it does not exist, add the user to the leaderboard
-        if (!userEmailExists && user) {
-          // added user to prevent race condition (user is undefined before auth resolves)
+        // add user to leaderboard if they don't exist already
+        try {
           await axios.post(
             `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
             {
@@ -240,15 +224,16 @@ export default function Home() {
             },
             config
           );
-          // Fetch the leaderboard again after insertion
-          const { data: updatedLeaderboardData } = await axios.get(
-            `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`,
-            config
-          );
-          setLeaderboard(
-            updatedLeaderboardData.map((item) => ({ ...item, id: item.id }))
-          );
+        } catch (error) {
+          console.log(error.response.data);
         }
+        // Fetch the leaderboard again after insertion
+        const { data: updatedLeaderboardData } = await axios.get(
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
+        );
+        setLeaderboard(
+          updatedLeaderboardData.map((item) => ({ ...item, id: item.id }))
+        );
       } catch (err) {
         console.log(err);
       } finally {
