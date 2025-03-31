@@ -34,7 +34,6 @@ export default function Home() {
   const [leaderboard, setLeaderboard] = useState([]);
   const { user, logOut } = UserAuth();
   const [token, setToken] = useState("");
-  const [subscription, setSubscription] = useState(false);
 
   const btnRef = useRef();
   const toast = useToast();
@@ -125,46 +124,6 @@ export default function Home() {
       onBookmarkModalOpen();
     }
   }, [location.pathname]);
-
-  const subscribeToggle = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.patch(
-        `${
-          import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL
-        }/leaderboard/changeSubscription`,
-        {
-          email: user.email,
-          subscription: !subscription,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // verify auth
-          },
-        }
-      );
-      setSubscription(!subscription);
-      toast({
-        title: subscription
-          ? "Succesfully Unsubscribed!"
-          : "Succesfully Subscribed!", // just switched subscription
-        description: subscription
-          ? "You have been unsubscribed from the ZotNFound Newsletter"
-          : "You have been subscribed to the ZotNFound Newsletter",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (err) {
-      toast({
-        title: "Something went wrong :(",
-        description: "Error occurred while trying to unsubscribe",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -299,7 +258,6 @@ export default function Home() {
 
     if (user) {
       getLeaderboard();
-      setSubscription(user.subscription);
     }
   }, [user, token]);
 
@@ -346,9 +304,7 @@ export default function Home() {
           user={user}
           onBookmarkModalOpen={onBookmarkModalOpen}
           leaderboard={leaderboard}
-          subscription={subscription}
           handleLogout={handleLogout}
-          subscribeToggle={subscribeToggle}
           setFindFilter={setFindFilter}
           onOpen={onOpen}
           onLoginModalOpen={onLoginModalOpen}

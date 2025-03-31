@@ -33,9 +33,7 @@ const Navbar = ({
   user,
   onBookmarkModalOpen,
   leaderboard,
-  subscription,
   handleLogout,
-  subscribeToggle,
   setFindFilter,
   onOpen,
   onLoginModalOpen,
@@ -157,9 +155,7 @@ const Navbar = ({
 
                   <ProfilePicDropdown
                     user={user}
-                    subscription={subscription}
                     handleLogout={handleLogout}
-                    subscribeToggle={subscribeToggle}
                     setFindFilter={setFindFilter}
                     onOpen={onOpen}
                     colorMode={colorMode}
