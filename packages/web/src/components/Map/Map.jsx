@@ -201,21 +201,21 @@ export default function Map({
           newAddedItem.image,
           options
         );
-        const response = await fetch(
+        const response = await axios.post(
           `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/upload/image`,
+          compressedFile,
           {
-            body: compressedFile,
-            method: "POST",
             headers: {
               "Content-Type": "image/jpeg",
+              Authorization: `Bearer ${token}`,
             },
           }
         );
-        if (!response.ok) {
+
+        if (response.status !== 200) {
           throw new Error("Failed to upload file");
         }
-        const data = await response.json();
-        imageUrl = data.url;
+        imageUrl = response.data.url;
       } catch (err) {
         // if url failed than image upload failed
         console.error("Error uploading image:", err);

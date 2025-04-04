@@ -33,8 +33,8 @@ export default function ProfilePicDropdown({
       <MenuButton>
         <Image
           src={user?.photoURL}
-          h={{ base: "27px", md: "60px" }}
-          w={{ base: "27px", md: "60px" }}
+          h={{ base: "30px", md: "60px" }}
+          w={{ base: "30px", md: "60px" }}
           borderRadius="100%"
           cursor={"pointer"}
           alt="profile picture"

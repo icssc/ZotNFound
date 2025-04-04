@@ -39,7 +39,7 @@ leaderboardRouter.post("/", async (req, res) => {
 leaderboardRouter.get("/", async (req, res) => {
   try {
     const lbData = await client.query(
-      `SELECT * FROM ${leaderboardTable} ORDER BY points DESC LIMIT 3`
+      `SELECT * FROM ${leaderboardTable} ORDER BY points DESC`
     );
 
     res.json(lbData.rows);
@@ -121,14 +121,14 @@ leaderboardRouter.put("/", async (req, res) => {
 });
 
 // delete user from leaderboard
-leaderboardRouter.delete("/:id", async (req, res) => {
+leaderboardRouter.delete("/:email", async (req, res) => {
   try {
-    const { id } = req.params; // Extract id from request body
-    if (!id) {
-      return res.status(400).send("id is required");
+    const { email } = req.params; // Extract email from request body
+    if (!email) {
+      return res.status(400).send("email is required");
     }
 
-    await client.query(`DELETE FROM ${leaderboardTable} WHERE id=$1`, [id]);
+    await client.query(`DELETE FROM ${leaderboardTable} WHERE email=$1`, [email]);
 
     res.status(200).send("User deleted from leaderboard");
   } catch (err) {

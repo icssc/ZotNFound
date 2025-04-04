@@ -82,7 +82,10 @@ export default function InfoModal({
   // Copies the url of the item to the clipboard
   const handleShare = useCallback(() => {
     setIsShared(true);
-    navigator.clipboard.writeText(`https://zotnfound.com/${props.id}`);
+    const baseUrl = process.env.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : "https://zotnfound.com";
+    navigator.clipboard.writeText(`${baseUrl}/${props.id}`);
   }, [props.id]);
 
   // The "Owner" tag for an item - only visible to the user who posted the item

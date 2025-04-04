@@ -2,6 +2,9 @@ import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import "./Home.css";
+import { useLocation } from "react-router-dom";
+
+import { getAuthToken } from "../../utils/Utils";
 
 import {
   Spinner,
@@ -23,6 +26,7 @@ import ToolBar from "./ToolBar/ToolBar";
 import MapSection from "./MapSection";
 import { UserAuth } from "../../context/AuthContext";
 import DataContext from "../../context/DataContext";
+import Tutorial from "../Tutorial/Tutorial";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -111,6 +115,16 @@ export default function Home() {
     onOpen: onLoginModalOpen,
     onClose: onLoginModalClose,
   } = useDisclosure();
+
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes("keywords")) {
+      onBookmarkModalOpen();
+    }
+  }, [location.pathname]);
 
   const subscribeToggle = async (e) => {
     e.preventDefault();
@@ -201,22 +215,29 @@ export default function Home() {
   //get data
   useEffect(() => {
     const getData = async () => {
-      // Define the headers object
-      const config = {
-        headers: {
-          // Include any other headers you need
-          "User-Email": user?.email, // Custom header with the user's email
-        },
-      };
+      try {
+        // const token = await getAuthToken();
+        // if (!token) return;
+        const config = {
+          headers: {
+            // Authorization: `Bearer ${token}`,
+            "User-Email": user?.email,
+          },
+        };
 
-      // Request to get items with additional headers
-      axios
-        .get(`${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items/`, config)
-        .then((obj) => {
-          setData(obj.data.map((item) => ({ ...item, id: item.id })));
-        })
-        .catch((err) => console.log(err));
-
+        const response = await axios.get(
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/items/`,
+          config
+        );
+        setData(response.data.map((item) => ({ ...item, id: item.id })));
+      } catch (err) {
+        console.error(
+          "API Error:",
+          err.response?.status,
+          err.response?.data,
+          err
+        );
+      }
       setLoading(true);
     };
     getData();
@@ -226,12 +247,25 @@ export default function Home() {
   useEffect(() => {
     const getLeaderboard = async () => {
       try {
+        const token = await getAuthToken();
+        if (!token) return;
+        const config = {
+          headers: {
+            // Authorization: `Bearer ${token}`,
+            "User-Email": user?.email,
+          },
+        };
+        // Get email associated with item id
+
         const { data: leaderboardData } = await axios.get(
-          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`
+          `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard/`,
+          config
         );
+
         setLeaderboard(
           leaderboardData.map((item) => ({ ...item, id: item.id }))
         );
+
         // Check if the current user's email exists in the leaderboard
         const userEmailExists = leaderboardData.some(
           (entry) => entry.email === user?.email
@@ -245,15 +279,12 @@ export default function Home() {
               email: user.email,
               points: 5, // You can modify this as per your requirements
             },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`, // verify auth
-              },
-            }
+            config
           );
           // Fetch the leaderboard again after insertion
           const { data: updatedLeaderboardData } = await axios.get(
-            `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`
+            `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/leaderboard`,
+            config
           );
           setLeaderboard(
             updatedLeaderboardData.map((item) => ({ ...item, id: item.id }))
@@ -278,6 +309,18 @@ export default function Home() {
       setToken(user.accessToken);
     }
   }, [user]);
+
+  useEffect(() => {
+    // Check if this is the user's first visit
+    const tutorialComplete = localStorage.getItem("tutorialComplete");
+    if (!tutorialComplete) {
+      setShowTutorial(true);
+    }
+  }, []);
+
+  const handleTutorialOpen = () => {
+    setShowTutorial(true);
+  };
 
   return (
     <DataContext.Provider
@@ -310,6 +353,7 @@ export default function Home() {
           onOpen={onOpen}
           onLoginModalOpen={onLoginModalOpen}
           onLeaderboardOpen={onLeaderboardOpen}
+          onTutorialOpen={handleTutorialOpen}
         />
 
         <MobileSearchBar
@@ -397,6 +441,8 @@ export default function Home() {
         <BookmarkModal
           isOpen={isBookmarkModalOpen}
           onClose={onBookmarkModalClose}
+          setSearch={setSearch}
+          colorMode={colorMode}
         />
         <Leaderboard
           onOpen={onLeaderboardOpen}
@@ -405,6 +451,10 @@ export default function Home() {
           btnRef={btnRef}
           leaderboard={leaderboard}
           user={user}
+        />
+        <Tutorial
+          isOpen={showTutorial}
+          onClose={() => setShowTutorial(false)}
         />
       </Box>
     </DataContext.Provider>

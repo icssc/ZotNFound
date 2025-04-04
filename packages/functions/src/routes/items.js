@@ -1,14 +1,32 @@
 import express from "express";
 
 import client from "../server/db.js";
-import sendEmail from "../util/sendEmail";
+import sendEmail from "../util/sendEmail.js";
+import emailTemplate from "../emailTemplate/template.js";
 // const middleware = require("../middleware/index.js");
 const itemsRouter = express.Router();
 
-// const templatePath = path.resolve(__dirname, "../emailTemplate/index.html");
-// const template = fs.readFileSync(templatePath, "utf-8");
+// const fs = require("fs");
+// const path = require("path");
+
+// let template;
+
+// if (process.env.NODE_ENV === "development") {
+//   const templatePath = path.resolve(
+//     "packages/functions/src/emailTemplate/index.html"
+//   );
+//   template = fs.readFileSync(templatePath, "utf-8");
+// } else {
+//   const templatePath = path.join(process.cwd(), "emailTemplate", "index.html");
+//   template = fs.readFileSync(templatePath, "utf-8");
+// }
+
 import isPositionWithinBounds from "../util/inbound.js";
-import { leaderboardTable, itemsTable, searchesTable } from "../config/db-config.js";
+import {
+  leaderboardTable,
+  itemsTable,
+  searchesTable,
+} from "../config/db-config.js";
 
 //Add a item
 itemsRouter.post("/", async (req, res) => {
@@ -30,13 +48,13 @@ itemsRouter.post("/", async (req, res) => {
     // Validate location
     if (!location || !Array.isArray(location) || location.length !== 2) {
       return res.status(400).json({
-        error: "Invalid location. Please provide a valid latitude and longitude.",
+        error:
+          "Invalid location. Please provide a valid latitude and longitude.",
       });
     }
 
     const [latitude, longitude] = location;
 
-    // Check if the location values are numbers and within bounds
     if (
       typeof latitude !== "number" ||
       typeof longitude !== "number" ||
@@ -47,9 +65,12 @@ itemsRouter.post("/", async (req, res) => {
       });
     }
 
-    // Add item to the database
-    await client.query(
-      `INSERT INTO ${itemsTable} (name, description, type, islost, location, date, itemdate, email, image, isresolved, ishelped) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+    // Insert item into the database
+    const item = await client.query(
+      `INSERT INTO ${itemsTable} 
+      (name, description, type, islost, location, date, itemdate, email, image, isresolved, ishelped) 
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      RETURNING *`,
       [
         name,
         description,
@@ -65,65 +86,50 @@ itemsRouter.post("/", async (req, res) => {
       ]
     );
 
-    // // query to get user emails subscribed to relevant keywords
-    // const subscribers = await client.query(
-    //   `SELECT emails
-    //   FROM ${searchesTable}
-    //   WHERE keyword IN ($1, $2, $3);`,
-    //   [name, description, type]
-    // );
+    // Fetch subscribers before sending the response
+    const subscribers = await client.query(
+      `SELECT emails FROM ${searchesTable} WHERE keyword IN ($1, $2, $3);`,
+      [name, description, type]
+    );
 
-    //  // add emails to set to remove duplicates
-    //  const emailSet = new Set();
-    //  subscribers.rows.forEach(row => {
-    //    row.emails.forEach(email => {
-    //      uniqueEmails.add(email);
-    //    });
-    //  });
+    const emailSet = new Set();
+    subscribers.rows.forEach((row) => {
+      row.emails.forEach((email) => {
+        emailSet.add(email);
+      });
+    });
 
-    //  const uniqueEmails = Array.from(emailSet);
-    //  console.log(uniqueEmails);
+    const emailArray = [...emailSet];
 
-    // res.json(item.rows[0]); // send the response immediately after adding the item
-    // let contentString = "";
+    // Send emails only if there are subscribers
+    if (emailArray.length > 0) {
+      let contentString = `${name}`;
+      const dynamicContent = {
+        content: contentString,
+        image: image,
+        url: `https://zotnfound.com/${item.rows[0].id}`,
+      };
 
-    // // COMMENT OUT FOR TESTING PURPOSES
-    // if (process.env.NODE_ENV === "production") {
-    //   function sendDelayedEmail(index) {
-    //     if (index >= uniqueEmails.length) return;
+      const customizedTemplate = emailTemplate
+        .replace("{{content}}", dynamicContent.content)
+        .replace("{{image}}", dynamicContent.image)
+        .replace("{{url}}", dynamicContent.url);
 
-    //     let email = uniqueEmails[index].email;
-    //     contentString += `A new item, ${name}, is added to ZotnFound!`;
+      console.log("Sending emails to:", emailArray);
+      await sendEmail(
+        emailArray,
+        `New Item Matches Your Search - ${name}`,
+        customizedTemplate
+      );
+    }
 
-    //     const dynamicContent = {
-    //       content: contentString,
-    //       image: image,
-    //       url: `https://zotnfound.com/${item.rows[0].id}`,
-    //     };
-
-    //     // const customizedTemplate = template
-    //     //   .replace("{{content}}", dynamicContent.content)
-    //     //   .replace("{{image}}", dynamicContent.image)
-    //     //   .replace("{{url}}", dynamicContent.url);
-
-    //     // sendEmail(email, "A nearby item was added.", customizedTemplate);
-
-    //     contentString = "";
-    //     console.log("sent " + email);
-    //     setTimeout(() => sendDelayedEmail(index + 1), 500); // recursive call to iterate through all user emails
-    //   }
-
-    //   sendDelayedEmail(0);
-    // }
-    // Send a success response
+    // Send response after email process is completed
     res.status(200).json({ message: "Item was added successfully." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal server error", reason: error });
   }
 });
-
-
 
 itemsRouter.get("/", async (req, res) => {
   try {
@@ -143,34 +149,6 @@ itemsRouter.get("/", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
-
-// itemsRouter.get("/testemail", async (req, res) => {
-//   contentString = `A new added item, is near your items!`;
-
-//   const dynamicContent = {
-//     content: contentString,
-//     image:
-//       "https://i.insider.com/61d5c65a5a119b00184b1e1a?width=1136&format=jpeg",
-//     url: `https://zotnfound.com/2`,
-//   };
-
-//   const customizedTemplate = template
-//     .replace("{{content}}", dynamicContent.content)
-//     .replace("{{image}}", dynamicContent.image)
-//     .replace("{{url}}", dynamicContent.url);
-
-//   email = [
-//     "nguyenisabillionaire@gmail.com",
-//     "dangnwin@gmail.com",
-//     "nwinsquared@gmail.com",
-//     "stevenzhouni@gmail.com",
-//     "sophiahuynh124@gmail.com",
-//   ];
-//   await sendEmail(email, "A nearby item was added!", customizedTemplate);
-
-//   contentString = "";
-//   res.json("nice");
-// });
 
 itemsRouter.get("/week", async (req, res) => {
   try {

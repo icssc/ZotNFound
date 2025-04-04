@@ -1,5 +1,14 @@
 import { React, useState, useEffect } from "react";
-import { Button, Text, Flex, Stack, Icon, Image, Box} from "@chakra-ui/react";
+import {
+  Button,
+  Text,
+  Flex,
+  Stack,
+  Icon,
+  Image,
+  Box,
+  Skeleton,
+} from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -31,6 +40,7 @@ export default function AboutPage() {
   const bgColor = useColorModeValue("gray.50", "gray.900");
   const textColor = useColorModeValue("gray.800", "gray.100");
   const accentColor = useColorModeValue("blue.500", "blue.300");
+  const [isLoading, setIsLoading] = useState(true);
 
   window.onresize = () => {
     setScreenWidth(window.screen.width);
@@ -41,20 +51,30 @@ export default function AboutPage() {
   };
 
   useEffect(() => {
-    getItems().then((itemsData) => {
-      setData(itemsData.data);
-    });
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const [itemsResponse, leaderboardResponse] = await Promise.all([
+          getItems(),
+          getLeaderboardCount(),
+        ]);
+        setData(itemsResponse.data);
+        setLeaderboardCount(leaderboardResponse.data + 500);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    getLeaderboardCount().then((leaderboardData) => {
-      setLeaderboardCount(leaderboardData.data + 500);
-    });
+    fetchData();
   }, []);
 
   return (
     <Box
       bg={bgColor}
       color={textColor}
-      height="100vh"
+      minHeight="100vh"
       overflowY="scroll"
       scrollSnapType="y proximity" 
       scrollPaddingTop="0px"
