@@ -40,7 +40,6 @@ searchRouter.post("/", async (req, res) => {
         `INSERT INTO ${searchesTable} (keyword, emails) VALUES($1, $2) RETURNING *`,
         [keyword, [email]]
       );
-      console.log("inserted new row");
       res.json(item.rows[0]);
     }
   } catch (error) {
@@ -60,10 +59,6 @@ searchRouter.delete("/", async (req, res) => {
          RETURNING *`,
       [email, keyword]
     );
-
-    if (updatedSubscription.rowCount === 0) {
-      return res.status(404).json({ message: "keyword not found" });
-    }
 
     res.json(updatedSubscription.rows[0]);
   } catch (error) {

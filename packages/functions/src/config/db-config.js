@@ -4,17 +4,18 @@ const config = {
   development: {
     leaderboardTable: "dev.leaderboard",
     itemsTable: "dev.items",
-    searchesTable: "dev.searches"
+    searchesTable: "dev.searches",
   },
   production: {
     leaderboardTable: "public.leaderboard",
     itemsTable: "public.items",
-    searchesTable: "public.searches"
+    searchesTable: "public.searches",
   },
   // Add more environments if needed
 };
 
 const table = config[process.env.NODE_ENV] || config.development;
+console.log(table);
 
 export const leaderboardTable = table.leaderboardTable;
 export const itemsTable = table.itemsTable;
