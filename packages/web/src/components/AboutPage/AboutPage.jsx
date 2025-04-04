@@ -3,11 +3,8 @@ import {
   Button,
   Text,
   Flex,
-  Stack,
-  Icon,
   Image,
   Box,
-  Skeleton,
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
@@ -72,11 +69,15 @@ export default function AboutPage() {
 
   return (
     <Box
+      position="fixed"
+      top={0}
+      left={0}
+      right={0}
+      bottom={0}
+      overflowY="scroll"
       bg={bgColor}
       color={textColor}
-      minHeight="100vh"
-      overflowY="scroll"
-      scrollSnapType="y proximity" 
+      scrollSnapType="y proximity"
       scrollPaddingTop="0px"
       pb={20}
     >
@@ -165,7 +166,13 @@ export default function AboutPage() {
             <FeatureSection />
           </Box>
 
-          <Box scrollSnapAlign="start" minHeight="100vh" display="flex" alignItems="center" ml={40}>
+          <Box
+            scrollSnapAlign="start"
+            minHeight="100vh"
+            display="flex"
+            alignItems="center"
+            ml={[0, 0, 40]} // Responsive margin: none on small screens
+          >  
             <AboutSection />
           </Box>
         </Box>
@@ -205,27 +212,35 @@ const AboutSection = () => (
     mt={1500}
     mb={20}
     my={20}
+    px={[4, 6, 8]} 
   >
-    <Box maxWidth="900px">
-      <Text fontSize="3xl" mb={6} fontWeight="semibold" color="gray.400">
-        Origin of <Text as="span" color="white" fontWeight="bold">ZotNFound</Text>.
-      </Text>
-      <Text fontSize="lg" lineHeight="1.8" mt={4}> 
-        Many individuals frequently misplace their belongings, including phones, keys, and water bottles. 
-        At UCI, this issue is particularly evident on the UCI subreddit, where numerous posts are dedicated 
-        to lost and found items. Recognizing the need for a more efficient solution, we initially launched 
-        an Instagram account to help reconnect lost items with their rightful owners. 
-      </Text>
-      <Text fontSize="lg" lineHeight="1.8" mt={6}> 
-        The overwhelming response and growing community support—resulting in over 300 followers and 
-        numerous successful returns—highlighted the demand for a more scalable and structured platform. 
-        This led to the development of ZotNFound, an integrated lost-and-found system for UCI. 
-      </Text>
-      <Text fontSize="lg" lineHeight="1.8" mt={6}> 
-        Today, ZotNFound is continually being developed, making the search for lost items easier and 
-        less stressful for everyone.
-      </Text>
-    </Box>
+    <Box 
+      maxWidth="900px" 
+      width="100%" 
+      mx="auto"
+      px={[4, 6, 8]} 
+      textAlign={["center", "center", "left"]}
+    >
+      <Box maxW={["100%", "85%", "100%"]} mx="auto" textAlign={["center", "left", "left"]}></Box>
+        <Text fontSize="3xl" mb={6} fontWeight="semibold" color="gray.400">
+          Origin of <Text as="span" color="white" fontWeight="bold">ZotNFound</Text>.
+        </Text>
+        <Text fontSize="lg" lineHeight="1.8" mt={6}> 
+          Many individuals frequently misplace their belongings, including phones, keys, and water bottles. 
+          At UCI, this issue is particularly evident on the UCI subreddit, where numerous posts are dedicated 
+          to lost and found items. Recognizing the need for a more efficient solution, we initially launched 
+          an Instagram account to help reconnect lost items with their rightful owners. 
+        </Text>
+        <Text fontSize="lg" lineHeight="1.8" mt={6}> 
+          The overwhelming response and growing community support—resulting in over 300 followers and 
+          numerous successful returns—highlighted the demand for a more scalable and structured platform. 
+          This led to the development of ZotNFound, an integrated lost-and-found system for UCI. 
+        </Text>
+        <Text fontSize="lg" lineHeight="1.8" mt={6}> 
+          Today, ZotNFound is continually being developed, making the search for lost items easier and 
+          less stressful for everyone.
+        </Text>
+      </Box>
     <AffiliatedSection />
   </Flex>
 );
@@ -276,7 +291,7 @@ const FeatureSection = () => (
       speed={1000}
       style={{ paddingBottom: "40px" }}
     >
-      <SwiperSlide style={{ width: "80vw", height: "525px" }}>
+      <SwiperSlide style={{ width: "80vw", minHeight: "525px" }}>
         <FeatureCard
           image={about1}
           title="Getting Started"
@@ -316,9 +331,9 @@ const FeatureCard = ({ image, title, description }) => (
     p={6} 
     borderRadius="xl" 
     boxShadow="lg"
-    height="525px"
     color="gray.100" 
     width="100%"
+    overflow="hidden"
   >
     <Text fontSize="xl" fontWeight="bold" mb={2} textAlign="left">
       {title}
@@ -326,7 +341,7 @@ const FeatureCard = ({ image, title, description }) => (
     <Text textAlign="left" mb={4}>
       {description}
     </Text>
-    <Image src={image} alt={title} mb={4} borderRadius="lg" />
+    <Image src={image} alt={title} mb={4} borderRadius="inherit"/>
   </Flex>
 );
 
@@ -341,7 +356,20 @@ const affiliatedProjects = [
 ];
 
 const AffiliatedSection = () => (
-  <Box width="100%" textAlign="left" mt={125} mb={-20} py={4}>
+  <Box
+  width="100%"
+  display="flex"
+  justifyContent="center"
+  px={[4, 6, 8]}
+>
+  <Box
+    width="100%"
+    maxWidth="900px"
+    textAlign={["center", "center", "left"]}
+    mt={125}
+    mb={-20}
+    py={4}
+  >
     <Text fontSize="2xl" fontWeight="semibold" color="gray.400">
       Affiliated with{" "}
       <a 
@@ -358,27 +386,28 @@ const AffiliatedSection = () => (
       Explore other projects.
     </Text>
 
-    <Flex justify="left" gap={6} wrap="wrap">
+    <Flex justify={["center", "center", "left"]} gap={6} wrap="wrap">
       {affiliatedProjects.map((project, index) => (
         <a 
-        key={index} 
-        href={project.link} 
-        target="_blank" 
-        rel="noopener noreferrer"
-      >
-        <Image 
-          key={index}
-          src={project.logo} 
-          alt={project.name} 
-          borderRadius="10px"
-          border={"1.5px solid"}
-          borderColor="gray.600"
-          boxSize="55px"
-          objectFit="cover"
-          _hover={{ transform: "scale(1.1)", transition: "0.3s ease-in-out" }}
-        />
+          key={index} 
+          href={project.link} 
+          target="_blank" 
+          rel="noopener noreferrer"
+        >
+          <Image 
+            src={project.logo} 
+            alt={project.name} 
+            borderRadius="10px"
+            border={"1.5px solid"}
+            borderColor="gray.600"
+            boxSize="55px"
+            objectFit="cover"
+            _hover={{ transform: "scale(1.1)", transition: "0.3s ease-in-out" }}
+          />
         </a>
       ))}
     </Flex>
+  </Box>
+
   </Box>
 );
