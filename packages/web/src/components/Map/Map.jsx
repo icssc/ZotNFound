@@ -10,8 +10,8 @@ import {
 // import mapuser from "../../assets/logos/mapuser.svg";
 import "./Map.css";
 
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import Fuse from "fuse.js";
 
 import { othersDragBlack, othersDragWhite, flyImg, iconsMap } from "./MapIcons";
@@ -38,6 +38,23 @@ import { filterItem } from "../../utils/Utils.js";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { createClusterCustomIcon } from "./MapIcons";
 
+// Set your Mapbox access token
+mapboxgl.accessToken = import.meta.env.VITE_REACT_APP_MAPBOX_ACCESS_TOKEN;
+
+// Add this function after the imports and before the Map component
+const getMarkerIcon = (item) => {
+  // Get the icon URL from the iconsMap
+  let iconObject;
+  if (item.isresolved) {
+    iconObject = iconsMap["resolved"][item.islost];
+  } else {
+    iconObject = (iconsMap[item.type] || iconsMap["others"])[item.islost];
+  }
+
+  // Extract the URL from the Leaflet icon object
+  return iconObject.options.iconUrl;
+};
+
 /**
  * Map is uses react-leaflet's API to communicate user actions to map entities and information
  *
@@ -52,7 +69,7 @@ import { createClusterCustomIcon } from "./MapIcons";
  * @prop {number} centerPosition - center of map coordinates
  * @prop {object} findFilter - search filters
  *
- * @returns {JSX.Element} Leaflet Map component
+ * @returns {JSX.Element} Mapbox Map component
  */
 
 export default function Map({
@@ -72,15 +89,15 @@ export default function Map({
   setUploadImg,
   setLeaderboard,
 }) {
-  // Contexts
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+  const marker = useRef(null);
+  const markers = useRef([]);
+
   const { user } = UserAuth();
   const { colorMode } = useColorMode();
   const { data, setLoading, token, setData } = useContext(DataContext);
-
-  // State: isOpen - if InfoModal is open
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // State: itemData - currently selected item
-  // ! (doesn't erase when clicked off of previously selected item)
   const [itemData, setItemData] = useState({});
 
   // State: showDonut - if red ring around selected marker shows
@@ -155,31 +172,161 @@ export default function Map({
     ));
   }, [markersData, filterItemCallback, onOpen, setItemData, setFocusLocation]);
 
-  // moves map when focusLocation state changes
-  function MapFocusLocation({ location }) {
-    const map = useMap();
-    if (location) {
-      map.flyTo(location, 18);
+  // Initialize map
+  useEffect(() => {
+    if (map.current) return;
+
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style:
+        colorMode === "dark"
+          ? "mapbox://styles/mapbox/navigation-night-v1"
+          : "mapbox://styles/mapbox/standard",
+      center: [centerPosition[1], centerPosition[0]], // Mapbox uses [lng, lat]
+      zoom: 17,
+      pitch: 45, // Add 3D perspective
+      bearing: -17.6,
+      antialias: true,
+    });
+
+    // Add 3D buildings
+    map.current.on("style.load", () => {
+      map.current.addLayer({
+        id: "3d-buildings",
+        source: "composite",
+        "source-layer": "building",
+        filter: ["==", "extrude", "true"],
+        type: "fill-extrusion",
+        minzoom: 15,
+        paint: {
+          "fill-extrusion-color": colorMode === "dark" ? "#242424" : "#aaa",
+          "fill-extrusion-height": ["get", "height"],
+          "fill-extrusion-base": ["get", "min_height"],
+          "fill-extrusion-opacity": 0.6,
+        },
+      });
+    });
+
+    // Add navigation controls
+    map.current.addControl(new mapboxgl.NavigationControl());
+
+    // Set bounds
+    const bounds = [
+      [-117.875143, 33.625038], // Southwest coordinates
+      [-117.808742, 33.668298], // Northeast coordinates
+    ];
+    map.current.setMaxBounds(bounds);
+  }, [colorMode, centerPosition]);
+
+  // Update map style when color mode changes
+  useEffect(() => {
+    if (!map.current) return;
+
+    map.current.setStyle(
+      colorMode === "dark"
+        ? "mapbox://styles/mapbox/navigation-night-v1"
+        : "mapbox://styles/mapbox/standard"
+    );
+  }, [colorMode]);
+
+  // Handle markers
+  useEffect(() => {
+    if (!map.current || !data) return;
+
+    // Clear existing markers
+    markers.current.forEach((marker) => marker.remove());
+    markers.current = [];
+
+    // Add new markers
+    const filteredData = search
+      ? fuse.search(search).map((result) => result.item)
+      : data;
+
+    filteredData
+      .filter((item) => filterItem(item, findFilter, user))
+      .forEach((item) => {
+        const el = document.createElement("div");
+        el.className = "marker";
+        // Set marker icon based on item type
+        el.style.backgroundImage = `url(${getMarkerIcon(item)})`;
+        el.style.width = "50px";
+        el.style.height = "50px";
+        el.style.backgroundSize = "cover";
+
+        const marker = new mapboxgl.Marker(el)
+          .setLngLat([item.location[1], item.location[0]])
+          .addTo(map.current);
+
+        marker.getElement().addEventListener("click", () => {
+          onOpen();
+          setItemData(item);
+          setFocusLocation(item.location);
+        });
+
+        markers.current.push(marker);
+      });
+  }, [data, search, findFilter, user]);
+
+  // Handle edit mode marker
+  useEffect(() => {
+    if (!map.current || !isEdit) return;
+
+    if (!marker.current) {
+      // Ensure we have valid coordinates
+      const validPosition = {
+        lng: position.lng || centerPosition[1], // fallback to center longitude
+        lat: position.lat || centerPosition[0], // fallback to center latitude
+      };
+
+      const el = document.createElement("div");
+      el.className = "edit-marker";
+      el.style.backgroundImage = `url(${
+        colorMode === "dark"
+          ? othersDragWhite.options.iconUrl
+          : othersDragBlack.options.iconUrl
+      })`;
+      el.style.width = "40px";
+      el.style.height = "40px";
+      el.style.backgroundSize = "cover";
+      el.style.cursor = "move";
+
+      marker.current = new mapboxgl.Marker({
+        element: el,
+        draggable: true,
+      })
+        .setLngLat([validPosition.lng, validPosition.lat])
+        .addTo(map.current);
+
+      // Add popup
+      const popup = new mapboxgl.Popup({
+        closeButton: false,
+        offset: 25,
+      }).setHTML('<span class="popup">Click to Confirm Location 🤔</span>');
+
+      marker.current.setPopup(popup);
+
+      marker.current.on("dragend", () => {
+        const lngLat = marker.current.getLngLat();
+        setPosition({ lat: lngLat.lat, lng: lngLat.lng });
+      });
+
+      // Add click handler for the popup
+      el.addEventListener("click", () => {
+        if (!marker.current) return;
+        const lngLat = marker.current.getLngLat();
+        setPosition({ lat: lngLat.lat, lng: lngLat.lng });
+        toggleDraggable();
+      });
     }
 
-    return location ? (
-      <Marker position={location} icon={flyImg}></Marker> // ? there is no fly image??
-    ) : null;
-  }
+    return () => {
+      if (marker.current) {
+        marker.current.remove();
+        marker.current = null;
+      }
+    };
+  }, [isEdit, position, colorMode]);
 
-  const markerRef = useRef(null);
-
-  const eventHandlers = useMemo(
-    () => ({
-      dragend() {
-        const marker = markerRef.current;
-        if (marker != null) {
-          setPosition(marker.getLatLng());
-        }
-      },
-    }),
-    [setPosition]
-  );
   async function handleSubmit() {
     const date = new Date();
     if (!token) {
@@ -397,47 +544,7 @@ export default function Map({
 
   return (
     <div>
-      {/* Styles applied to MapContainer don't render unless page is reloaded */}
-      <MapContainer
-        className="map-container"
-        center={centerPosition}
-        zoom={17}
-        minZoom={15}
-        zoomControl={false}
-        attributionControl={false}
-        maxBounds={mapBounds}
-        maxBoundsViscosity={1.0}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url={mapUrl}
-        />
-        {!isEdit && (
-          <MapFocusLocation location={focusLocation} search={search} />
-        )}
-        {!isEdit && (
-          <MarkerClusterGroup
-            key={colorMode} // Force re-render when colorMode changes
-            {...createCluster}
-          >
-            {allMarkers}
-          </MarkerClusterGroup>
-        )}
-
-        {isEdit && <NewItemMarker />}
-        {showDonut && focusLocation && (
-          <>
-            <Circle
-              center={focusLocation}
-              radius={20}
-              color="red"
-              weight={3}
-              fillColor="yellow"
-            />
-          </>
-        )}
-        <SetBoundsRectangles />
-      </MapContainer>
+      <div ref={mapContainer} className="map-container" />
       {isOpen && (
         <InfoModal
           props={itemData}
