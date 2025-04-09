@@ -70,12 +70,17 @@ export const AuthContextProvider = ({ children }) => {
   }, [user]);
 
   const addKeyword = async (keyword) => {
+    if (keywords.includes(keyword)) {
+      return { success: true, wasAdded: false };
+    }
+  
     const token = await getAuthToken();
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     };
+  
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_REACT_APP_AWS_BACKEND_URL}/searches`,
@@ -85,16 +90,19 @@ export const AuthContextProvider = ({ children }) => {
         },
         config
       );
-      if (response.status == 201) {
+  
+      if (response.status === 200 || response.status === 201) {
         setKeywords((prevKeywords) => [...prevKeywords, keyword]);
-        return { success: true, description: "added" };
+        return { success: true, wasAdded: true };
       }
-      return { success: true, description: "existing" };
+  
+      return { success: true, wasAdded: false };
     } catch (err) {
       console.error(err);
-      return { success: false, description: "error" };
+      return { success: false };
     }
   };
+  
 
   const removeKeyword = async (deletedKw) => {
     const token = await getAuthToken();

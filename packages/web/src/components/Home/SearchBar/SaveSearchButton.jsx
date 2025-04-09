@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import {
   Box,
   HStack,
@@ -16,34 +16,46 @@ import bookmarkEmptyWhite from "../../../assets/logos/bookmark-empty-white.svg";
 import { UserAuth } from "../../../context/AuthContext";
 import DataContext from "../../../context/DataContext";
 
-export default function SaveSearchButton({keyword}) {
-  const [isBookmarked] = useState(false);
+export default function SaveSearchButton({ keyword }) {
   const { colorMode } = useColorMode();
   const toast = useToast();
-  const { user, addKeyword } = UserAuth();
+  const { user, addKeyword, keywords } = UserAuth();
   const { onLoginModalOpen } = useContext(DataContext);
+  const isBookmarked = keywords.includes(keyword);
 
   const handleBookmarkClick = async () => {
     if (!user) {
-      onLoginModalOpen(); // prompt user to log in in order to save search
+      onLoginModalOpen();
       return;
     }
+  
     const response = await addKeyword(keyword);
-    const { success, description } = response;
+    const { success, wasAdded } = response;
+  
+    if (!success) {
+      toast({
+        title: "Error!",
+        description:
+          "Sorry, an error occurred while saving your search term. Please try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+  
     toast({
-      title: success ? (description === "added" ? "Subscribed!" : "Already subscribed!") : "Error!",
-      description:
-        success ? 
-        (description === "added" ?
-          "Your email was subscribed to notifications for this search." : 
-          "You are already subscribed to notifications for this search."
-        ) :
-        "Sorry, an error occurred while saving your search term. Please try again.",
-      status: success ? (description === "added" ? "success" : "info") : "error",
+      title: wasAdded ? "Subscribed!" : "Already subscribed!",
+      description: wasAdded
+        ? "Your email was subscribed to notifications for this search."
+        : "You are already subscribed to notifications for this search.",
+      status: wasAdded ? "success" : "info",
       duration: 3000,
       isClosable: true,
     });
-  }
+  };
+  
+  
 
   return (
     <Box
