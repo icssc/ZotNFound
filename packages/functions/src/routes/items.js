@@ -115,7 +115,6 @@ itemsRouter.post("/", async (req, res) => {
         .replace("{{image}}", dynamicContent.image)
         .replace("{{url}}", dynamicContent.url);
 
-      console.log("Sending emails to:", emailArray);
       await sendEmail(
         emailArray,
         `New Item Matches Your Search - ${name}`,
