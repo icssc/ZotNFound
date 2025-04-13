@@ -6,8 +6,6 @@ import {
   useRef,
   useState,
 } from "react";
-// import { useMapEvents } from "react-leaflet/hooks";
-// import mapuser from "../../assets/logos/mapuser.svg";
 import "./Map.css";
 
 import mapboxgl from "mapbox-gl";
@@ -15,16 +13,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import Fuse from "fuse.js";
 
 import { othersDragBlack, othersDragWhite, flyImg, iconsMap } from "./MapIcons";
-import {
-  Circle,
-  MapContainer,
-  Marker,
-  Popup,
-  Rectangle,
-  TileLayer,
-  useMap,
-  useMapEvents,
-} from "react-leaflet";
+
 import { useColorMode, useDisclosure } from "@chakra-ui/react";
 import InfoModal from "../InfoModal/InfoModal";
 
@@ -35,8 +24,6 @@ import axios from "axios";
 import imageCompression from "browser-image-compression";
 
 import { filterItem } from "../../utils/Utils.js";
-import MarkerClusterGroup from "react-leaflet-cluster";
-import { createClusterCustomIcon } from "./MapIcons";
 
 // Set your Mapbox access token
 mapboxgl.accessToken = import.meta.env.VITE_REACT_APP_MAPBOX_ACCESS_TOKEN;
@@ -112,11 +99,11 @@ export default function Map({
   ];
   const bounds = L.latLngBounds(allowedBounds);
 
-  const mapBoundsCoordinates = [
-    [33.625038, -117.875143],
-    [33.668298, -117.808742],
-  ];
-  const mapBounds = L.latLngBounds(mapBoundsCoordinates);
+  // const mapBoundsCoordinates = [
+  //   [33.625038, -117.875143],
+  //   [33.668298, -117.808742],
+  // ];
+  // const mapBounds = L.latLngBounds(mapBoundsCoordinates);
 
   const handleMarkerSelect = async () => {
     setShowDonut(true);
@@ -143,34 +130,34 @@ export default function Map({
   };
 
   const fuse = new Fuse(data, fuseOptions);
-  const results = fuse.search(search).map((result) => result.item);
+  // const results = fuse.search(search).map((result) => result.item);
 
   const filterItemCallback = useCallback(
     (item) => filterItem(item, findFilter, user),
     [findFilter, user]
   );
 
-  const markersData = results.length > 0 ? results : data;
-  const allMarkers = useMemo(() => {
-    return markersData.filter(filterItemCallback).map((item) => (
-      <Marker
-        key={item.id}
-        position={item.location}
-        eventHandlers={{
-          click: () => {
-            onOpen();
-            setItemData(item);
-            setFocusLocation(item.location);
-          },
-        }}
-        icon={
-          item.isresolved
-            ? iconsMap["resolved"][item.islost]
-            : (iconsMap[item.type] || iconsMap["others"])[item.islost]
-        }
-      ></Marker>
-    ));
-  }, [markersData, filterItemCallback, onOpen, setItemData, setFocusLocation]);
+  // const markersData = results.length > 0 ? results : data;
+  // const allMarkers = useMemo(() => {
+  //   return markersData.filter(filterItemCallback).map((item) => (
+  //     <Marker
+  //       key={item.id}
+  //       position={item.location}
+  //       eventHandlers={{
+  //         click: () => {
+  //           onOpen();
+  //           setItemData(item);
+  //           setFocusLocation(item.location);
+  //         },
+  //       }}
+  //       icon={
+  //         item.isresolved
+  //           ? iconsMap["resolved"][item.islost]
+  //           : (iconsMap[item.type] || iconsMap["others"])[item.islost]
+  //       }
+  //     ></Marker>
+  //   ));
+  // }, [markersData, filterItemCallback, onOpen, setItemData, setFocusLocation]);
 
   // Initialize map
   useEffect(() => {
@@ -184,27 +171,9 @@ export default function Map({
           : "mapbox://styles/mapbox/standard",
       center: [centerPosition[1], centerPosition[0]], // Mapbox uses [lng, lat]
       zoom: 17,
-      pitch: 45, // Add 3D perspective
+      pitch: 35,
       bearing: -17.6,
       antialias: true,
-    });
-
-    // Add 3D buildings
-    map.current.on("style.load", () => {
-      map.current.addLayer({
-        id: "3d-buildings",
-        source: "composite",
-        "source-layer": "building",
-        filter: ["==", "extrude", "true"],
-        type: "fill-extrusion",
-        minzoom: 15,
-        paint: {
-          "fill-extrusion-color": colorMode === "dark" ? "#242424" : "#aaa",
-          "fill-extrusion-height": ["get", "height"],
-          "fill-extrusion-base": ["get", "min_height"],
-          "fill-extrusion-opacity": 0.6,
-        },
-      });
     });
 
     // Add navigation controls
@@ -216,56 +185,268 @@ export default function Map({
       [-117.808742, 33.668298], // Northeast coordinates
     ];
     map.current.setMaxBounds(bounds);
+
+    // Wait for map to load before adding sources and layers
+    map.current.on("load", () => {
+      // Initialize markers if we have data
+      if (data && data.length > 0) {
+        initializeMarkers();
+      }
+    });
+
+    // Cleanup function
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
   }, [colorMode, centerPosition]);
+
+  // Function to initialize markers and clustering
+  const initializeMarkers = useCallback(() => {
+    if (!map.current || !data || !map.current.isStyleLoaded()) return;
+
+    // Remove existing layers and sources
+    ["clusters", "cluster-count", "unclustered-point"].forEach((layerId) => {
+      if (map.current.getLayer(layerId)) {
+        map.current.removeLayer(layerId);
+      }
+    });
+
+    if (map.current.getSource("markers")) {
+      map.current.removeSource("markers");
+    }
+
+    const filteredData = search
+      ? fuse.search(search).map((result) => result.item)
+      : data;
+
+    // Create a GeoJSON source for clustering
+    const geojson = {
+      type: "FeatureCollection",
+      features: filteredData
+        .filter((item) => filterItem(item, findFilter, user))
+        .map((item) => ({
+          type: "Feature",
+          properties: {
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            type: item.type,
+            islost: item.islost,
+            isresolved: item.isresolved,
+            icon: `${item.type}-${item.islost}`,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [item.location[1], item.location[0]],
+          },
+        })),
+    };
+
+    // Load custom icons before adding layers
+    const loadIcons = async () => {
+      const promises = Object.entries(iconsMap)
+        .map(([type, status]) =>
+          Object.entries(status).map(([isLost, icon]) => {
+            const iconId = `${type}-${isLost}`;
+            if (!map.current.hasImage(iconId)) {
+              return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => {
+                  if (!map.current.hasImage(iconId)) {
+                    map.current.addImage(iconId, img);
+                  }
+                  resolve();
+                };
+                img.onerror = () =>
+                  reject(
+                    new Error(`Failed to load image: ${icon.options.iconUrl}`)
+                  );
+                img.src = icon.options.iconUrl;
+              });
+            }
+            return Promise.resolve();
+          })
+        )
+        .flat();
+
+      // Load resolved icon
+      if (!map.current.hasImage("resolved")) {
+        promises.push(
+          new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+              if (!map.current.hasImage("resolved")) {
+                map.current.addImage("resolved", img);
+              }
+              resolve();
+            };
+            img.onerror = () =>
+              reject(new Error(`Failed to load resolved icon`));
+            img.src = iconsMap.resolved.true.options.iconUrl;
+          })
+        );
+      }
+
+      await Promise.all(promises);
+    };
+
+    // Add sources and layers after icons are loaded
+    loadIcons()
+      .then(() => {
+        // Add clustering source
+        map.current.addSource("markers", {
+          type: "geojson",
+          data: geojson,
+          cluster: true,
+          clusterMaxZoom: 30,
+          clusterRadius: 50,
+        });
+
+        // Add cluster circles
+        map.current.addLayer({
+          id: "clusters",
+          type: "circle",
+          source: "markers",
+          filter: ["has", "point_count"],
+          paint: {
+            "circle-color":
+              colorMode === "dark"
+                ? "rgba(45, 55, 72, 0.8)"
+                : "rgba(255, 255, 255, 0.8)",
+            "circle-radius": [
+              "step",
+              ["get", "point_count"],
+              20, // radius for small clusters
+              5, // threshold for medium clusters
+              30, // radius for medium clusters
+              20, // threshold for large clusters
+              40, // radius for large clusters
+            ],
+            "circle-stroke-width": 3,
+            "circle-stroke-color": [
+              "step",
+              ["get", "point_count"],
+              colorMode === "dark" ? "#63B3ED" : "#3182CE", // Blue for small clusters (1-4)
+              5,
+              colorMode === "dark" ? "#68D391" : "#38A169", // Green for medium clusters (5-19)
+              20,
+              colorMode === "dark" ? "#FC8181" : "#E53E3E", // Red for large clusters (20+)
+            ],
+          },
+        });
+
+        // Add cluster count labels
+        map.current.addLayer({
+          id: "cluster-count",
+          type: "symbol",
+          source: "markers",
+          filter: ["has", "point_count"],
+          layout: {
+            "text-field": "{point_count_abbreviated}",
+            "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+            "text-size": 14,
+          },
+          paint: {
+            "text-color": [
+              "step",
+              ["get", "point_count"],
+              colorMode === "dark" ? "#63B3ED" : "#3182CE", // Blue for small clusters (1-4)
+              5,
+              colorMode === "dark" ? "#68D391" : "#38A169", // Green for medium clusters (5-19)
+              20,
+              colorMode === "dark" ? "#FC8181" : "#E53E3E", // Red for large clusters (20+)
+            ],
+          },
+        });
+
+        // Add individual point markers
+        map.current.addLayer({
+          id: "unclustered-point",
+          type: "symbol",
+          source: "markers",
+          filter: ["!", ["has", "point_count"]],
+          layout: {
+            "icon-image": ["get", "icon"],
+            "icon-size": 0.5,
+            "icon-allow-overlap": true,
+          },
+        });
+
+        // Add click handlers
+        map.current.on("click", "clusters", (e) => {
+          const features = map.current.queryRenderedFeatures(e.point, {
+            layers: ["clusters"],
+          });
+          const clusterId = features[0].properties.cluster_id;
+          map.current
+            .getSource("markers")
+            .getClusterExpansionZoom(clusterId, (err, zoom) => {
+              if (err) return;
+              map.current.easeTo({
+                center: features[0].geometry.coordinates,
+                zoom: zoom,
+              });
+            });
+        });
+
+        map.current.on("click", "unclustered-point", (e) => {
+          const properties = e.features[0].properties;
+          const item = filteredData.find((item) => item.id === properties.id);
+          if (item) {
+            onOpen();
+            setItemData(item);
+            setFocusLocation(item.location);
+          }
+        });
+
+        // Change cursor on hover
+        map.current.on("mouseenter", "clusters", () => {
+          map.current.getCanvas().style.cursor = "pointer";
+        });
+        map.current.on("mouseleave", "clusters", () => {
+          map.current.getCanvas().style.cursor = "";
+        });
+        map.current.on("mouseenter", "unclustered-point", () => {
+          map.current.getCanvas().style.cursor = "pointer";
+        });
+        map.current.on("mouseleave", "unclustered-point", () => {
+          map.current.getCanvas().style.cursor = "";
+        });
+      })
+      .catch((error) => console.error("Error loading icons:", error));
+  }, [
+    data,
+    search,
+    findFilter,
+    user,
+    colorMode,
+    onOpen,
+    setItemData,
+    setFocusLocation,
+  ]);
+
+  // Handle markers updates
+  useEffect(() => {
+    if (!map.current || !data) return;
+    if (map.current.isStyleLoaded()) {
+      initializeMarkers();
+    } else {
+      map.current.once("style.load", initializeMarkers);
+    }
+  }, [data, search, findFilter, user, colorMode, initializeMarkers]);
 
   // Update map style when color mode changes
   useEffect(() => {
     if (!map.current) return;
-
     map.current.setStyle(
       colorMode === "dark"
         ? "mapbox://styles/mapbox/navigation-night-v1"
         : "mapbox://styles/mapbox/standard"
     );
   }, [colorMode]);
-
-  // Handle markers
-  useEffect(() => {
-    if (!map.current || !data) return;
-
-    // Clear existing markers
-    markers.current.forEach((marker) => marker.remove());
-    markers.current = [];
-
-    // Add new markers
-    const filteredData = search
-      ? fuse.search(search).map((result) => result.item)
-      : data;
-
-    filteredData
-      .filter((item) => filterItem(item, findFilter, user))
-      .forEach((item) => {
-        const el = document.createElement("div");
-        el.className = "marker";
-        // Set marker icon based on item type
-        el.style.backgroundImage = `url(${getMarkerIcon(item)})`;
-        el.style.width = "50px";
-        el.style.height = "50px";
-        el.style.backgroundSize = "cover";
-
-        const marker = new mapboxgl.Marker(el)
-          .setLngLat([item.location[1], item.location[0]])
-          .addTo(map.current);
-
-        marker.getElement().addEventListener("click", () => {
-          onOpen();
-          setItemData(item);
-          setFocusLocation(item.location);
-        });
-
-        markers.current.push(marker);
-      });
-  }, [data, search, findFilter, user]);
 
   // Handle edit mode marker
   useEffect(() => {
@@ -471,76 +652,61 @@ export default function Map({
   };
   const transparentColor = { color: "#ffffff00", fillColor: "None" };
 
-  function SetBoundsRectangles() {
-    const map = useMap();
+  // function SetBoundsRectangles() {
+  //   const map = useMap();
 
-    const outerHandlers = useMemo(
-      () => ({
-        click() {
-          map.fitBounds(bounds);
-        },
-      }),
-      [map]
-    );
+  //   const outerHandlers = useMemo(
+  //     () => ({
+  //       click() {
+  //         map.fitBounds(bounds);
+  //       },
+  //     }),
+  //     [map]
+  //   );
 
-    return (
-      <>
-        <Rectangle
-          bounds={bounds}
-          eventHandlers={outerHandlers}
-          pathOptions={transparentColor}
-        />
-      </>
-    );
-  }
+  //   return (
+  //     <>
+  //       <Rectangle
+  //         bounds={bounds}
+  //         eventHandlers={outerHandlers}
+  //         pathOptions={transparentColor}
+  //       />
+  //     </>
+  //   );
+  // }
 
-  const mapUrl =
-    colorMode === "dark"
-      ? import.meta.env.VITE_REACT_APP_MAPBOX_DARK_URL
-      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  // const NewItemMarker = () => {
+  //   const map = useMap();
+  //   useEffect(() => {
+  //     if (markerRef.current) {
+  //       markerRef.current.openPopup();
+  //     }
+  //   }, [map]);
 
-  const NewItemMarker = () => {
-    const map = useMap();
-    useEffect(() => {
-      if (markerRef.current) {
-        markerRef.current.openPopup();
-      }
-    }, [map]);
+  //   useMapEvents({
+  //     click(event) {
+  //       setPosition(event.latlng);
+  //     },
+  //   });
 
-    useMapEvents({
-      click(event) {
-        setPosition(event.latlng);
-      },
-    });
-
-    return position.lat !== centerPosition[0] &&
-      position.lng !== centerPosition[1] ? (
-      <Marker
-        className="marker"
-        draggable={true}
-        eventHandlers={eventHandlers}
-        position={position}
-        icon={colorMode == "dark" ? othersDragWhite : othersDragBlack}
-        ref={markerRef}
-      >
-        <Popup minWidth={90} closeButton={false} position={position}>
-          <span className="popup" onClick={() => toggleDraggable()}>
-            Click to Confirm Location 🤔
-          </span>
-        </Popup>
-      </Marker>
-    ) : null;
-  };
-
-  const createCluster = useMemo(() => {
-    // console.log("Current colorMode:", colorMode); // Debug log
-    return {
-      chunkedLoading: true,
-      iconCreateFunction: (cluster) => {
-        return createClusterCustomIcon(cluster, colorMode);
-      },
-    };
-  }, [colorMode]); // Make sure colorMode is in dependency array
+  //   return position.lat !== centerPosition[0] &&
+  //     position.lng !== centerPosition[1] ? (
+  //     <Marker
+  //       className="marker"
+  //       draggable={true}
+  //       eventHandlers={eventHandlers}
+  //       position={position}
+  //       icon={colorMode == "dark" ? othersDragWhite : othersDragBlack}
+  //       ref={markerRef}
+  //     >
+  //       <Popup minWidth={90} closeButton={false} position={position}>
+  //         <span className="popup" onClick={() => toggleDraggable()}>
+  //           Click to Confirm Location 🤔
+  //         </span>
+  //       </Popup>
+  //     </Marker>
+  //   ) : null;
+  // };
 
   return (
     <div>
