@@ -112,17 +112,6 @@ export default function Map({
     setShowDonut(false);
   };
 
-  useEffect(() => {
-    const handleFocus = async () => {
-      await handleMarkerSelect();
-      setFocusLocation(undefined);
-    };
-
-    if (focusLocation) {
-      handleFocus();
-    }
-  }, [focusLocation, setFocusLocation]);
-
   const fuseOptions = {
     keys: ["name", "description"],
     threshold: 0.3,
@@ -137,31 +126,21 @@ export default function Map({
     [findFilter, user]
   );
 
-  // const markersData = results.length > 0 ? results : data;
-  // const allMarkers = useMemo(() => {
-  //   return markersData.filter(filterItemCallback).map((item) => (
-  //     <Marker
-  //       key={item.id}
-  //       position={item.location}
-  //       eventHandlers={{
-  //         click: () => {
-  //           onOpen();
-  //           setItemData(item);
-  //           setFocusLocation(item.location);
-  //         },
-  //       }}
-  //       icon={
-  //         item.isresolved
-  //           ? iconsMap["resolved"][item.islost]
-  //           : (iconsMap[item.type] || iconsMap["others"])[item.islost]
-  //       }
-  //     ></Marker>
-  //   ));
-  // }, [markersData, filterItemCallback, onOpen, setItemData, setFocusLocation]);
+
+  console.log(focusLocation);
 
   // Initialize map
   useEffect(() => {
-    if (map.current) return;
+    if (map.current) {
+      // Just update the style if map already exists
+      map.current.setStyle(
+        colorMode === "dark"
+          ? "mapbox://styles/mapbox/navigation-night-v1"
+          : "mapbox://styles/mapbox/standard",
+        { preserve: true } // This preserves the camera position
+      );
+      return;
+    }
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -188,6 +167,7 @@ export default function Map({
 
     // Wait for map to load before adding sources and layers
     map.current.on("load", () => {
+      console.log("Map loaded");
       // Initialize markers if we have data
       if (data && data.length > 0) {
         initializeMarkers();
@@ -201,7 +181,119 @@ export default function Map({
         map.current = null;
       }
     };
-  }, [colorMode, centerPosition]);
+  }, [colorMode]); // Remove centerPosition from dependencies
+
+  // Handle focus location changes
+  useEffect(() => {
+    if (!focusLocation || !map.current) return;
+
+    const handleFocus = async () => {
+      try {
+        const currentCenter = map.current.getCenter();
+        console.log("Flying from:", currentCenter, "to:", focusLocation);
+
+        // Remove existing highlight layers if any
+        if (map.current.getLayer("highlight-circle")) {
+          map.current.removeLayer("highlight-circle");
+        }
+        if (map.current.getSource("highlight-point")) {
+          map.current.removeSource("highlight-point");
+        }
+
+        // Add highlight point source
+        map.current.addSource("highlight-point", {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [focusLocation[1], focusLocation[0]],
+            },
+          },
+        });
+
+        // Add highlight circle layer
+        map.current.addLayer({
+          id: "highlight-circle",
+          type: "circle",
+          source: "highlight-point",
+          paint: {
+            "circle-radius": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              10,
+              20,
+              22,
+              40,
+            ],
+            "circle-color": colorMode === "dark" ? "#3182CE" : "#2B6CB0",
+            "circle-opacity": 0.3,
+            "circle-stroke-width": 3,
+            "circle-stroke-color": colorMode === "dark" ? "#63B3ED" : "#4299E1",
+            "circle-stroke-opacity": 0.8,
+          },
+        });
+
+        // Animate the highlight
+        let start;
+        function animate(timestamp) {
+          if (!start) start = timestamp;
+          const progress = (timestamp - start) / 1500; // 1.5 second animation
+
+          if (map.current.getLayer("highlight-circle")) {
+            map.current.setPaintProperty(
+              "highlight-circle",
+              "circle-opacity",
+              0.3 * Math.abs(Math.sin(progress * Math.PI))
+            );
+            map.current.setPaintProperty(
+              "highlight-circle",
+              "circle-stroke-opacity",
+              0.8 * Math.abs(Math.sin(progress * Math.PI))
+            );
+          }
+
+          if (progress < 4) {
+            // Run animation for 4 cycles
+            requestAnimationFrame(animate);
+          }
+        }
+
+        // Start the animation
+        requestAnimationFrame(animate);
+
+        // Fly to location
+        map.current.flyTo({
+          center: [focusLocation[1], focusLocation[0]],
+          zoom: 19,
+          duration: 2000,
+          essential: true,
+        });
+
+        await handleMarkerSelect();
+
+        // Clean up highlight after delay
+        setTimeout(() => {
+          if (map.current.getLayer("highlight-circle")) {
+            map.current.removeLayer("highlight-circle");
+          }
+          if (map.current.getSource("highlight-point")) {
+            map.current.removeSource("highlight-point");
+          }
+          setFocusLocation(undefined);
+        }, 2000);
+      } catch (error) {
+        console.error("Error flying to location:", error);
+      }
+    };
+
+    if (map.current.loaded()) {
+      handleFocus();
+    } else {
+      map.current.once("load", handleFocus);
+    }
+  }, [focusLocation, colorMode]);
 
   // Function to initialize markers and clustering
   const initializeMarkers = useCallback(() => {
@@ -301,7 +393,7 @@ export default function Map({
           type: "geojson",
           data: geojson,
           cluster: true,
-          clusterMaxZoom: 30,
+          clusterMaxZoom: 40,
           clusterRadius: 50,
         });
 
