@@ -126,7 +126,6 @@ export default function Map({
     [findFilter, user]
   );
 
-
   console.log(focusLocation);
 
   // Initialize map
@@ -150,7 +149,7 @@ export default function Map({
           : "mapbox://styles/mapbox/standard",
       center: [centerPosition[1], centerPosition[0]], // Mapbox uses [lng, lat]
       zoom: 17,
-      pitch: 35,
+      pitch: 45,
       bearing: -17.6,
       antialias: true,
     });
