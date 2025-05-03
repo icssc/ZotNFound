@@ -99,12 +99,13 @@ const ResultCard = React.memo(
                 alt="uploaded image"
               />
             </Flex>
-            <Stack mt="6" spacing="3">
-              <Flex justifyContent={"space-between"}>
+            <Stack mt="6">
+              <Flex justifyContent={"center"} alignItems={"center"}>
                 <Text
                   color={colorMode === "dark" ? "white" : "blue.600"}
                   fontSize="md"
                   fontWeight="bold"
+                  mr={5}
                 >
                   {props.name}
                 </Text>
