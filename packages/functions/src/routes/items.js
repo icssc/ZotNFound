@@ -283,4 +283,20 @@ itemsRouter.delete("/:id", async (req, res) => {
   }
 });
 
+
+// allows updating the item info (name, description, image, type, status (lost or found) and lost date
+itemsRouter.put("/update/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, type, islost, image } = req.body;
+    const item = await client.query(
+      `UPDATE ${itemsTable} SET name=$1, description=$2, type=$3, islost=$4, image=$5 WHERE id=$6 RETURNING *`,
+      [name, description, type, islost, image, id]
+    );
+    res.json(item.rows[0]);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 export default itemsRouter;
