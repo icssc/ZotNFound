@@ -13,7 +13,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import Fuse from "fuse.js";
 
 import { othersDragBlack, othersDragWhite, flyImg, iconsMap } from "./MapIcons";
-import { useColorMode, useDisclosure } from "@chakra-ui/react";
+import { useColorMode, useDisclosure, Button } from "@chakra-ui/react";
 import InfoModal from "../InfoModal/InfoModal";
 import DataContext from "../../context/DataContext";
 import { UserAuth } from "../../context/AuthContext";
@@ -21,6 +21,7 @@ import axios from "axios";
 import imageCompression from "browser-image-compression";
 
 import { filterItem } from "../../utils/Utils.js";
+import CreateMarkerConfirmModal from "../CreateMarkerConfirmModal/CreateMarkerConfirmModal";
 
 // Set your Mapbox access token
 mapboxgl.accessToken = import.meta.env.VITE_REACT_APP_MAPBOX_ACCESS_TOKEN;
@@ -82,6 +83,11 @@ export default function Map({
   const { colorMode } = useColorMode();
   const { data, setLoading, token, setData } = useContext(DataContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isConfirmOpen,
+    onOpen: onConfirmOpen,
+    onClose: onConfirmClose,
+  } = useDisclosure();
   const [itemData, setItemData] = useState({});
 
   // State: showDonut - if red ring around selected marker shows
@@ -123,8 +129,6 @@ export default function Map({
     [findFilter, user]
   );
 
-  console.log(focusLocation);
-
   // Initialize map
   useEffect(() => {
     if (map.current) {
@@ -163,23 +167,21 @@ export default function Map({
 
     // Wait for map to load before adding sources and layers
     map.current.on("load", () => {
-      console.log("Map loaded");
-      
       // Add 3D buildings in dark mode
       if (colorMode === "dark") {
         map.current.addLayer({
-          'id': '3d-buildings',
-          'source': 'composite',
-          'source-layer': 'building',
-          'filter': ['==', 'extrude', 'true'],
-          'type': 'fill-extrusion',
-          'minzoom': 15,
-          'paint': {
-            'fill-extrusion-color': '#2D3748',
-            'fill-extrusion-height': ['get', 'height'],
-            'fill-extrusion-base': ['get', 'min_height'],
-            'fill-extrusion-opacity': 0.6
-          }
+          id: "3d-buildings",
+          source: "composite",
+          "source-layer": "building",
+          filter: ["==", "extrude", "true"],
+          type: "fill-extrusion",
+          minzoom: 15,
+          paint: {
+            "fill-extrusion-color": "#2D3748",
+            "fill-extrusion-height": ["get", "height"],
+            "fill-extrusion-base": ["get", "min_height"],
+            "fill-extrusion-opacity": 0.6,
+          },
         });
       }
 
@@ -244,25 +246,23 @@ export default function Map({
 
     // Load custom icons before adding layers
     const loadIcons = async () => {
-      console.log("Loading icons...");
       const promises = Object.entries(iconsMap)
         .map(([type, status]) =>
           Object.entries(status).map(([isLost, icon]) => {
             const iconId = `${type}-${isLost}`;
-            console.log("Loading icon:", iconId, icon.options.iconUrl);
             if (!map.current.hasImage(iconId)) {
               return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.onload = () => {
-                  console.log("Icon loaded successfully:", iconId);
                   if (!map.current.hasImage(iconId)) {
                     map.current.addImage(iconId, img);
                   }
                   resolve();
                 };
                 img.onerror = (error) => {
-                  console.error("Failed to load icon:", iconId, error);
-                  reject(new Error(`Failed to load image: ${icon.options.iconUrl}`));
+                  reject(
+                    new Error(`Failed to load image: ${icon.options.iconUrl}`)
+                  );
                 };
                 img.src = icon.options.iconUrl;
               });
@@ -278,14 +278,12 @@ export default function Map({
           new Promise((resolve, reject) => {
             const img = new Image();
             img.onload = () => {
-              console.log("Resolved icon loaded successfully");
               if (!map.current.hasImage("resolved")) {
                 map.current.addImage("resolved", img);
               }
               resolve();
             };
             img.onerror = (error) => {
-              console.error("Failed to load resolved icon:", error);
               reject(new Error(`Failed to load resolved icon`));
             };
             img.src = iconsMap.resolved.true.options.iconUrl;
@@ -295,7 +293,6 @@ export default function Map({
 
       try {
         await Promise.all(promises);
-        console.log("All icons loaded successfully");
       } catch (error) {
         console.error("Error loading icons:", error);
       }
@@ -304,7 +301,6 @@ export default function Map({
     // Add sources and layers after icons are loaded
     loadIcons()
       .then(() => {
-        console.log("Adding marker source and layers...");
         // Add clustering source
         map.current.addSource("markers", {
           type: "geojson",
@@ -383,11 +379,9 @@ export default function Map({
             "icon-allow-overlap": true,
             "icon-ignore-placement": true,
             "icon-pitch-alignment": "viewport",
-            "icon-rotation-alignment": "viewport"
+            "icon-rotation-alignment": "viewport",
           },
         });
-
-        console.log("Marker layers added successfully");
 
         // Add click handlers
         map.current.on("click", "clusters", (e) => {
@@ -463,11 +457,9 @@ export default function Map({
   // Handle markers updates
   useEffect(() => {
     if (!map.current || !data) return;
-    
+
     // Always wait for style to load before initializing markers
-    console.log("Waiting for style to load...");
     map.current.once("style.load", () => {
-      console.log("Style loaded, initializing markers...");
       initializeMarkers();
     });
   }, [data, search, findFilter, user, colorMode, initializeMarkers]);
@@ -477,16 +469,14 @@ export default function Map({
       map.current.flyTo({
         center: [centerPosition[1], centerPosition[0]], // [lng, lat]
         zoom: 17,
-        essential: true
+        essential: true,
       });
     }
-  }, [isEdit, centerPosition]);
+  }, [isEdit]);
 
   // Update map style when color mode changes
   useEffect(() => {
     if (!map.current) return;
-    
-    console.log("Color mode changed to:", colorMode);
     map.current.setStyle(
       colorMode === "dark"
         ? "mapbox://styles/mapbox/navigation-night-v1"
@@ -501,7 +491,6 @@ export default function Map({
     const handleFocus = async () => {
       try {
         const currentCenter = map.current.getCenter();
-        console.log("Flying from:", currentCenter, "to:", focusLocation);
 
         // Remove existing highlight layers if any
         if (map.current.getLayer("highlight-circle")) {
@@ -613,8 +602,8 @@ export default function Map({
     if (!marker.current) {
       // Ensure we have valid coordinates
       const validPosition = {
-        lat: position.lat || centerPosition[0], // fallback to center latitude
-        lng: position.lng || centerPosition[1], // fallback to center longitude
+        lat: position.lat || centerPosition[0],
+        lng: position.lng || centerPosition[1],
       };
 
       const el = document.createElement("div");
@@ -636,36 +625,32 @@ export default function Map({
         .setLngLat([validPosition.lng, validPosition.lat])
         .addTo(map.current);
 
-      // Add popup
-      const popup = new mapboxgl.Popup({
-        closeButton: false,
-        offset: 25,
-      }).setHTML('<span class="popup">Click to Confirm Location 🤔</span>');
-
-      marker.current.setPopup(popup);
-
       marker.current.on("dragend", () => {
         const lngLat = marker.current.getLngLat();
         setPosition({ lat: lngLat.lat, lng: lngLat.lng });
       });
-
-      // Add click handler for the popup
-      el.addEventListener("click", () => {
-        if (!marker.current) return;
-        const lngLat = marker.current.getLngLat();
-        setPosition({ lat: lngLat.lat, lng: lngLat.lng });
-        toggleDraggable();
-      });
     }
+
+    // Handler to move marker on map click
+    const handleMapClick = (e) => {
+      if (marker.current) {
+        marker.current.setLngLat(e.lngLat);
+        setPosition({ lat: e.lngLat.lat, lng: e.lngLat.lng });
+      }
+    };
+
+    map.current.on("click", handleMapClick);
 
     return () => {
       if (marker.current) {
         marker.current.remove();
         marker.current = null;
       }
+      if (map.current) {
+        map.current.off("click", handleMapClick);
+      }
     };
   }, [isEdit, position, colorMode]);
-
 
   async function handleSubmit() {
     const date = new Date();
@@ -867,9 +852,40 @@ export default function Map({
   //   ) : null;
   // };
 
+  // Add this button component
+  const ConfirmButton = () => (
+    <Button
+      position="absolute"
+      bottom="20px"
+      left="50%"
+      transform="translateX(-50%)"
+      colorScheme="blue"
+      size="lg"
+      onClick={onConfirmOpen}
+      zIndex={1000}
+      boxShadow="lg"
+      _hover={{
+        transform: "translateX(-50%) scale(1.05)",
+      }}
+      transition="all 0.2s"
+    >
+      Confirm Location
+    </Button>
+  );
+
   return (
     <div>
       <div ref={mapContainer} className="map-container" />
+      {isEdit && <ConfirmButton />}
+      <CreateMarkerConfirmModal
+        isOpen={isConfirmOpen}
+        onClose={onConfirmClose}
+        onConfirm={() => {
+          onConfirmClose();
+          toggleDraggable();
+        }}
+        position={position}
+      />
       {isOpen && (
         <InfoModal
           props={itemData}
