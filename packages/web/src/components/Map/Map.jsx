@@ -796,61 +796,6 @@ export default function Map({
   };
   const transparentColor = { color: "#ffffff00", fillColor: "None" };
 
-  // function SetBoundsRectangles() {
-  //   const map = useMap();
-
-  //   const outerHandlers = useMemo(
-  //     () => ({
-  //       click() {
-  //         map.fitBounds(bounds);
-  //       },
-  //     }),
-  //     [map]
-  //   );
-
-  //   return (
-  //     <>
-  //       <Rectangle
-  //         bounds={bounds}
-  //         eventHandlers={outerHandlers}
-  //         pathOptions={transparentColor}
-  //       />
-  //     </>
-  //   );
-  // }
-
-  // const NewItemMarker = () => {
-  //   const map = useMap();
-  //   useEffect(() => {
-  //     if (markerRef.current) {
-  //       markerRef.current.openPopup();
-  //     }
-  //   }, [map]);
-
-  //   useMapEvents({
-  //     click(event) {
-  //       setPosition(event.latlng);
-  //     },
-  //   });
-
-  //   return position.lat !== centerPosition[0] &&
-  //     position.lng !== centerPosition[1] ? (
-  //     <Marker
-  //       className="marker"
-  //       draggable={true}
-  //       eventHandlers={eventHandlers}
-  //       position={position}
-  //       icon={colorMode == "dark" ? othersDragWhite : othersDragBlack}
-  //       ref={markerRef}
-  //     >
-  //       <Popup minWidth={90} closeButton={false} position={position}>
-  //         <span className="popup" onClick={() => toggleDraggable()}>
-  //           Click to Confirm Location 🤔
-  //         </span>
-  //       </Popup>
-  //     </Marker>
-  //   ) : null;
-  // };
 
   // Add this button component
   const ConfirmButton = () => (

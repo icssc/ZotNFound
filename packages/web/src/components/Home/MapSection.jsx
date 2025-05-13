@@ -5,7 +5,7 @@ import ListItemButton from "./ListItemButton";
 import FeedbackButtonMobile from "./NavBar/FeedbackButtonMobile";
 import ResultsBar from "../ResultsBar/ResultsBar";
 import CreateModal from "../CreateModal/CreateModal";
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 
 const MapSection = ({
   isOpenCreateModal,
@@ -33,6 +33,22 @@ const MapSection = ({
   setLeaderboard,
 }) => {
   const { colorMode } = useColorMode();
+
+  const handleCancel = () => {
+    setIsEdit(false);
+    setNewAddedItem({
+      image: "",
+      type: "",
+      islost: true,
+      name: "",
+      description: "",
+      itemdate: "",
+      isresolved: false,
+      ishelped: null,
+    });
+    setUploadImg("");
+  };
+
   return (
     <>
       <Flex
@@ -44,21 +60,21 @@ const MapSection = ({
           position="absolute"
           bottom={4}
           right={4}
-          colorScheme="blue"
+          colorScheme={isEdit ? "red" : "blue"}
           height={75}
           width={75}
-          backgroundColor="#74a2fa"
+          backgroundColor={isEdit ? "#E53E3E" : "#74a2fa"}
           color="white"
           borderRadius="50%"
           padding={0}
           _hover={{
-            background: "#365fad",
+            background: isEdit ? "#C53030" : "#365fad",
           }}
           fontSize="30px"
-          onClick={handleListItemButtonClick}
+          onClick={isEdit ? handleCancel : handleListItemButtonClick}
           zIndex={1000}
         >
-          <AddIcon boxSize={8} />
+          {isEdit ? <CloseIcon boxSize={8} /> : <AddIcon boxSize={8} />}
         </Button>
         <Flex
           zIndex={1000}
