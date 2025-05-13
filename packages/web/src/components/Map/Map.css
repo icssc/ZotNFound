@@ -21,8 +21,6 @@
 .edit-marker {
   width: 40px;
   height: 40px;
-  background-image: url("path-to-your-drag-marker-icon");
-  background-size: cover;
   cursor: move;
 }
 

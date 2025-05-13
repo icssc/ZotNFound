@@ -19,6 +19,8 @@ import DataContext from "../../context/DataContext";
 import { UserAuth } from "../../context/AuthContext";
 import axios from "axios";
 import imageCompression from "browser-image-compression";
+import others_black from "../../assets/logos/others_black.svg";
+import others_white from "../../assets/logos/others_white.svg";
 
 import { filterItem } from "../../utils/Utils.js";
 import CreateMarkerConfirmModal from "../CreateMarkerConfirmModal/CreateMarkerConfirmModal";
@@ -84,9 +86,9 @@ export default function Map({
   const { data, setLoading, token, setData } = useContext(DataContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
-    isOpen: isConfirmOpen,
-    onOpen: onConfirmOpen,
-    onClose: onConfirmClose,
+    isOpen: isConfirmModalOpen,
+    onOpen: onConfirmModalOpen,
+    onClose: onConfirmModalClose,
   } = useDisclosure();
   const [itemData, setItemData] = useState({});
 
@@ -608,15 +610,19 @@ export default function Map({
 
       const el = document.createElement("div");
       el.className = "edit-marker";
-      el.style.backgroundImage = `url(${
-        colorMode === "dark"
-          ? othersDragWhite.options.iconUrl
-          : othersDragBlack.options.iconUrl
-      })`;
+
+      const img = document.createElement("img");
+      img.src = colorMode === "dark" ? others_white : others_black;
+      img.style.width = "100%";
+      img.style.height = "100%";
+      el.appendChild(img);
+
       el.style.width = "40px";
       el.style.height = "53px";
-      el.style.backgroundSize = "cover";
       el.style.cursor = "move";
+      el.style.display = "flex";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
 
       marker.current = new mapboxgl.Marker({
         element: el,
@@ -796,7 +802,6 @@ export default function Map({
   };
   const transparentColor = { color: "#ffffff00", fillColor: "None" };
 
-
   // Add this button component
   const ConfirmButton = () => (
     <Button
@@ -806,7 +811,7 @@ export default function Map({
       transform="translateX(-50%)"
       colorScheme="blue"
       size="lg"
-      onClick={onConfirmOpen}
+      onClick={onConfirmModalOpen}
       zIndex={1000}
       boxShadow="lg"
       _hover={{
@@ -823,10 +828,10 @@ export default function Map({
       <div ref={mapContainer} className="map-container" />
       {isEdit && <ConfirmButton />}
       <CreateMarkerConfirmModal
-        isOpen={isConfirmOpen}
-        onClose={onConfirmClose}
+        isOpen={isConfirmModalOpen}
+        onClose={onConfirmModalClose}
         onConfirm={() => {
-          onConfirmClose();
+          onConfirmModalClose();
           toggleDraggable();
         }}
         position={position}
