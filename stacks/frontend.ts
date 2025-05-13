@@ -41,6 +41,8 @@ export function FrontendStack({ app, stack }: StackContext) {
         process.env.VITE_REACT_APP_MAPBOX_DARK_URL!,
       VITE_REACT_APP_MAPBOX_LIGHT_URL:
         process.env.VITE_REACT_APP_MAPBOX_LIGHT_URL!,
+      VITE_REACT_APP_MAPBOX_ACCESS_TOKEN:
+        process.env.VITE_REACT_APP_MAPBOX_ACCESS_TOKEN!,
     },
   });
 
