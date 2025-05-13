@@ -13,13 +13,10 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import Fuse from "fuse.js";
 
 import { othersDragBlack, othersDragWhite, flyImg, iconsMap } from "./MapIcons";
-
 import { useColorMode, useDisclosure } from "@chakra-ui/react";
 import InfoModal from "../InfoModal/InfoModal";
-
 import DataContext from "../../context/DataContext";
 import { UserAuth } from "../../context/AuthContext";
-
 import axios from "axios";
 import imageCompression from "browser-image-compression";
 
@@ -107,7 +104,7 @@ export default function Map({
 
   const handleMarkerSelect = async () => {
     setShowDonut(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     setShowDonut(false);
   };
@@ -149,7 +146,7 @@ export default function Map({
           : "mapbox://styles/mapbox/standard",
       center: [centerPosition[1], centerPosition[0]], // Mapbox uses [lng, lat]
       zoom: 17,
-      pitch: 45,
+      pitch: 35,
       bearing: -17.6,
       antialias: true,
     });
@@ -205,17 +202,18 @@ export default function Map({
   const initializeMarkers = useCallback(() => {
     if (!map.current || !data) return;
 
-    console.log("Starting marker initialization...");
     // Remove existing layers and sources
     ["clusters", "cluster-count", "unclustered-point"].forEach((layerId) => {
       if (map.current.getLayer(layerId)) {
         map.current.removeLayer(layerId);
       }
     });
-
     if (map.current.getSource("markers")) {
       map.current.removeSource("markers");
     }
+
+    // Only add marker layers if not in edit mode
+    if (isEdit) return;
 
     const filteredData = search
       ? fuse.search(search).map((result) => result.item)
@@ -442,7 +440,25 @@ export default function Map({
     onOpen,
     setItemData,
     setFocusLocation,
+    isEdit,
   ]);
+
+  // Clean up marker layers when entering edit mode, re-add when leaving
+  useEffect(() => {
+    if (!map.current) return;
+    if (isEdit) {
+      ["clusters", "cluster-count", "unclustered-point"].forEach((layerId) => {
+        if (map.current.getLayer(layerId)) {
+          map.current.removeLayer(layerId);
+        }
+      });
+      if (map.current.getSource("markers")) {
+        map.current.removeSource("markers");
+      }
+    } else {
+      initializeMarkers();
+    }
+  }, [isEdit, initializeMarkers]);
 
   // Handle markers updates
   useEffect(() => {
@@ -455,6 +471,16 @@ export default function Map({
       initializeMarkers();
     });
   }, [data, search, findFilter, user, colorMode, initializeMarkers]);
+
+  useEffect(() => {
+    if (isEdit && map.current && centerPosition) {
+      map.current.flyTo({
+        center: [centerPosition[1], centerPosition[0]], // [lng, lat]
+        zoom: 17,
+        essential: true
+      });
+    }
+  }, [isEdit, centerPosition]);
 
   // Update map style when color mode changes
   useEffect(() => {
@@ -587,8 +613,8 @@ export default function Map({
     if (!marker.current) {
       // Ensure we have valid coordinates
       const validPosition = {
-        lng: position.lng || centerPosition[1], // fallback to center longitude
         lat: position.lat || centerPosition[0], // fallback to center latitude
+        lng: position.lng || centerPosition[1], // fallback to center longitude
       };
 
       const el = document.createElement("div");
@@ -599,7 +625,7 @@ export default function Map({
           : othersDragBlack.options.iconUrl
       })`;
       el.style.width = "40px";
-      el.style.height = "40px";
+      el.style.height = "53px";
       el.style.backgroundSize = "cover";
       el.style.cursor = "move";
 
@@ -639,6 +665,7 @@ export default function Map({
       }
     };
   }, [isEdit, position, colorMode]);
+
 
   async function handleSubmit() {
     const date = new Date();
