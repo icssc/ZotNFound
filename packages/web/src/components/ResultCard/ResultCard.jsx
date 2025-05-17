@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Card,
@@ -24,6 +24,7 @@ const ResultCard = React.memo(
     const { colorMode } = useColorMode();
     const infoModalDisclosure = useDisclosure();
     const { id } = useParams();
+    const [isEdit, setIsEdit] = useState(false);
 
     const formattedDate = useMemo(
       () => formatDate(new Date(props.date)),
@@ -38,8 +39,7 @@ const ResultCard = React.memo(
         size="md"
         w="40"
         gap={1}
-        onClick={onResultsBarClose}
-      >
+        onClick={onResultsBarClose}>
         <Image src={colorMode === "dark" ? locate_dark : locate} alt="lost" />
         Lost
       </Button>
@@ -53,8 +53,7 @@ const ResultCard = React.memo(
         size="md"
         w="40"
         gap={1}
-        onClick={onResultsBarClose}
-      >
+        onClick={onResultsBarClose}>
         <Image src={colorMode === "dark" ? locate_dark : locate} alt="found" />
         Found
       </Button>
@@ -67,8 +66,7 @@ const ResultCard = React.memo(
           borderColor={colorMode === "dark" ? "#2F363C" : "gray.300"}
           maxW="lg"
           align={"center"}
-          mb="10px"
-        >
+          mb="10px">
           <CardBody>
             <Flex justifyContent={"center"} alignItems={"center"}>
               {props.isresolved && (
@@ -79,8 +77,7 @@ const ResultCard = React.memo(
                   alignItems={"center"}
                   marginTop={30}
                   flexDir={"column"}
-                  w={450}
-                >
+                  w={450}>
                   <Text fontSize={18} as="b" color={"white"}>
                     RETURNED
                   </Text>
@@ -105,14 +102,12 @@ const ResultCard = React.memo(
                   color={colorMode === "dark" ? "white" : "blue.600"}
                   fontSize="md"
                   fontWeight="bold"
-                  mr={5}
-                >
+                  mr={5}>
                   {props.name}
                 </Text>
                 <Text
                   color={colorMode === "dark" ? "white" : "blue.600"}
-                  fontSize="sm"
-                >
+                  fontSize="sm">
                   {formattedDate}
                 </Text>
               </Flex>
@@ -127,8 +122,7 @@ const ResultCard = React.memo(
                 leftIcon={<InfoIcon />}
                 size="md"
                 w="60%"
-                onClick={infoModalDisclosure.onOpen}
-              >
+                onClick={infoModalDisclosure.onOpen}>
                 View
               </Button>
               {props.islost ? lostButton : foundButton}
@@ -145,6 +139,8 @@ const ResultCard = React.memo(
                 : infoModalDisclosure.isOpen
             }
             setData={setData}
+            isEdit={isEdit}
+            setIsEdit={setIsEdit}
             setLeaderboard={setLeaderboard}
           />
         )}
