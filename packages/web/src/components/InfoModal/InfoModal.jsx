@@ -13,18 +13,23 @@ import {
   useDisclosure,
   useColorMode,
 } from "@chakra-ui/react";
+import upload from "../../assets/images/download.png";
+
 import { formatDate } from "../../utils/DateUtils";
 import { UserAuth } from "../../context/AuthContext";
 import DataContext from "../../context/DataContext";
 import ImageContainer from "../ImageContainer/ImageContainer";
 import FeedbackModal from "../FeedbackModal/FeedbackModal";
-import { LinkIcon, CheckIcon, EmailIcon } from "@chakra-ui/icons";
+import { LinkIcon, CheckIcon, EmailIcon, EditIcon } from "@chakra-ui/icons";
 import { getItemEmail, deleteItem } from "../../utils/ApiUtils";
 import DeleteConfirmationPopover from "./DeleteConfirmationPopover";
+import EditModal from "../EditModal/EditModal";
 // import axios from "axios";
 
 export default function InfoModal({
   setData,
+  isEdit,
+  setIsEdit,
   isOpen,
   onClose,
   props,
@@ -34,14 +39,39 @@ export default function InfoModal({
   const [showEmail, setShowEmail] = useState(false);
   const [itemEmail, setItemEmail] = useState("");
   const [isShared, setIsShared] = useState(false);
+
+  const [currentItem, setCurrentItem] = useState(props);
   const { onLoginModalOpen, token, setLoading } = useContext(DataContext);
   const { user } = UserAuth();
   const navigate = useNavigate();
   const feedbackModalDisclosure = useDisclosure();
   const currentEmail = user?.email;
 
+  const {
+    isOpen: isOpenEditModal,
+    onOpen: onOpenEditModal,
+    onClose: onCloseEditModal,
+  } = useDisclosure();
+
+  const [isCreate, setIsCreate] = useState(true);
+  const centerPosition = [33.6461, -117.8427];
+  const [position, setPosition] = useState(centerPosition);
+  const [focusLocation, setFocusLocation] = useState();
+  const [uploadImg, setUploadImg] = useState("");
+  const [date, setDate] = useState(new Date());
+
   async function handleResolve() {
     feedbackModalDisclosure.onOpen();
+  }
+
+  async function handleEditItem() {
+    onOpenEditModal();
+    setLoading(false);
+    setUploadImg([props.image]);
+    setDate(new Date(props.itemdate));
+    setPosition([props.latitude, props.longitude]);
+    setIsEdit(true);
+    console.log("PROPS: " + JSON.stringify(props, null, 2));
   }
 
   async function handleDelete() {
@@ -82,9 +112,10 @@ export default function InfoModal({
   // Copies the url of the item to the clipboard
   const handleShare = useCallback(() => {
     setIsShared(true);
-    const baseUrl = process.env.NODE_ENV === "development"
-      ? "http://localhost:3000"
-      : "https://zotnfound.com";
+    const baseUrl =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : "https://zotnfound.com";
     navigator.clipboard.writeText(`${baseUrl}/${props.id}`);
   }, [props.id]);
 
@@ -133,8 +164,7 @@ export default function InfoModal({
       size={"lg"}
       gap={2}
       isDisabled={props.isresolved && true}
-      onClick={handleShowEmail}
-    >
+      onClick={handleShowEmail}>
       <EmailIcon /> View Contact
     </Button>
   );
@@ -152,8 +182,7 @@ export default function InfoModal({
       <Modal
         isOpen={isOpen}
         onClose={handleClose}
-        size={{ base: "full", md: "5xl" }}
-      >
+        size={{ base: "full", md: "5xl" }}>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton
@@ -169,23 +198,20 @@ export default function InfoModal({
             paddingY={"5%"}
             width={"100%"}
             flexDir={{ base: "column", md: "row" }}
-            overflowX={"hidden"}
-          >
+            overflowX={"hidden"}>
             <ImageContainer image={props.image} isresolved={props.isresolved} />
             <Flex
               flexDir={"column"}
               w={{ base: "90%", md: "40%" }}
               gap={5}
-              mt={{ md: 0, base: 5 }}
-            >
+              mt={{ md: 0, base: 5 }}>
               {/* HEADING */}
               <Flex flexDir={"column"} gap={2}>
                 <Heading
                   // mt="20px"
                   fontSize="4xl"
                   fontFamily={"body"}
-                  fontWeight={"bold"}
-                >
+                  fontWeight={"bold"}>
                   {props.name}
                 </Heading>
 
@@ -193,8 +219,8 @@ export default function InfoModal({
                   {currentEmail === props.email
                     ? ownerTag
                     : props.islost
-                    ? lostTag
-                    : foundTag}
+                      ? lostTag
+                      : foundTag}
                   <Text color={"gray.500"}>Posted: {formattedDate}</Text>
                 </Flex>
               </Flex>
@@ -211,41 +237,52 @@ export default function InfoModal({
                   fontSize={"md"}
                   mt={3}
                   overflowY={"auto"}
-                  maxHeight={"200"}
-                >
+                  maxHeight={"200"}>
                   {props.description}
                 </Text>
               </Flex>
               <hr />
 
-              <Flex gap={5} justifyContent={"center"} alignItems={"center"}>
+              <Flex
+                // Could add an elipses dropdown for the buttons since it's getting kinda stuffed rn
+                gap={currentEmail === props.email ? 2 : 5}
+                justifyContent={"center"}
+                alignItems={"center"}>
                 {currentEmail !== props.email &&
                   (!showEmail ? viewContactButton : showContactButton)}
                 {currentEmail === props.email && (
-                  <Button
-                    colorScheme="green"
-                    size={"lg"}
-                    gap={2}
-                    onClick={handleResolve}
-                    isDisabled={props.isresolved ? true : false}
-                  >
-                    <CheckIcon /> Resolve
-                  </Button>
-                )}
-
-                {currentEmail === props.email && (
-                  <DeleteConfirmationPopover
-                    onDelete={handleDelete}
-                    onClose={onClose}
-                  />
+                  <>
+                    <Button
+                      colorScheme="green"
+                      size={"lg"}
+                      gap={2}
+                      onClick={handleResolve}
+                      isDisabled={props.isresolved ? true : false}>
+                      <CheckIcon />
+                      Resolve
+                    </Button>
+                    <DeleteConfirmationPopover
+                      onDelete={handleDelete}
+                      onClose={onClose}
+                    />
+                    <Button
+                      colorScheme="orange"
+                      isDisabled={props.isresolved ? true : false}
+                      size={"lg"}
+                      variant={"solid"}
+                      gap={2}
+                      onClick={handleEditItem}>
+                      <EditIcon />
+                      Edit
+                    </Button>
+                  </>
                 )}
                 <Button
                   colorScheme="blue"
                   size={"lg"}
                   variant={"outline"}
                   gap={2}
-                  onClick={handleShare}
-                >
+                  onClick={handleShare}>
                   <LinkIcon /> {!isShared ? "Share" : "Copied"}
                 </Button>
               </Flex>
@@ -261,6 +298,26 @@ export default function InfoModal({
         setData={setData}
         email={user?.email}
         setLeaderboard={setLeaderboard}
+      />
+
+      <EditModal
+        isOpenEditModal={isOpenEditModal}
+        onOpenEditModal={onOpenEditModal}
+        onCloseEditModal={onCloseEditModal}
+        onCloseInfoModal={onClose}
+        setIsCreate={setIsCreate}
+        isCreate={isCreate}
+        isEdit={isEdit}
+        setIsEdit={setIsEdit}
+        setPosition={setPosition}
+        centerPosition={centerPosition}
+        date={date}
+        setDate={setDate}
+        newAddedItem={currentItem}
+        setNewAddedItem={setCurrentItem}
+        setUploadImg={setUploadImg}
+        uploadImg={uploadImg}
+        upload={upload}
       />
     </>
   );

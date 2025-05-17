@@ -817,8 +817,7 @@ export default function Map({
       _hover={{
         transform: "translateX(-50%) scale(1.05)",
       }}
-      transition="all 0.2s"
-    >
+      transition="all 0.2s">
       Confirm Location
     </Button>
   );
@@ -843,6 +842,8 @@ export default function Map({
           onClose={onClose}
           isOpen={isOpen}
           setData={setData}
+          isEdit={isEdit}
+          setIsEdit={setIsEdit}
           setLeaderboard={setLeaderboard}
         />
       )}
