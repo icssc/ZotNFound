@@ -41,6 +41,22 @@ const MobileSearchBar = ({ search, setSearch, loading }) => {
               onChange={(e) => setSearch(e.target.value)}
             />
           </InputGroup>
+          {search.trim() !== "" && (
+            <Box
+              position="absolute"
+              top="100%"
+              left={0}
+              width="100%"
+              mt="2"
+              borderRadius="md"
+              bg={colorMode === "dark" ? "#45435b" : "#ac9dd1"}
+              color={colorMode === "dark" ? "white" : "black"}
+              zIndex="9999"
+              boxShadow="md"
+            >
+              <SaveSearchButton keyword={search} />
+            </Box>
+          )}
         </Flex>
       </Flex>
     </motion.div>
